@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Logbook Digital</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 700px; margin: auto; }
+    input, textarea { width: 100%; margin: 5px 0; padding: 8px; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Logbook Digital</h2>
+  <input type="date" id="date">
+  <input type="text" id="activity" placeholder="Kegiatan">
+  <textarea id="notes" placeholder="Catatan..."></textarea>
+  <button onclick="saveLog()">Simpan</button>
+
+  <table id="logTable">
+    <thead><tr><th>Tanggal</th><th>Kegiatan</th><th>Catatan</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const saveLog = () => {
+      const date = document.getElementById('date').value;
+      const activity = document.getElementById('activity').value;
+      const notes = document.getElementById('notes').value;
+
+      if (!date || !activity) return alert("Isi semua data!");
+
+      const logs = JSON.parse(localStorage.getItem('logbook') || '[]');
+      logs.push({ date, activity, notes });
+      localStorage.setItem('logbook', JSON.stringify(logs));
+      renderLogs();
+    };
+
+    const renderLogs = () => {
+      const logs = JSON.parse(localStorage.getItem('logbook') || '[]');
+      const tbody = document.querySelector('#logTable tbody');
+      tbody.innerHTML = logs.map(log => `
+        <tr><td>${log.date}</td><td>${log.activity}</td><td>${log.notes}</td></tr>
+      `).join('');
+    };
+
+    renderLogs();
+  </script>
+</body>
+</html>
