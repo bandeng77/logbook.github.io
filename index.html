@@ -12,7 +12,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 40px;
-      background-color: #f4f4f4;
+      background-color: #7FFFD4; /* Background utama */
       display: flex;
       gap: 30px;
     }
@@ -26,6 +26,12 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .form-wrapper img.logo {
+      display: block;
+      margin: 0 auto 10px;
+      max-width: 200px;
     }
 
     h2 {
@@ -91,9 +97,10 @@
 </head>
 <body>
   <div class="form-wrapper">
+    <!-- Logo -->
+    <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
     <h2>📘 Logbook</h2>
     <form id="logForm">
-      <!-- Ganti date dengan datetime-local -->
       <input type="datetime-local" id="tanggal" required />
       <input type="text" id="nama" placeholder="Nama" required />
       <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
@@ -107,7 +114,6 @@
 
   <div class="logbook-list" id="log">
     <h2>📋 Daftar Logbook</h2>
-    <!-- Entri akan ditambahkan di sini -->
   </div>
 
   <script>
