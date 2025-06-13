@@ -4,67 +4,96 @@
   <meta charset="UTF-8" />
   <title>Logbook</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background-color: #f8f8f8;
+      margin: 0;
+      padding: 40px;
+      background-color: #f4f4f4;
+    }
+
+    .wrapper {
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      align-items: flex-start;
+      gap: 40px;
     }
 
     #container {
-      width: 600px;
+      width: 500px;
       background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #log {
+      flex: 1;
+      max-width: 600px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     h2 {
       text-align: center;
-      font-size: 32px;
     }
 
     input, textarea, button {
-      margin-bottom: 15px;
       width: 100%;
       padding: 10px;
+      margin-bottom: 15px;
       font-size: 16px;
-      box-sizing: border-box;
     }
 
     video, canvas {
       display: block;
-      margin: 10px auto;
+      margin: 0 auto 15px;
     }
 
-    #log {
-      margin-top: 20px;
+    .log-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background: #fdfdfd;
     }
 
-    img {
-      width: 200px;
-      display: block;
+    .log-entry img {
       margin-top: 10px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    ul {
+      padding-left: 20px;
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <h2>📘 Logbook</h2>
-    <form id="logForm">
-      <input type="date" id="tanggal" required />
-      <input type="text" id="nama" placeholder="Nama" required />
-      <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-      <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
-      <video id="video" width="300" autoplay></video>
-      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-      <canvas id="canvas" width="300" style="display:none;"></canvas>
-      <button type="submit">+ Tambah ke Logbook</button>
-    </form>
-    <div id="log"></div>
+  <div class="wrapper">
+    <div id="container">
+      <h2>📘 Logbook</h2>
+      <form id="logForm">
+        <input type="date" id="tanggal" required />
+        <input type="text" id="nama" placeholder="Nama" required />
+        <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
+        <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+        <video id="video" width="300" autoplay></video>
+        <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
+        <canvas id="canvas" width="300" style="display:none;"></canvas>
+        <button type="submit">+ Tambah ke Logbook</button>
+      </form>
+    </div>
+
+    <div id="log">
+      <h2>📋 Daftar Logbook</h2>
+      <!-- Entri akan ditambahkan di sini -->
+    </div>
   </div>
 
   <script>
@@ -76,7 +105,7 @@
 
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
-      .catch(error => console.error('Akses kamera ditolak:', error));
+      .catch(err => console.error('Akses kamera ditolak:', err));
 
     function takePhoto() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -90,17 +119,20 @@
       const perusahaan = document.getElementById('perusahaan').value;
       const alamat = document.getElementById('alamat').value;
 
-      const entry = `
-        <div style="border:1px solid #ccc; padding:10px; margin-top:10px;">
-          <strong>Tanggal:</strong> ${tanggal}<br/>
-          <strong>Nama:</strong> ${nama}<br/>
-          <strong>Perusahaan:</strong> ${perusahaan}<br/>
-          <strong>Alamat:</strong> ${alamat}<br/>
-          <strong>Foto:</strong><br/>
-          <img src="${photoData}" alt="Foto Kegiatan"/>
-        </div>
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `
+        <ul>
+          <li><strong>Tanggal:</strong> ${tanggal}</li>
+          <li><strong>Nama:</strong> ${nama}</li>
+          <li><strong>Perusahaan:</strong> ${perusahaan}</li>
+          <li><strong>Alamat:</strong> ${alamat}</li>
+        </ul>
+        <strong>Foto:</strong><br/>
+        <img src="${photoData}" alt="Foto Kegiatan"/>
       `;
-      log.innerHTML += entry;
+
+      log.appendChild(entry);
       this.reset();
     }
   </script>
