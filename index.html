@@ -13,46 +13,60 @@
       margin: 0;
       padding: 40px;
       background-color: #f4f4f4;
-    }
-
-    .wrapper {
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 40px;
+      gap: 30px;
     }
 
-    #container {
-      width: 500px;
+    .form-wrapper {
+      width: 400px;
+      position: sticky;
+      top: 20px;
+      align-self: flex-start;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    #log {
-      flex: 1;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     h2 {
       text-align: center;
+      margin-top: 0;
     }
 
     input, textarea, button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 15px;
       font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
-    video, canvas {
+    button {
+      cursor: pointer;
+      background-color: #f2f2f2;
+      border: 1px solid #aaa;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #ddd;
+    }
+
+    video {
       display: block;
       margin: 0 auto 15px;
+      border-radius: 6px;
+    }
+
+    .logbook-list {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .log-entry {
@@ -67,6 +81,7 @@
       margin-top: 10px;
       width: 100%;
       max-width: 300px;
+      border-radius: 6px;
     }
 
     ul {
@@ -75,25 +90,24 @@
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <div id="container">
-      <h2>📘 Logbook</h2>
-      <form id="logForm">
-        <input type="date" id="tanggal" required />
-        <input type="text" id="nama" placeholder="Nama" required />
-        <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-        <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
-        <video id="video" width="300" autoplay></video>
-        <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-        <canvas id="canvas" width="300" style="display:none;"></canvas>
-        <button type="submit">+ Tambah ke Logbook</button>
-      </form>
-    </div>
+  <div class="form-wrapper">
+    <h2>📘 Logbook</h2>
+    <form id="logForm">
+      <!-- Ganti date dengan datetime-local -->
+      <input type="datetime-local" id="tanggal" required />
+      <input type="text" id="nama" placeholder="Nama" required />
+      <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
+      <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+      <video id="video" width="300" autoplay></video>
+      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
+      <canvas id="canvas" width="300" style="display:none;"></canvas>
+      <button type="submit">+ Tambah ke Logbook</button>
+    </form>
+  </div>
 
-    <div id="log">
-      <h2>📋 Daftar Logbook</h2>
-      <!-- Entri akan ditambahkan di sini -->
-    </div>
+  <div class="logbook-list" id="log">
+    <h2>📋 Daftar Logbook</h2>
+    <!-- Entri akan ditambahkan di sini -->
   </div>
 
   <script>
@@ -123,7 +137,7 @@
       entry.className = 'log-entry';
       entry.innerHTML = `
         <ul>
-          <li><strong>Tanggal:</strong> ${tanggal}</li>
+          <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
           <li><strong>Nama:</strong> ${nama}</li>
           <li><strong>Perusahaan:</strong> ${perusahaan}</li>
           <li><strong>Alamat:</strong> ${alamat}</li>
