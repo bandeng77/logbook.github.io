@@ -4,26 +4,68 @@
   <meta charset="UTF-8" />
   <title>Logbook</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    input, textarea { margin-bottom: 10px; width: 100%; }
-    #log { margin-top: 20px; }
-    img { width: 100px; margin-top: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #container {
+      width: 600px;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 32px;
+    }
+
+    input, textarea, button {
+      margin-bottom: 15px;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    video, canvas {
+      display: block;
+      margin: 10px auto;
+    }
+
+    #log {
+      margin-top: 20px;
+    }
+
+    img {
+      width: 200px;
+      display: block;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h2>📘 Logbook</h2>
-  <form id="logForm">
-    <input type="date" id="tanggal" required /><br />
-    <input type="text" id="nama" placeholder="Nama" required /><br />
-    <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required /><br />
-    <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea><br />
-    <video id="video" width="200" autoplay></video><br />
-    <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-    <canvas id="canvas" width="200" style="display:none;"></canvas><br />
-    <button type="submit">+ Tambah ke Logbook</button>
-  </form>
-
-  <div id="log"></div>
+  <div id="container">
+    <h2>📘 Logbook</h2>
+    <form id="logForm">
+      <input type="date" id="tanggal" required />
+      <input type="text" id="nama" placeholder="Nama" required />
+      <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
+      <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+      <video id="video" width="300" autoplay></video>
+      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
+      <canvas id="canvas" width="300" style="display:none;"></canvas>
+      <button type="submit">+ Tambah ke Logbook</button>
+    </form>
+    <div id="log"></div>
+  </div>
 
   <script>
     const video = document.getElementById('video');
@@ -33,7 +75,8 @@
     let photoData = '';
 
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream);
+      .then(stream => video.srcObject = stream)
+      .catch(error => console.error('Akses kamera ditolak:', error));
 
     function takePhoto() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
