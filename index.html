@@ -158,35 +158,38 @@ if (!photoData) {
     foto: photoData
   };
 
-  fetch('https://script.google.com/macros/s/AKfycbwwQBNozO5BNHSsZgbHLK-9X6la7HAQ3Dpbx7P5ar0Bo9pg0pwIrLJi6lB_GqByyuBl/exec', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(res => res.text())
-  .then(response => {
-    alert('Data berhasil dikirim ke Google Sheet');
-    // Tampilkan juga di halaman lokal
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-      <ul>
-        <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-        <li><strong>Nama:</strong> ${nama}</li>
-        <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-        <li><strong>Alamat:</strong> ${alamat}</li>
-        <li><strong>No Telepon:</strong> ${telepon}</li>
-        <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-      </ul>
-      <strong>Foto:</strong><br/>
-      <img src="${photoData}" alt="Foto Kegiatan"/>
-    `;
-    log.appendChild(entry);
-    document.getElementById('logForm').reset();
-  })
-  .catch(err => {
-    alert('Gagal mengirim data: ' + err);
-  });
+  fetch("https://corsproxy.io/?" + encodeURIComponent("https://script.google.com/macros/s/AKfycbya39jB7HG4uWKALY4rMvWYqkgwK5ebdtJ_g102VRX6zmTcBXZAQtHvs9erAOwyWiU/exec"), {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(data)
+})
+.then(res => res.text())
+.then(response => {
+  alert('Data berhasil dikirim ke Google Sheet');
+  // Tampilkan juga di halaman lokal
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `
+    <ul>
+      <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
+      <li><strong>Nama:</strong> ${nama}</li>
+      <li><strong>Perusahaan:</strong> ${perusahaan}</li>
+      <li><strong>Alamat:</strong> ${alamat}</li>
+      <li><strong>No Telepon:</strong> ${telepon}</li>
+      <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
+    </ul>
+    <strong>Foto:</strong><br/>
+    <img src="${photoData}" alt="Foto Kegiatan"/>
+  `;
+  log.appendChild(entry);
+  document.getElementById('logForm').reset();
+})
+.catch(err => {
+  alert('Gagal mengirim data: ' + err);
+});
+
 };
   </script>
 </body>
