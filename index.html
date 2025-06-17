@@ -108,7 +108,7 @@
     let photoData = '';
 
     // Aktifkan kamera
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUser Media({ video: true })
       .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
 
