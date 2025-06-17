@@ -134,60 +134,32 @@
     }
 
     document.getElementById('logForm').onsubmit = function(e) {
-  e.preventDefault();
-      
-if (!photoData) {
-  alert("Silakan ambil foto terlebih dahulu sebelum submit.");
-  return;
-}
+      e.preventDefault();
+      const tanggal = document.getElementById('tanggal').value;
+      const nama = document.getElementById('nama').value;
+      const perusahaan = document.getElementById('perusahaan').value;
+      const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const tujuan = document.getElementById('tujuan').value;
 
-  const tanggal = document.getElementById('tanggal').value;
-  const nama = document.getElementById('nama').value;
-  const perusahaan = document.getElementById('perusahaan').value;
-  const alamat = document.getElementById('alamat').value;
-  const telepon = document.getElementById('telepon').value;
-  const tujuan = document.getElementById('tujuan').value;
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `
+        <ul>
+          <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
+          <li><strong>Nama:</strong> ${nama}</li>
+          <li><strong>Perusahaan:</strong> ${perusahaan}</li>
+          <li><strong>Alamat:</strong> ${alamat}</li>
+          <li><strong>No Telepon:</strong> ${telepon}</li>
+          <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
+        </ul>
+        <strong>Foto:</strong><br/>
+        <img src="${photoData}" alt="Foto Kegiatan"/>
+      `;
 
-  const data = {
-    tanggal,
-    nama,
-    perusahaan,
-    alamat,
-    telepon,
-    tujuan,
-    foto: photoData
-  };
-
-  fetch('https://script.google.com/macros/s/AKfycbwOKrgRQMnd-kqeUX2LWaeKO88IVsa_OXgRUl-Cr1eXaU-52k4NcW-rVRml5n-AHBWi/exec', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(res => res.text())
-  .then(response => {
-    alert('Data berhasil dikirim ke Google Sheet');
-    // Tampilkan juga di halaman lokal
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-      <ul>
-        <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-        <li><strong>Nama:</strong> ${nama}</li>
-        <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-        <li><strong>Alamat:</strong> ${alamat}</li>
-        <li><strong>No Telepon:</strong> ${telepon}</li>
-        <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-      </ul>
-      <strong>Foto:</strong><br/>
-      <img src="${photoData}" alt="Foto Kegiatan"/>
-    `;
-    log.appendChild(entry);
-    document.getElementById('logForm').reset();
-  })
-  .catch(err => {
-    alert('Gagal mengirim data: ' + err);
-  });
-};
+      log.appendChild(entry);
+      this.reset();
+    }
   </script>
 </body>
 </html>
