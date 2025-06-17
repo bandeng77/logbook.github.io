@@ -12,7 +12,7 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 40px;
-      background-color: #7FFFD4; /* Background utama */
+      background-color: #7FFFD4;
       display: flex;
       gap: 30px;
     }
@@ -97,7 +97,6 @@
 </head>
 <body>
   <div class="form-wrapper">
-    <!-- Logo -->
     <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
     <h2>📘 Logbook</h2>
     <form id="logForm">
@@ -105,6 +104,8 @@
       <input type="text" id="nama" placeholder="Nama" required />
       <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
       <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+      <input type="tel" id="telepon" placeholder="No Telepon" required />
+      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan" required />
       <video id="video" width="300" autoplay></video>
       <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
       <canvas id="canvas" width="300" style="display:none;"></canvas>
@@ -138,6 +139,8 @@
       const nama = document.getElementById('nama').value;
       const perusahaan = document.getElementById('perusahaan').value;
       const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const tujuan = document.getElementById('tujuan').value;
 
       const entry = document.createElement('div');
       entry.className = 'log-entry';
@@ -147,6 +150,8 @@
           <li><strong>Nama:</strong> ${nama}</li>
           <li><strong>Perusahaan:</strong> ${perusahaan}</li>
           <li><strong>Alamat:</strong> ${alamat}</li>
+          <li><strong>No Telepon:</strong> ${telepon}</li>
+          <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
         </ul>
         <strong>Foto:</strong><br/>
         <img src="${photoData}" alt="Foto Kegiatan"/>
