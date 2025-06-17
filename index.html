@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Logbook</title>
+  <title>Logbook Genetek</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -16,7 +13,6 @@
       display: flex;
       gap: 30px;
     }
-
     .form-wrapper {
       width: 400px;
       position: sticky;
@@ -27,18 +23,15 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     .form-wrapper img.logo {
       display: block;
       margin: 0 auto 10px;
       max-width: 200px;
     }
-
     h2 {
       text-align: center;
       margin-top: 0;
     }
-
     input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -47,24 +40,20 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     button {
       cursor: pointer;
       background-color: #f2f2f2;
       border: 1px solid #aaa;
       transition: background 0.2s ease;
     }
-
     button:hover {
       background-color: #ddd;
     }
-
     video {
       display: block;
       margin: 0 auto 15px;
       border-radius: 6px;
     }
-
     .logbook-list {
       flex: 1;
       background: white;
@@ -74,7 +63,6 @@
       max-height: 80vh;
       overflow-y: auto;
     }
-
     .log-entry {
       border: 1px solid #ccc;
       padding: 15px;
@@ -82,17 +70,13 @@
       margin-bottom: 15px;
       background: #fdfdfd;
     }
-
     .log-entry img {
       margin-top: 10px;
       width: 100%;
       max-width: 300px;
       border-radius: 6px;
     }
-
-    ul {
-      padding-left: 20px;
-    }
+    ul { padding-left: 20px; }
   </style>
 </head>
 <body>
@@ -117,7 +101,25 @@
     <h2>📋 Daftar Logbook</h2>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
+
   <script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+      authDomain: "logbook-e6ab3.firebaseapp.com",
+      projectId: "logbook-e6ab3",
+      storageBucket: "logbook-e6ab3.firebasestorage.app",
+      messagingSenderId: "484546392348",
+      appId: "1:484546392348:web:861616b680427c158ecad9"
+    };
+
+    // Inisialisasi Firebase dan Firestore
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
@@ -133,7 +135,8 @@
       photoData = canvas.toDataURL('image/png');
     }
 
-    document.getElementById('logForm').onsubmit = function(e) {
+    // Simpan dan tampilkan data
+    document.getElementById('logForm').onsubmit = async function(e) {
       e.preventDefault();
       const tanggal = document.getElementById('tanggal').value;
       const nama = document.getElementById('nama').value;
@@ -142,24 +145,40 @@
       const telepon = document.getElementById('telepon').value;
       const tujuan = document.getElementById('tujuan').value;
 
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      entry.innerHTML = `
-        <ul>
-          <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-          <li><strong>Nama:</strong> ${nama}</li>
-          <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-          <li><strong>Alamat:</strong> ${alamat}</li>
-          <li><strong>No Telepon:</strong> ${telepon}</li>
-          <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-        </ul>
-        <strong>Foto:</strong><br/>
-        <img src="${photoData}" alt="Foto Kegiatan"/>
-      `;
+      try {
+        await db.collection("logbook").add({
+          tanggal,
+          nama,
+          perusahaan,
+          alamat,
+          telepon,
+          tujuan,
+          foto: photoData,
+          timestamp: new Date()
+        });
 
-      log.appendChild(entry);
-      this.reset();
-    }
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+          <ul>
+            <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
+            <li><strong>Nama:</strong> ${nama}</li>
+            <li><strong>Perusahaan:</strong> ${perusahaan}</li>
+            <li><strong>Alamat:</strong> ${alamat}</li>
+            <li><strong>No Telepon:</strong> ${telepon}</li>
+            <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
+          </ul>
+          <strong>Foto:</strong><br/>
+          <img src="${photoData}" alt="Foto Kegiatan"/>
+        `;
+        log.appendChild(entry);
+        this.reset();
+        alert("✅ Data berhasil disimpan ke Firestore!");
+      } catch (error) {
+        console.error("❌ Gagal menyimpan:", error);
+        alert("❌ Gagal menyimpan ke Firestore.");
+      }
+    };
   </script>
 </body>
 </html>
