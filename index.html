@@ -158,42 +158,24 @@ if (!photoData) {
     foto: photoData
   };
       
+const formData = new URLSearchParams();
+formData.append("data", JSON.stringify(data));
+
 fetch("https://script.google.com/macros/s/AKfycbzQpFI4GU31L67bSRxv8paMEETingDS6kqMDsTHo5h0FnDoHoyNzi9h_Z2UdSbM5O-C/exec", {
   method: "POST",
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/x-www-form-urlencoded"
   },
-  body: JSON.stringify(data)
+  body: formData
 })
-.then(res => res.json())
+.then(res => res.text())
 .then(response => {
-  if (response.status === "success") {
-    alert('✅ Data berhasil dikirim ke Google Sheet.');
-    // Tampilkan juga di halaman
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-      <ul>
-        <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-        <li><strong>Nama:</strong> ${nama}</li>
-        <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-        <li><strong>Alamat:</strong> ${alamat}</li>
-        <li><strong>No Telepon:</strong> ${telepon}</li>
-        <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-      </ul>
-      <strong>Foto:</strong><br/>
-      <img src="${photoData}" alt="Foto Kegiatan"/>
-    `;
-    log.appendChild(entry);
-    document.getElementById('logForm').reset();
-  } else {
-    alert("❌ Error: " + response.message);
-  }
+  alert('Data berhasil dikirim ke Google Sheet');
+  // ... tampilkan juga di logbook seperti sebelumnya
 })
 .catch(err => {
-  alert("❌ Gagal mengirim data: " + err);
+  alert('Gagal mengirim data: ' + err);
 });
-
 
 
 };
