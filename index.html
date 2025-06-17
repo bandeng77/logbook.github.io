@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <title>Logbook</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 40px;
-      background-color: #7FFFD4; /* Background utama */
+      background-color: #7FFFD4;
       display: flex;
       gap: 30px;
     }
-
     .form-wrapper {
       width: 400px;
       position: sticky;
@@ -27,18 +23,10 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
-    .form-wrapper img.logo {
-      display: block;
-      margin: 0 auto 10px;
-      max-width: 200px;
-    }
-
     h2 {
       text-align: center;
       margin-top: 0;
     }
-
     input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -47,24 +35,20 @@
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     button {
       cursor: pointer;
       background-color: #f2f2f2;
       border: 1px solid #aaa;
       transition: background 0.2s ease;
     }
-
     button:hover {
       background-color: #ddd;
     }
-
     video {
       display: block;
       margin: 0 auto 15px;
       border-radius: 6px;
     }
-
     .logbook-list {
       flex: 1;
       background: white;
@@ -74,7 +58,6 @@
       max-height: 80vh;
       overflow-y: auto;
     }
-
     .log-entry {
       border: 1px solid #ccc;
       padding: 15px;
@@ -82,29 +65,24 @@
       margin-bottom: 15px;
       background: #fdfdfd;
     }
-
     .log-entry img {
       margin-top: 10px;
       width: 100%;
       max-width: 300px;
       border-radius: 6px;
     }
-
-    ul {
-      padding-left: 20px;
-    }
   </style>
 </head>
 <body>
   <div class="form-wrapper">
-    <!-- Logo -->
-    <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
     <h2>📘 Logbook</h2>
     <form id="logForm">
       <input type="datetime-local" id="tanggal" required />
       <input type="text" id="nama" placeholder="Nama" required />
       <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
       <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+      <input type="tel" id="telepon" placeholder="No Telepon" required />
+      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan" required />
       <video id="video" width="300" autoplay></video>
       <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
       <canvas id="canvas" width="300" style="display:none;"></canvas>
@@ -123,38 +101,65 @@
     const log = document.getElementById('log');
     let photoData = '';
 
-    navigator.mediaDevices.getUserMedia({ video: true })
+    // Aktifkan kamera
+    navigator.mediaDevices.getUser Media({ video: true })
       .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
 
+    // Ambil foto
     function takePhoto() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       photoData = canvas.toDataURL('image/png');
     }
 
+    // Kirim data
     document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
-      const tanggal = document.getElementById('tanggal').value;
-      const nama = document.getElementById('nama').value;
-      const perusahaan = document.getElementById('perusahaan').value;
-      const alamat = document.getElementById('alamat').value;
 
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      entry.innerHTML = `
-        <ul>
-          <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-          <li><strong>Nama:</strong> ${nama}</li>
-          <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-          <li><strong>Alamat:</strong> ${alamat}</li>
-        </ul>
-        <strong>Foto:</strong><br/>
-        <img src="${photoData}" alt="Foto Kegiatan"/>
-      `;
+      if (!photoData) {
+        alert("Silakan ambil foto terlebih dahulu sebelum submit.");
+        return;
+      }
 
-      log.appendChild(entry);
-      this.reset();
-    }
+      const data = {
+        tanggal: document.getElementById('tanggal').value,
+        nama: document.getElementById('nama').value,
+        perusahaan: document.getElementById('perusahaan').value,
+        alamat: document.getElementById('alamat').value,
+        telepon: document.getElementById('telepon').value,
+        tujuan: document.getElementById('tujuan').value,
+        foto: photoData
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwOKrgRQMnd-kqeUX2LWaeKO88IVsa_OXgRUl-Cr1eXaU-52k4NcW-rVRml5n-AHBWi/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        if (response.status === "success") {
+          alert("✅ Data berhasil disimpan!");
+          const entry = document.createElement('div');
+          entry.className = 'log-entry';
+          entry.innerHTML = `
+            <strong>${data.nama}</strong> dari <em>${data.perusahaan}</em><br/>
+            Tujuan: ${data.tujuan}<br/>
+            <img src="${response.fileUrl}" />
+          `;
+          log.prepend(entry);
+          document.getElementById('logForm').reset();
+          photoData = '';
+        } else {
+          alert("❌ Gagal menyimpan: " + response.message);
+        }
+      })
+      .catch(err => {
+        alert("❌ Gagal mengirim: " + err.message);
+      });
+    };
   </script>
 </body>
 </html>
