@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Logbook</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f1f1f1;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .login-form, .logbook-data {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    input, button {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .log-entry {
+      border-bottom: 1px solid #ccc;
+      padding: 15px 0;
+    }
+
+    img {
+      max-width: 300px;
+      display: block;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .logout-btn {
+      background-color: #e74c3c;
+    }
+
+    .logout-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-form" id="loginForm">
+    <h1>Login Admin</h1>
+    <input type="email" id="email" placeholder="Email admin" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div class="logbook-data hidden" id="logbookSection">
+    <h2>📋 Data Logbook</h2>
+    <div id="logbookContainer"></div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+      authDomain: "logbook-e6ab3.firebaseapp.com",
+      projectId: "logbook-e6ab3",
+      storageBucket: "logbook-e6ab3.appspot.com",
+      messagingSenderId: "484546392348",
+      appId: "1:484546392348:web:861616b680427c158ecad9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginForm = document.getElementById("loginForm");
+    const logbookSection = document.getElementById("logbookSection");
+    const logbookContainer = document.getElementById("logbookContainer");
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(user => {
+          loginForm.classList.add("hidden");
+          logbookSection.classList.remove("hidden");
+          loadLogbook();
+        })
+        .catch(error => {
+          alert("Login gagal: " + error.message);
+        });
+    }
+
+    function logout() {
+      auth.signOut().then(() => {
+        logbookContainer.innerHTML = "";
+        loginForm.classList.remove("hidden");
+        logbookSection.classList.add("hidden");
+      });
+    }
+
+    function loadLogbook() {
+      db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
+        logbookContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const div = document.createElement("div");
+          div.className = "log-entry";
+          div.innerHTML = `
+            <strong>Nama:</strong> ${d.nama}<br>
+            <strong>Perusahaan:</strong> ${d.perusahaan}<br>
+            <strong>Alamat:</strong> ${d.alamat}<br>
+            <strong>Telepon:</strong> ${d.telepon}<br>
+            <strong>Tujuan:</strong> ${d.tujuan}<br>
+            <strong>Tanggal:</strong> ${d.tanggal}<br>
+            <img src="${d.foto}" alt="Foto Tamu">
+          `;
+          logbookContainer.appendChild(div);
+        });
+      });
+    }
+
+    // Otomatis cek jika user sudah login sebelumnya
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loginForm.classList.add("hidden");
+        logbookSection.classList.remove("hidden");
+        loadLogbook();
+      }
+    });
+  </script>
+</body>
+</html>
