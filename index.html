@@ -29,7 +29,7 @@
       background: white;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
     }
 
     .form-wrapper {
@@ -54,9 +54,7 @@
       font-size: 28px;
     }
 
-    input,
-    textarea,
-    button {
+    input, textarea, button {
       width: 100%;
       padding: 14px;
       margin-bottom: 16px;
@@ -76,13 +74,11 @@
       background-color: #ddd;
     }
 
-    video,
-    #preview {
+    video, #preview {
       width: 100%;
       max-width: 400px;
-      border-radius: 8px;
+      border-radius: 9px;
       margin-bottom: 16px;
-      object-fit: cover;
     }
 
     canvas {
@@ -113,7 +109,7 @@
     <div class="camera-wrapper">
       <video id="video" autoplay></video>
       <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" width="400"></canvas>
       <img id="preview" alt="Preview Foto" />
     </div>
   </div>
@@ -151,16 +147,7 @@
     window.onload = setCurrentDateTime;
 
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-        video.onloadedmetadata = () => {
-          // Sinkronkan ukuran canvas dan preview
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          preview.width = video.videoWidth;
-          preview.height = video.videoHeight;
-        };
-      })
+      .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
 
     function takePhoto() {
