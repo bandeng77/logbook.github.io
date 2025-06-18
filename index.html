@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Logbook</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-aHv6m4IwA3Se1tYUV39o8W1hNKYI6N1+eWmVvQg+U3mNc+9W9yP0jgb8vN2hW2BRJ2pXKgDOPgDBnD2StdLqCQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
   <style>
     * {
       box-sizing: border-box;
@@ -90,6 +97,16 @@
       border-radius: 6px;
     }
 
+    .eye-btn {
+      display: inline-block;
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 20px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
     ul {
       padding-left: 20px;
     }
@@ -142,6 +159,17 @@
     const log = document.getElementById('log');
     let photoData = '';
 
+    // Fungsi untuk set waktu sekarang ke input
+    function setCurrentDateTime() {
+      const now = new Date();
+      const tzOffset = now.getTimezoneOffset() * 60000;
+      const localISOTime = new Date(now - tzOffset).toISOString().slice(0, 16);
+      document.getElementById('tanggal').value = localISOTime;
+    }
+
+    // Set waktu saat halaman dibuka
+    window.onload = setCurrentDateTime;
+
     // Aktifkan kamera
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
@@ -152,7 +180,7 @@
       photoData = canvas.toDataURL('image/png');
     }
 
-    // Simpan data ke Firestore saat submit
+    // Submit form
     document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
 
@@ -183,19 +211,22 @@
           alert("Data berhasil disimpan di Firestore");
           document.getElementById('logForm').reset();
           photoData = '';
+          setCurrentDateTime(); // reset tanggal ke saat ini
         })
         .catch(err => {
           alert("Gagal menyimpan data: " + err.message);
         });
     };
 
-    // Tampilkan data realtime dari Firestore
+    // Tampilkan data logbook realtime
     db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
       log.innerHTML = '<h2>📋 Daftar Logbook</h2>';
       snapshot.forEach(doc => {
         const d = doc.data();
         const entry = document.createElement('div');
         entry.className = 'log-entry';
+        const photoId = 'photo-' + doc.id;
+
         entry.innerHTML = `
           <ul>
             <li><strong>Tanggal & Jam:</strong> ${d.tanggal}</li>
@@ -205,12 +236,19 @@
             <li><strong>No Telepon:</strong> ${d.telepon}</li>
             <li><strong>Tujuan Kunjungan:</strong> ${d.tujuan}</li>
           </ul>
-          <strong>Foto:</strong><br/>
-          <img src="${d.foto}" alt="Foto Kegiatan"/>
+          <button class="eye-btn" onclick="togglePhoto('${photoId}')">
+            <i class="fas fa-eye"></i> Lihat Foto
+          </button>
+          <img id="${photoId}" src="${d.foto}" alt="Foto Kegiatan" style="display: none;" />
         `;
         log.appendChild(entry);
       });
     });
+
+    function togglePhoto(id) {
+      const img = document.getElementById(id);
+      img.style.display = img.style.display === 'none' ? 'block' : 'none';
+    }
   </script>
 </body>
 </html>
