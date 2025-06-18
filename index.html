@@ -1,164 +1,193 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Logbook - GENETEK</title>
+  <meta charset="UTF-8" />
+  <title>Logbook</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background-color: #8ffff0;
       margin: 0;
-      padding: 0;
+      padding: 40px;
+      background-color: #7FFFD4;
       display: flex;
+      gap: 30px;
     }
 
-    .container {
-      display: flex;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .form-section {
-      width: 30%;
+    .form-wrapper {
+      width: 400px;
+      position: sticky;
+      top: 20px;
+      align-self: flex-start;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
-      margin-right: 20px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .form-section h2 {
-      display: flex;
-      align-items: center;
-      font-size: 24px;
-    }
-
-    .form-section h2::before {
-      content: '📘';
-      margin-right: 10px;
-    }
-
-    .form-section input, .form-section textarea, .form-section button {
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    .form-section button {
-      background-color: #eee;
-      cursor: pointer;
-    }
-
-    .logbook-section {
-      flex-grow: 1;
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px #ccc;
-    }
-
-    .logbook-section h2 {
-      font-size: 24px;
-    }
-
-    .logbook-section h2::before {
-      content: '📋';
-      margin-right: 10px;
-    }
-
-    video, canvas {
+    .form-wrapper img.logo {
       display: block;
+      margin: 0 auto 10px;
+      max-width: 200px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    input, textarea, button {
       width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #f2f2f2;
+      border: 1px solid #aaa;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #ddd;
+    }
+
+    video {
+      display: block;
+      margin: 0 auto 15px;
+      border-radius: 6px;
+    }
+
+    .logbook-list {
+      flex: 1;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background: #fdfdfd;
+    }
+
+    .log-entry img {
       margin-top: 10px;
+      width: 100%;
+      max-width: 300px;
+      border-radius: 6px;
+    }
+
+    ul {
+      padding-left: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-section">
-      <img src="https://i.imgur.com/OdpQWWD.png" alt="Genetek Logo" style="max-width: 100%; height: auto;">
-      <h2>Logbook</h2>
-      <input type="datetime-local" id="tanggal">
-      <input type="text" id="nama" placeholder="Nama">
-      <input type="text" id="perusahaan" placeholder="Nama Perusahaan">
-      <textarea id="alamat" placeholder="Alamat Perusahaan"></textarea>
-      <input type="text" id="telepon" placeholder="No Telepon">
-      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan">
+  <div class="form-wrapper">
+    <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
+    <h2>📘 Logbook</h2>
+    <form id="logForm">
+      <input type="datetime-local" id="tanggal" required />
+      <input type="text" id="nama" placeholder="Nama" required />
+      <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
+      <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
+      <input type="tel" id="telepon" placeholder="No Telepon" required />
+      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan" required />
+      <video id="video" width="300" autoplay></video>
+      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
+      <canvas id="canvas" width="300" style="display:none;"></canvas>
+      <button type="submit">+ Tambah ke Logbook</button>
+    </form>
+  </div>
 
-      <button onclick="startCamera()">📸 Ambil Foto</button>
-      <video id="video" autoplay style="display:none;"></video>
-      <canvas id="canvas" style="display:none;"></canvas>
-
-      <button onclick="tambahLogbook()">+ Tambah ke Logbook</button>
-    </div>
-
-    <div class="logbook-section">
-      <h2>Daftar Logbook</h2>
-      <div id="logbookList"></div>
-    </div>
+  <div class="logbook-list" id="log">
+    <h2>📋 Daftar Logbook</h2>
   </div>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    let stream;
+    const context = canvas.getContext('2d');
+    const log = document.getElementById('log');
+    let photoData = '';
 
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(s => {
-          stream = s;
-          video.style.display = 'block';
-          video.srcObject = stream;
-
-          setTimeout(() => {
-            takePhoto();
-          }, 2000); // ambil foto otomatis setelah 2 detik
-        })
-        .catch(err => alert('Kamera tidak tersedia: ' + err));
-    }
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => video.srcObject = stream)
+      .catch(err => console.error('Akses kamera ditolak:', err));
 
     function takePhoto() {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0);
-
-      // Stop kamera
-      stream.getTracks().forEach(track => track.stop());
-      video.style.display = 'none';
-      canvas.style.display = 'block';
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      photoData = canvas.toDataURL('image/png');
     }
 
-    function tambahLogbook() {
-      const list = document.getElementById('logbookList');
-      const foto = canvas.toDataURL();
-      const tanggal = document.getElementById('tanggal').value;
-      const nama = document.getElementById('nama').value;
-      const perusahaan = document.getElementById('perusahaan').value;
-      const alamat = document.getElementById('alamat').value;
-      const telepon = document.getElementById('telepon').value;
-      const tujuan = document.getElementById('tujuan').value;
+    document.getElementById('logForm').onsubmit = function(e) {
+  e.preventDefault();
+      
+if (!photoData) {
+  alert("Silakan ambil foto terlebih dahulu sebelum submit.");
+  return;
+}
 
-      const entry = document.createElement('div');
-      entry.style.marginBottom = '20px';
-      entry.innerHTML = `
-        <strong>${tanggal}</strong><br>
-        Nama: ${nama}<br>
-        Perusahaan: ${perusahaan}<br>
-        Alamat: ${alamat}<br>
-        Telepon: ${telepon}<br>
-        Tujuan: ${tujuan}<br>
-        <img src="${foto}" width="150"><hr>
-      `;
-      list.appendChild(entry);
+  const tanggal = document.getElementById('tanggal').value;
+  const nama = document.getElementById('nama').value;
+  const perusahaan = document.getElementById('perusahaan').value;
+  const alamat = document.getElementById('alamat').value;
+  const telepon = document.getElementById('telepon').value;
+  const tujuan = document.getElementById('tujuan').value;
 
-      // Reset
-      document.querySelectorAll('.form-section input, .form-section textarea').forEach(el => el.value = '');
-      canvas.style.display = 'none';
-    }
+  const data = {
+    tanggal,
+    nama,
+    perusahaan,
+    alamat,
+    telepon,
+    tujuan,
+    foto: photoData
+  };
+
+  fetch('https://script.google.com/macros/s/AKfycbxfz6J4bFx1-HJdI-q6Yl-6CX2QfBDp2b2pF-VBv_npQ1OHJrxhCksF4JGZHujLnIc4/exec', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.text())
+  .then(response => {
+    alert('Data berhasil dikirim ke Google Sheet');
+    // Tampilkan juga di halaman lokal
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+      <ul>
+        <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
+        <li><strong>Nama:</strong> ${nama}</li>
+        <li><strong>Perusahaan:</strong> ${perusahaan}</li>
+        <li><strong>Alamat:</strong> ${alamat}</li>
+        <li><strong>No Telepon:</strong> ${telepon}</li>
+        <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
+      </ul>
+      <strong>Foto:</strong><br/>
+      <img src="${photoData}" alt="Foto Kegiatan"/>
+    `;
+    log.appendChild(entry);
+    document.getElementById('logForm').reset();
+  })
+  .catch(err => {
+    alert('Gagal mengirim data: ' + err);
+  });
+};
   </script>
 </body>
 </html>
