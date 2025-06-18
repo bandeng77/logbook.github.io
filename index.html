@@ -77,24 +77,28 @@
       background-color: #ddd;
     }
 
-    video, #preview {
+    video {
       width: 100%;
       max-width: 100%;
       border-radius: 8px;
       margin: 10px auto;
       display: block;
+      transform: scaleX(-1); /* Mirror camera view */
+    }
+
+    #preview {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 8px;
+      margin: 10px auto;
+      display: none;
+      object-fit: cover;
     }
 
     canvas {
       display: none;
     }
 
-    #preview {
-      display: none;
-      object-fit: cover;
-    }
-
-    /* Mobile Styles */
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -129,7 +133,7 @@
   <div class="container">
     <div class="form-wrapper">
       <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
-      <h2>Buku Tamu</h2>
+      <h2>📘 Buku Tamu</h2>
       <form id="logForm">
         <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: #f5f5f5;" />
         <input type="text" id="nama" placeholder="Nama" required />
@@ -188,7 +192,13 @@
     function takePhoto() {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Mirror image to match video
+      context.save();
+      context.scale(-1, 1);
+      context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      context.restore();
+
       photoData = canvas.toDataURL('image/jpeg', 0.3);
       preview.src = photoData;
       preview.style.display = 'block';
