@@ -117,13 +117,32 @@
     <h2>📋 Daftar Logbook</h2>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
   <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+      authDomain: "logbook-e6ab3.firebaseapp.com",
+      projectId: "logbook-e6ab3",
+      storageBucket: "logbook-e6ab3.appspot.com",
+      messagingSenderId: "484546392348",
+      appId: "1:484546392348:web:861616b680427c158ecad9"
+    };
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const log = document.getElementById('log');
     let photoData = '';
 
+    // Aktifkan kamera
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
@@ -133,61 +152,65 @@
       photoData = canvas.toDataURL('image/png');
     }
 
+    // Simpan data ke Firestore saat submit
     document.getElementById('logForm').onsubmit = function(e) {
-  e.preventDefault();
-      
-if (!photoData) {
-  alert("Silakan ambil foto terlebih dahulu sebelum submit.");
-  return;
-}
+      e.preventDefault();
 
-  const tanggal = document.getElementById('tanggal').value;
-  const nama = document.getElementById('nama').value;
-  const perusahaan = document.getElementById('perusahaan').value;
-  const alamat = document.getElementById('alamat').value;
-  const telepon = document.getElementById('telepon').value;
-  const tujuan = document.getElementById('tujuan').value;
+      if (!photoData) {
+        alert("Silakan ambil foto terlebih dahulu sebelum submit.");
+        return;
+      }
 
-  const data = {
-    tanggal,
-    nama,
-    perusahaan,
-    alamat,
-    telepon,
-    tujuan,
-    foto: photoData
-  };
+      const tanggal = document.getElementById('tanggal').value;
+      const nama = document.getElementById('nama').value;
+      const perusahaan = document.getElementById('perusahaan').value;
+      const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const tujuan = document.getElementById('tujuan').value;
 
-  fetch('https://script.google.com/macros/s/AKfycbxfz6J4bFx1-HJdI-q6Yl-6CX2QfBDp2b2pF-VBv_npQ1OHJrxhCksF4JGZHujLnIc4/exec', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(res => res.text())
-  .then(response => {
-    alert('Data berhasil dikirim ke Google Sheet');
-    // Tampilkan juga di halaman lokal
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    entry.innerHTML = `
-      <ul>
-        <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-        <li><strong>Nama:</strong> ${nama}</li>
-        <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-        <li><strong>Alamat:</strong> ${alamat}</li>
-        <li><strong>No Telepon:</strong> ${telepon}</li>
-        <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-      </ul>
-      <strong>Foto:</strong><br/>
-      <img src="${photoData}" alt="Foto Kegiatan"/>
-    `;
-    log.appendChild(entry);
-    document.getElementById('logForm').reset();
-  })
-  .catch(err => {
-    alert('Gagal mengirim data: ' + err);
-  });
-};
+      const data = {
+        tanggal,
+        nama,
+        perusahaan,
+        alamat,
+        telepon,
+        tujuan,
+        foto: photoData
+      };
+
+      db.collection("logbook").add(data)
+        .then(() => {
+          alert("Data berhasil disimpan di Firestore");
+          document.getElementById('logForm').reset();
+          photoData = '';
+        })
+        .catch(err => {
+          alert("Gagal menyimpan data: " + err.message);
+        });
+    };
+
+    // Tampilkan data realtime dari Firestore
+    db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
+      log.innerHTML = '<h2>📋 Daftar Logbook</h2>';
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+          <ul>
+            <li><strong>Tanggal & Jam:</strong> ${d.tanggal}</li>
+            <li><strong>Nama:</strong> ${d.nama}</li>
+            <li><strong>Perusahaan:</strong> ${d.perusahaan}</li>
+            <li><strong>Alamat:</strong> ${d.alamat}</li>
+            <li><strong>No Telepon:</strong> ${d.telepon}</li>
+            <li><strong>Tujuan Kunjungan:</strong> ${d.tujuan}</li>
+          </ul>
+          <strong>Foto:</strong><br/>
+          <img src="${d.foto}" alt="Foto Kegiatan"/>
+        `;
+        log.appendChild(entry);
+      });
+    });
   </script>
 </body>
 </html>
