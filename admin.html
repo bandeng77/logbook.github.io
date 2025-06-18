@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Logbook</title>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,8 +14,9 @@
       justify-content: center;
     }
 
-    .login-form {
-      width: 400px;
+    .login-form, .logbook-data {
+      width: 100%;
+      max-width: 1000px;
       background: white;
       padding: 25px;
       border-radius: 12px;
@@ -45,17 +41,6 @@
 
     .login-form button:hover {
       background-color: #45a049;
-    }
-
-    .logbook-data {
-      flex: 1;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-height: 90vh;
-      overflow-y: auto;
-      width: 100%;
     }
 
     h2 {
@@ -88,9 +73,9 @@
     }
 
     th, td {
-      border: 1px solid #ccc;
       padding: 10px;
       text-align: left;
+      border: 1px solid #ccc;
       vertical-align: top;
     }
 
@@ -101,20 +86,22 @@
     .view-photo-btn {
       background: none;
       border: none;
-      color: #333;
-      font-size: 14px;
+      color: #007bff;
       cursor: pointer;
-    }
-
-    .view-photo-btn i {
-      margin-right: 5px;
     }
 
     .photo-preview {
       margin-top: 10px;
-      max-width: 300px;
-      display: none;
+      max-width: 200px;
       border-radius: 6px;
+      display: none;
+    }
+
+    input[type="text"], input[type="date"] {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
@@ -129,6 +116,12 @@
 
   <div class="logbook-data hidden" id="logbookSection">
     <h2>📋 Daftar Logbook</h2>
+
+    <div style="margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
+      <input type="text" id="searchInput" placeholder="Cari...">
+      <input type="date" id="filterDate">
+    </div>
+
     <div id="logbookContainer"></div>
     <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
@@ -156,12 +149,14 @@
     const logbookSection = document.getElementById("logbookSection");
     const logbookContainer = document.getElementById("logbookContainer");
 
+    let allLogData = [];
+
     function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
       auth.signInWithEmailAndPassword(email, password)
-        .then(user => {
+        .then(() => {
           loginForm.classList.add("hidden");
           logbookSection.classList.remove("hidden");
           loadLogbook();
@@ -186,56 +181,77 @@
 
     function loadLogbook() {
       db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
-        logbookContainer.innerHTML = "";
-
-        const table = document.createElement("table");
-        const thead = document.createElement("thead");
-        const tbody = document.createElement("tbody");
-
-        thead.innerHTML = `
-          <tr>
-            <th>No</th>
-            <th>Tanggal & Jam</th>
-            <th>Nama</th>
-            <th>Perusahaan</th>
-            <th>Alamat</th>
-            <th>No Telepon</th>
-            <th>Tujuan Kunjungan</th>
-            <th>Foto</th>
-          </tr>
-        `;
-
-        let index = 1;
+        allLogData = [];
         snapshot.forEach(doc => {
-          const d = doc.data();
-          const row = document.createElement("tr");
-          const photoId = `photo-${doc.id}`;
-
-          row.innerHTML = `
-            <td>${index}</td>
-            <td>${d.tanggal}</td>
-            <td>${d.nama}</td>
-            <td>${d.perusahaan}</td>
-            <td>${d.alamat}</td>
-            <td>${d.telepon}</td>
-            <td>${d.tujuan}</td>
-            <td>
-              <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
-                <i class="fas fa-eye"></i> Lihat Foto
-              </button>
-              <br/>
-              <img id="${photoId}" class="photo-preview" src="${d.foto}" alt="Foto Kegiatan" />
-            </td>
-          `;
-          tbody.appendChild(row);
-          index++;
+          const data = doc.data();
+          allLogData.push({ id: doc.id, ...data });
         });
-
-        table.appendChild(thead);
-        table.appendChild(tbody);
-        logbookContainer.appendChild(table);
+        renderLogbook(allLogData);
       });
     }
+
+    function renderLogbook(dataList) {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filterDate = document.getElementById("filterDate").value;
+
+      const filteredData = dataList.filter(d => {
+        const combined = `${d.nama} ${d.perusahaan} ${d.alamat} ${d.telepon} ${d.tujuan}`.toLowerCase();
+        const matchesSearch = combined.includes(searchValue);
+        const matchesDate = !filterDate || d.tanggal.startsWith(filterDate);
+        return matchesSearch && matchesDate;
+      });
+
+      logbookContainer.innerHTML = "";
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const tbody = document.createElement("tbody");
+
+      thead.innerHTML = `
+        <tr>
+          <th>No</th>
+          <th>Tanggal & Jam</th>
+          <th>Nama</th>
+          <th>Perusahaan</th>
+          <th>Alamat</th>
+          <th>No Telepon</th>
+          <th>Tujuan</th>
+          <th>Foto</th>
+        </tr>
+      `;
+
+      let no = 1;
+      filteredData.forEach(d => {
+        const row = document.createElement("tr");
+        const photoId = "photo-" + d.id;
+        row.innerHTML = `
+          <td>${no++}</td>
+          <td>${d.tanggal}</td>
+          <td>${d.nama}</td>
+          <td>${d.perusahaan}</td>
+          <td>${d.alamat}</td>
+          <td>${d.telepon}</td>
+          <td>${d.tujuan}</td>
+          <td>
+            <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
+              <i class="fas fa-eye"></i> Lihat Foto
+            </button>
+            <br>
+            <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto Kegiatan">
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      logbookContainer.appendChild(table);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("searchInput").addEventListener("input", () => renderLogbook(allLogData));
+      document.getElementById("filterDate").addEventListener("input", () => renderLogbook(allLogData));
+    });
 
     auth.onAuthStateChanged(user => {
       if (user) {
