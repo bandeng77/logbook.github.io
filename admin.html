@@ -62,37 +62,6 @@
       text-align: center;
     }
 
-    .log-entry {
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      background: #fdfdfd;
-    }
-
-    .log-entry img {
-      margin-top: 10px;
-      width: 100%;
-      max-width: 300px;
-      border-radius: 6px;
-    }
-
-    .eye-btn {
-      display: inline-block;
-      background: none;
-      border: none;
-      color: #333;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 0;
-      white-space: nowrap;
-    }
-
-    ul {
-      padding-left: 20px;
-      margin: 0;
-    }
-
     .logout-btn {
       background-color: #e74c3c;
       color: white;
@@ -110,6 +79,42 @@
 
     .hidden {
       display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .view-photo-btn {
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .view-photo-btn i {
+      margin-right: 5px;
+    }
+
+    .photo-preview {
+      margin-top: 10px;
+      max-width: 300px;
+      display: none;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -182,32 +187,53 @@
     function loadLogbook() {
       db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
         logbookContainer.innerHTML = "";
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+
+        thead.innerHTML = `
+          <tr>
+            <th>No</th>
+            <th>Tanggal & Jam</th>
+            <th>Nama</th>
+            <th>Perusahaan</th>
+            <th>Alamat</th>
+            <th>No Telepon</th>
+            <th>Tujuan Kunjungan</th>
+            <th>Foto</th>
+          </tr>
+        `;
+
+        let index = 1;
         snapshot.forEach(doc => {
           const d = doc.data();
-          const entry = document.createElement('div');
-          entry.className = 'log-entry';
-          const photoId = 'photo-' + doc.id;
+          const row = document.createElement("tr");
+          const photoId = `photo-${doc.id}`;
 
-          entry.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-              <ul>
-                <li><strong>Tanggal & Jam:</strong> ${d.tanggal}</li>
-                <li><strong>Nama:</strong> ${d.nama}</li>
-                <li><strong>Perusahaan:</strong> ${d.perusahaan}</li>
-                <li><strong>Alamat:</strong> ${d.alamat}</li>
-                <li><strong>No Telepon:</strong> ${d.telepon}</li>
-                <li><strong>Tujuan Kunjungan:</strong> ${d.tujuan}</li>
-              </ul>
-              <div>
-                <button class="eye-btn" onclick="togglePhoto('${photoId}')">
-                  <i class="fas fa-eye"></i> Lihat Foto
-                </button>
-              </div>
-            </div>
-            <img id="${photoId}" src="${d.foto}" alt="Foto Kegiatan" style="display: none;" />
+          row.innerHTML = `
+            <td>${index}</td>
+            <td>${d.tanggal}</td>
+            <td>${d.nama}</td>
+            <td>${d.perusahaan}</td>
+            <td>${d.alamat}</td>
+            <td>${d.telepon}</td>
+            <td>${d.tujuan}</td>
+            <td>
+              <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
+                <i class="fas fa-eye"></i> Lihat Foto
+              </button>
+              <br/>
+              <img id="${photoId}" class="photo-preview" src="${d.foto}" alt="Foto Kegiatan" />
+            </td>
           `;
-          logbookContainer.appendChild(entry);
+          tbody.appendChild(row);
+          index++;
         });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        logbookContainer.appendChild(table);
       });
     }
 
