@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Logbook</title>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     * {
       box-sizing: border-box;
@@ -29,7 +24,7 @@
       background: white;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
 
     .form-wrapper {
@@ -54,7 +49,9 @@
       font-size: 28px;
     }
 
-    input, textarea, button {
+    input,
+    textarea,
+    button {
       width: 100%;
       padding: 14px;
       margin-bottom: 16px;
@@ -74,11 +71,15 @@
       background-color: #ddd;
     }
 
-    video, #preview {
+    video,
+    #preview {
       width: 100%;
       max-width: 400px;
+      height: auto;
       border-radius: 8px;
-      margin-bottom: 16px;
+      display: block;
+      margin: 0 auto 16px;
+      object-fit: cover;
     }
 
     canvas {
@@ -109,7 +110,7 @@
     <div class="camera-wrapper">
       <video id="video" autoplay></video>
       <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-      <canvas id="canvas" width="400"></canvas>
+      <canvas id="canvas"></canvas>
       <img id="preview" alt="Preview Foto" />
     </div>
   </div>
@@ -151,13 +152,17 @@
       .catch(err => console.error('Akses kamera ditolak:', err));
 
     function takePhoto() {
+      // Set canvas size to match video stream size
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       photoData = canvas.toDataURL('image/png');
       preview.src = photoData;
       preview.style.display = 'block';
     }
 
-    document.getElementById('logForm').onsubmit = function(e) {
+    document.getElementById('logForm').onsubmit = function (e) {
       e.preventDefault();
 
       if (!photoData) {
