@@ -1,145 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Logbook Genetek</title>
+  <meta charset="UTF-8">
+  <title>Logbook - GENETEK</title>
   <style>
-    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
+      background-color: #8ffff0;
       margin: 0;
-      padding: 40px;
-      background-color: #7FFFD4;
+      padding: 0;
       display: flex;
-      gap: 30px;
     }
-    .form-wrapper {
-      width: 400px;
-      position: sticky;
-      top: 20px;
-      align-self: flex-start;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .form-wrapper img.logo {
-      display: block;
-      margin: 0 auto 10px;
-      max-width: 200px;
-    }
-    h2 {
-      text-align: center;
-      margin-top: 0;
-    }
-    input, textarea, button {
+
+    .container {
+      display: flex;
       width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 20px;
+      box-sizing: border-box;
     }
-    button {
+
+    .form-section {
+      width: 30%;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      margin-right: 20px;
+    }
+
+    .form-section h2 {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+    }
+
+    .form-section h2::before {
+      content: '📘';
+      margin-right: 10px;
+    }
+
+    .form-section input, .form-section textarea, .form-section button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .form-section button {
+      background-color: #eee;
       cursor: pointer;
-      background-color: #f2f2f2;
-      border: 1px solid #aaa;
-      transition: background 0.2s ease;
     }
-    button:hover {
-      background-color: #ddd;
-    }
-    video {
-      display: block;
-      margin: 0 auto 15px;
-      border-radius: 6px;
-    }
-    .logbook-list {
-      flex: 1;
+
+    .logbook-section {
+      flex-grow: 1;
       background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-height: 80vh;
-      overflow-y: auto;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 10px #ccc;
     }
-    .log-entry {
-      border: 1px solid #ccc;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      background: #fdfdfd;
+
+    .logbook-section h2 {
+      font-size: 24px;
     }
-    .log-entry img {
-      margin-top: 10px;
+
+    .logbook-section h2::before {
+      content: '📋';
+      margin-right: 10px;
+    }
+
+    video, canvas {
+      display: block;
       width: 100%;
-      max-width: 300px;
-      border-radius: 6px;
+      margin-top: 10px;
     }
-    ul { padding-left: 20px; }
   </style>
 </head>
 <body>
-  <div class="form-wrapper">
-    <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
-    <h2>📘 Logbook</h2>
-    <form id="logForm">
-      <input type="datetime-local" id="tanggal" required />
-      <input type="text" id="nama" placeholder="Nama" required />
-      <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-      <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
-      <input type="tel" id="telepon" placeholder="No Telepon" required />
-      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan" required />
-      <video id="video" width="300" autoplay></video>
-      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
-      <canvas id="canvas" width="300" style="display:none;"></canvas>
-      <button type="submit">+ Tambah ke Logbook</button>
-    </form>
+  <div class="container">
+    <div class="form-section">
+      <img src="https://i.imgur.com/OdpQWWD.png" alt="Genetek Logo" style="max-width: 100%; height: auto;">
+      <h2>Logbook</h2>
+      <input type="datetime-local" id="tanggal">
+      <input type="text" id="nama" placeholder="Nama">
+      <input type="text" id="perusahaan" placeholder="Nama Perusahaan">
+      <textarea id="alamat" placeholder="Alamat Perusahaan"></textarea>
+      <input type="text" id="telepon" placeholder="No Telepon">
+      <input type="text" id="tujuan" placeholder="Tujuan Kunjungan">
+
+      <button onclick="startCamera()">📸 Ambil Foto</button>
+      <video id="video" autoplay style="display:none;"></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+
+      <button onclick="tambahLogbook()">+ Tambah ke Logbook</button>
+    </div>
+
+    <div class="logbook-section">
+      <h2>Daftar Logbook</h2>
+      <div id="logbookList"></div>
+    </div>
   </div>
-
-  <div class="logbook-list" id="log">
-    <h2>📋 Daftar Logbook</h2>
-  </div>
-  
- <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    const log = document.getElementById('log');
-    let photoData = '';
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => console.error('Akses kamera ditolak:', err));
-
-    function takePhoto() {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      photoData = canvas.toDataURL('image/png');
-      
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js"></script>
 
   <script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.firebasestorage.app",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
-    };
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    let stream;
 
-    // Inisialisasi Firebase dan Firestore
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(s => {
+          stream = s;
+          video.style.display = 'block';
+          video.srcObject = stream;
 
+          setTimeout(() => {
+            takePhoto();
+          }, 2000); // ambil foto otomatis setelah 2 detik
+        })
+        .catch(err => alert('Kamera tidak tersedia: ' + err));
     }
 
-    // Simpan dan tampilkan data
-    document.getElementById('logForm').onsubmit = async function(e) {
-      e.preventDefault();
+    function takePhoto() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+
+      // Stop kamera
+      stream.getTracks().forEach(track => track.stop());
+      video.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    function tambahLogbook() {
+      const list = document.getElementById('logbookList');
+      const foto = canvas.toDataURL();
       const tanggal = document.getElementById('tanggal').value;
       const nama = document.getElementById('nama').value;
       const perusahaan = document.getElementById('perusahaan').value;
@@ -147,40 +142,23 @@
       const telepon = document.getElementById('telepon').value;
       const tujuan = document.getElementById('tujuan').value;
 
-      try {
-        await db.collection("logbook").add({
-          tanggal,
-          nama,
-          perusahaan,
-          alamat,
-          telepon,
-          tujuan,
-          foto: photoData,
-          timestamp: new Date()
-        });
+      const entry = document.createElement('div');
+      entry.style.marginBottom = '20px';
+      entry.innerHTML = `
+        <strong>${tanggal}</strong><br>
+        Nama: ${nama}<br>
+        Perusahaan: ${perusahaan}<br>
+        Alamat: ${alamat}<br>
+        Telepon: ${telepon}<br>
+        Tujuan: ${tujuan}<br>
+        <img src="${foto}" width="150"><hr>
+      `;
+      list.appendChild(entry);
 
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `
-          <ul>
-            <li><strong>Tanggal & Jam:</strong> ${tanggal}</li>
-            <li><strong>Nama:</strong> ${nama}</li>
-            <li><strong>Perusahaan:</strong> ${perusahaan}</li>
-            <li><strong>Alamat:</strong> ${alamat}</li>
-            <li><strong>No Telepon:</strong> ${telepon}</li>
-            <li><strong>Tujuan Kunjungan:</strong> ${tujuan}</li>
-          </ul>
-          <strong>Foto:</strong><br/>
-          <img src="${photoData}" alt="Foto Kegiatan"/>
-        `;
-        log.appendChild(entry);
-        this.reset();
-        alert("✅ Data berhasil disimpan ke Firestore!");
-      } catch (error) {
-        console.error("❌ Gagal menyimpan:", error);
-        alert("❌ Gagal menyimpan ke Firestore.");
-      }
-    };
+      // Reset
+      document.querySelectorAll('.form-section input, .form-section textarea').forEach(el => el.value = '');
+      canvas.style.display = 'none';
+    }
   </script>
 </body>
 </html>
