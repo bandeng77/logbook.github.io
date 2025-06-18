@@ -6,7 +6,6 @@
   <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    integrity="sha512-aHv6m4IwA3Se1tYUV39o8W1hNKYI6N1+eWmVvQg+U3mNc+9W9yP0jgb8vN2hW2BRJ2pXKgDOPgDBnD2StdLqCQ=="
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
@@ -102,13 +101,15 @@
       background: none;
       border: none;
       color: #333;
-      font-size: 20px;
+      font-size: 16px;
       cursor: pointer;
-      margin-top: 10px;
+      margin-top: 0;
+      white-space: nowrap;
     }
 
     ul {
       padding-left: 20px;
+      margin: 0;
     }
   </style>
 </head>
@@ -117,7 +118,7 @@
     <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
     <h2>📘 Logbook</h2>
     <form id="logForm">
-      <input type="datetime-local" id="tanggal" required />
+      <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: #f5f5f5;" />
       <input type="text" id="nama" placeholder="Nama" required />
       <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
       <textarea id="alamat" placeholder="Alamat Perusahaan" required></textarea>
@@ -139,7 +140,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
       authDomain: "logbook-e6ab3.firebaseapp.com",
@@ -149,7 +149,6 @@
       appId: "1:484546392348:web:861616b680427c158ecad9"
     };
 
-    // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -159,18 +158,15 @@
     const log = document.getElementById('log');
     let photoData = '';
 
-    // Fungsi untuk set waktu sekarang ke input
     function setCurrentDateTime() {
       const now = new Date();
       const tzOffset = now.getTimezoneOffset() * 60000;
       const localISOTime = new Date(now - tzOffset).toISOString().slice(0, 16);
-      document.getElementById('tanggal').value = localISOTime;
+      document.getElementById('tanggal').value = localISOTime.replace('T', ' ');
     }
 
-    // Set waktu saat halaman dibuka
     window.onload = setCurrentDateTime;
 
-    // Aktifkan kamera
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
@@ -180,7 +176,6 @@
       photoData = canvas.toDataURL('image/png');
     }
 
-    // Submit form
     document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
 
@@ -211,14 +206,13 @@
           alert("Data berhasil disimpan di Firestore");
           document.getElementById('logForm').reset();
           photoData = '';
-          setCurrentDateTime(); // reset tanggal ke saat ini
+          setCurrentDateTime();
         })
         .catch(err => {
           alert("Gagal menyimpan data: " + err.message);
         });
     };
 
-    // Tampilkan data logbook realtime
     db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
       log.innerHTML = '<h2>📋 Daftar Logbook</h2>';
       snapshot.forEach(doc => {
@@ -228,17 +222,21 @@
         const photoId = 'photo-' + doc.id;
 
         entry.innerHTML = `
-          <ul>
-            <li><strong>Tanggal & Jam:</strong> ${d.tanggal}</li>
-            <li><strong>Nama:</strong> ${d.nama}</li>
-            <li><strong>Perusahaan:</strong> ${d.perusahaan}</li>
-            <li><strong>Alamat:</strong> ${d.alamat}</li>
-            <li><strong>No Telepon:</strong> ${d.telepon}</li>
-            <li><strong>Tujuan Kunjungan:</strong> ${d.tujuan}</li>
-          </ul>
-          <button class="eye-btn" onclick="togglePhoto('${photoId}')">
-            <i class="fas fa-eye"></i> Lihat Foto
-          </button>
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <ul>
+              <li><strong>Tanggal & Jam:</strong> ${d.tanggal}</li>
+              <li><strong>Nama:</strong> ${d.nama}</li>
+              <li><strong>Perusahaan:</strong> ${d.perusahaan}</li>
+              <li><strong>Alamat:</strong> ${d.alamat}</li>
+              <li><strong>No Telepon:</strong> ${d.telepon}</li>
+              <li><strong>Tujuan Kunjungan:</strong> ${d.tujuan}</li>
+            </ul>
+            <div>
+              <button class="eye-btn" onclick="togglePhoto('${photoId}')">
+                <i class="fas fa-eye"></i> Lihat Foto
+              </button>
+            </div>
+          </div>
           <img id="${photoId}" src="${d.foto}" alt="Foto Kegiatan" style="display: none;" />
         `;
         log.appendChild(entry);
