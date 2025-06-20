@@ -176,14 +176,24 @@
     const preview = document.getElementById('preview');
     let photoData = '';
 
-    function setCurrentDateTime() {
-      const now = new Date();
-      const tzOffset = now.getTimezoneOffset() * 60000;
-      const localISOTime = new Date(now - tzOffset).toISOString().slice(0, 16);
-      document.getElementById('tanggal').value = localISOTime.replace('T', ' ');
+    function updateDateTimeRealtime() {
+      setInterval(() => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+
+        const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        document.getElementById('tanggal').value = formattedTime;
+      }, 1000);
     }
 
-    window.onload = setCurrentDateTime;
+    window.onload = () => {
+      updateDateTimeRealtime();
+    };
 
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
@@ -193,7 +203,6 @@
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      // Mirror image to match video
       context.save();
       context.scale(-1, 1);
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
@@ -235,7 +244,6 @@
           document.getElementById('logForm').reset();
           photoData = '';
           preview.style.display = 'none';
-          setCurrentDateTime();
         })
         .catch(err => {
           alert("Gagal menyimpan data: " + err.message);
