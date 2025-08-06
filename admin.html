@@ -195,7 +195,8 @@
       const filterDate = document.getElementById("filterDate").value;
 
       const filteredData = dataList.filter(d => {
-        const combined = `${d.nama} ${d.perusahaan} ${d.alamat} ${d.telepon} ${d.tujuan}`.toLowerCase();
+        // Tambahkan 'deskripsi' ke pencarian
+        const combined = `${d.nama} ${d.perusahaan} ${d.alamat} ${d.telepon} ${d.tujuan} ${d.deskripsi || ''}`.toLowerCase();
         const matchesSearch = combined.includes(searchValue);
         const matchesDate = !filterDate || d.tanggal.startsWith(filterDate);
         return matchesSearch && matchesDate;
@@ -216,6 +217,7 @@
           <th>Alamat</th>
           <th>No Telepon</th>
           <th>Tujuan</th>
+          <th>Deskripsi</th> <!-- Tambahkan kolom Deskripsi -->
           <th>Foto</th>
         </tr>
       `;
@@ -232,11 +234,13 @@
           <td>${d.alamat}</td>
           <td>${d.telepon}</td>
           <td>${d.tujuan}</td>
+          <td>${d.deskripsi || '-'}</td> <!-- Tampilkan deskripsi -->
           <td>
             <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
               <i class="fas fa-eye"></i> Lihat Foto
             </button>
             <br>
+            <!-- Menggunakan d.foto karena sekarang menyimpan Base64 -->
             <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto Kegiatan">
           </td>
         `;
