@@ -169,7 +169,7 @@
       display: none;
     }
 
-    input[type="text"], input[type="date"] {
+    input[type="text"], select { /* Tambahkan select di sini */
       padding: 10px;
       font-size: 16px;
       border-radius: 6px;
@@ -191,7 +191,8 @@
 
     <div style="margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
       <input type="text" id="searchInput" placeholder="Cari...">
-      <input type="date" id="filterDate">
+      <!-- Ganti input date dengan select untuk bulan/tahun -->
+      <select id="filterMonthYear"></select>
     </div>
 
     <div id="logbookContainer"></div>
@@ -220,8 +221,11 @@
     const loginForm = document.getElementById("loginForm");
     const logbookSection = document.getElementById("logbookSection");
     const logbookContainer = document.getElementById("logbookContainer");
+    const filterMonthYearSelect = document.getElementById("filterMonthYear");
 
     let allLogData = [];
+    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
     function login() {
       const email = document.getElementById("email").value;
@@ -251,6 +255,32 @@
       img.style.display = img.style.display === 'none' ? 'block' : 'none';
     }
 
+    function populateMonthYearFilter(data) {
+      const uniqueMonths = new Set();
+      data.forEach(d => {
+        // Tanggal disimpan dalam format YYYY-MM-DD HH:mm:ss
+        const datePart = d.tanggal.substring(0, 7); // Ambil YYYY-MM
+        uniqueMonths.add(datePart);
+      });
+
+      const sortedMonths = Array.from(uniqueMonths).sort((a, b) => b.localeCompare(a)); // Urutkan dari terbaru
+
+      filterMonthYearSelect.innerHTML = '<option value="">Semua Bulan</option>'; // Opsi default
+      sortedMonths.forEach(monthYear => {
+        const [year, month] = monthYear.split('-');
+        const monthName = monthNames[parseInt(month) - 1];
+        const option = document.createElement('option');
+        option.value = monthYear;
+        option.textContent = `${monthName} ${year}`;
+        filterMonthYearSelect.appendChild(option);
+      });
+
+      // Set filter ke bulan terbaru secara default jika ada data
+      if (sortedMonths.length > 0) {
+        filterMonthYearSelect.value = sortedMonths[0];
+      }
+    }
+
     function loadLogbook() {
       db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
         allLogData = [];
@@ -258,23 +288,31 @@
           const data = doc.data();
           allLogData.push({ id: doc.id, ...data });
         });
-        renderLogbook(allLogData);
+        populateMonthYearFilter(allLogData); // Isi filter setelah data dimuat
+        renderLogbook(allLogData); // Render dengan filter default (bulan terbaru)
       });
     }
 
     function renderLogbook(dataList) {
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
-      const filterDate = document.getElementById("filterDate").value;
+      const selectedMonthYear = filterMonthYearSelect.value; // Ambil nilai dari select
 
       const filteredData = dataList.filter(d => {
-        // Tambahkan 'deskripsi' ke pencarian
         const combined = `${d.nama} ${d.perusahaan} ${d.alamat} ${d.telepon} ${d.tujuan} ${d.deskripsi || ''}`.toLowerCase();
         const matchesSearch = combined.includes(searchValue);
-        const matchesDate = !filterDate || d.tanggal.startsWith(filterDate);
-        return matchesSearch && matchesDate;
+
+        // Filter berdasarkan bulan/tahun yang dipilih
+        const matchesMonthYear = !selectedMonthYear || d.tanggal.startsWith(selectedMonthYear);
+
+        return matchesSearch && matchesMonthYear;
       });
 
       logbookContainer.innerHTML = "";
+
+      if (filteredData.length === 0) {
+        logbookContainer.innerHTML = "<p style='text-align: center; margin-top: 30px; color: #666;'>Tidak ada data logbook yang ditemukan untuk filter ini.</p>";
+        return;
+      }
 
       const table = document.createElement("table");
       const thead = document.createElement("thead");
@@ -289,7 +327,7 @@
           <th>Alamat</th>
           <th>No Telepon</th>
           <th>Tujuan</th>
-          <th>Deskripsi</th> <!-- Tambahkan kolom Deskripsi -->
+          <th>Deskripsi</th>
           <th>Foto</th>
         </tr>
       `;
@@ -306,13 +344,12 @@
           <td>${d.alamat}</td>
           <td>${d.telepon}</td>
           <td>${d.tujuan}</td>
-          <td>${d.deskripsi || '-'}</td> <!-- Tampilkan deskripsi -->
+          <td>${d.deskripsi || '-'}</td>
           <td>
             <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
               <i class="fas fa-eye"></i> Lihat Foto
             </button>
             <br>
-            <!-- Menggunakan d.foto karena sekarang menyimpan Base64 -->
             <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto Kegiatan">
           </td>
         `;
@@ -326,7 +363,8 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("searchInput").addEventListener("input", () => renderLogbook(allLogData));
-      document.getElementById("filterDate").addEventListener("input", () => renderLogbook(allLogData));
+      // Ganti event listener untuk filter tanggal menjadi filter bulan/tahun
+      filterMonthYearSelect.addEventListener("change", () => renderLogbook(allLogData));
     });
 
     auth.onAuthStateChanged(user => {
