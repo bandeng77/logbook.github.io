@@ -146,7 +146,7 @@
           <option value="Ambil Dokumen">Ambil Dokumen</option>
           <option value="Antar Barang">Antar Barang</option>
           <option value="Ambil Barang">Ambil Barang</option>
-          <option value="Ambil Barang">Antar Dokumen dan Barang</option>
+          <option value="Antar Dokumen dan Barang">Antar Dokumen dan Barang</option>
           <option value="Kunjungan">Kunjungan</option>
         </select>
         <input type="text" id="deskripsi" placeholder="Deskripsi Kunjungan" required />
@@ -165,26 +165,30 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <!-- Firebase Storage SDK tidak diperlukan lagi jika menyimpan Base64 di Firestore -->
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.appspot.com",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70", // Ganti dengan API Key Anda
+      authDomain: "logbook-e6ab3.firebaseapp.com", // Ganti dengan Auth Domain Anda
+      projectId: "logbook-e6ab3", // Ganti dengan Project ID Anda
+      storageBucket: "logbook-e6ab3.appspot.com", // Ganti dengan Storage Bucket Anda
+      messagingSenderId: "484546392348", // Ganti dengan Messaging Sender ID Anda
+      appId: "1:484546392348:web:861616b680427c158ecad9" // Ganti dengan App ID Anda
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    // const storage = firebase.storage(); // Tidak diperlukan lagi
+    // const storageRef = storage.ref(); // Tidak diperlukan lagi
 
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const preview = document.getElementById('preview');
-    let photoData = '';
+    let photoData = ''; // Akan menyimpan Base64 string dari foto
 
+    // Fungsi untuk memperbarui tanggal dan waktu secara real-time
     function updateDateTimeRealtime() {
       setInterval(() => {
         const now = new Date();
@@ -200,28 +204,36 @@
       }, 1000);
     }
 
+    // Panggil fungsi updateDateTimeRealtime saat halaman dimuat
     window.onload = () => {
       updateDateTimeRealtime();
     };
 
+    // Meminta akses kamera
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => video.srcObject = stream)
       .catch(err => console.error('Akses kamera ditolak:', err));
 
+    // Fungsi untuk mengambil foto dari kamera
     function takePhoto() {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
       context.save();
-      context.scale(-1, 1);
+      context.scale(-1, 1); // Mirror the image horizontally
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       context.restore();
 
+      // Ambil data gambar sebagai Base64 string (kualitas 30%)
+      // Kualitas rendah sangat disarankan untuk mengurangi ukuran data
       photoData = canvas.toDataURL('image/jpeg', 0.3);
       preview.src = photoData;
       preview.style.display = 'block';
     }
 
+    // Fungsi helper b64toBlob tidak diperlukan lagi jika menyimpan Base64 langsung
+
+    // Handler saat formulir disubmit
     document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
 
@@ -236,25 +248,31 @@
       const alamat = document.getElementById('alamat').value;
       const telepon = document.getElementById('telepon').value;
       const tujuan = document.getElementById('tujuan').value;
+      const deskripsi = document.getElementById('deskripsi').value; // Ambil nilai deskripsi
 
-      const data = {
+      // Data yang akan disimpan di Firestore, termasuk foto Base64
+      const dataToFirestore = {
         tanggal,
         nama,
         perusahaan,
         alamat,
         telepon,
         tujuan,
-        foto: photoData
+        deskripsi, // Sertakan deskripsi
+        foto: photoData // Simpan data Base64 langsung
       };
 
-      db.collection("logbook").add(data)
+      db.collection("logbook").add(dataToFirestore)
         .then(() => {
           alert("Data berhasil disimpan di Firestore");
+          // Reset formulir dan tampilan setelah berhasil
           document.getElementById('logForm').reset();
-          photoData = '';
-          preview.style.display = 'none';
+          photoData = ''; // Kosongkan data foto
+          preview.src = ''; // Kosongkan preview
+          preview.style.display = 'none'; // Sembunyikan preview
         })
         .catch(err => {
+          console.error("Gagal menyimpan data:", err);
           alert("Gagal menyimpan data: " + err.message);
         });
     };
