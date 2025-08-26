@@ -3,90 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Logbook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <!-- Tambahkan Google Fonts untuk tipografi yang lebih baik, sesuai index.html -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
+    /* --- CSS Variables (from index.html) --- */
+    :root {
+      --primary-color: #4a6cf7; /* Biru cerah */
+      --secondary-color: #6a5acd; /* Ungu */
+      --accent-color: #7FFFD4; /* Hijau mint - digunakan untuk background body */
+      --text-color: #333;
+      --light-text-color: #666;
+      --border-color: rgba(0,0,0,0.1);
+      --bg-light: rgba(255,255,255,0.95);
+      --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.15);
+      --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
+    }
+
+    /* --- General Styles --- */
+    * {
+      box-sizing: border-box;
       margin: 0;
-      padding: 40px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif; /* Menggunakan font Poppins */
+      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%); /* Gradien latar belakang */
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px; /* Sesuaikan padding */
+      color: var(--text-color);
     }
 
+    /* --- Form & Section Containers (consistent with index.html .container) --- */
     .login-form, .logbook-data {
       width: 100%;
-      max-width: 1000px;
-      background: rgba(255,255,255,0.95);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.2);
+      max-width: 1100px; /* Max-width sesuai index.html */
+      background: var(--bg-light);
+      padding: 40px; /* Padding sesuai index.html */
+      border-radius: 20px; /* Sudut lebih membulat */
+      box-shadow: var(--shadow-light);
+      border: 1px solid rgba(255,255,255,0.3); /* Border transparan */
+      backdrop-filter: blur(10px); /* Efek glassmorphism */
+      transition: all 0.3s ease;
+    }
+
+    .login-form:hover, .logbook-data:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* --- Login Form Specific Styles --- */
+    .login-form h1 {
+      text-align: center;
+      color: var(--primary-color); /* Warna sesuai primary-color */
+      margin-bottom: 30px; /* Margin lebih besar */
+      font-size: 28px; /* Ukuran font lebih besar */
     }
 
     .login-form input {
       width: 100%;
-      padding: 14px 16px;
-      margin-bottom: 20px;
+      padding: 15px; /* Padding lebih besar */
+      margin-bottom: 20px; /* Margin lebih besar */
       font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid rgba(0,0,0,0.1);
-      background: rgba(255,255,255,0.8);
+      border-radius: 10px; /* Sudut lebih membulat */
+      border: 1px solid var(--border-color);
+      background-color: rgba(255,255,255,0.7); /* Background input transparan */
       transition: all 0.3s ease;
+      color: var(--text-color);
+    }
+
+    .login-form input::placeholder {
+      color: var(--light-text-color);
+      opacity: 0.8;
     }
 
     .login-form input:focus {
       outline: none;
-      border-color: #4a6cf7;
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2); /* Bayangan fokus */
+      background-color: white;
     }
 
     .login-form button {
       width: 100%;
-      padding: 14px;
-      margin-bottom: 15px;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 8px;
+      padding: 15px; /* Padding lebih besar */
+      font-size: 18px; /* Ukuran font lebih besar */
+      font-weight: 600; /* Lebih tebal */
+      border-radius: 10px;
       border: none;
       cursor: pointer;
-      background: linear-gradient(to right, #4a6cf7, #6a5acd);
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); /* Gradien tombol */
       color: white;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(74, 108, 247, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Bayangan tombol */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
 
-    .login-form button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 12px rgba(74, 108, 247, 0.3);
+    .login-form button:hover:not(:disabled) {
+      transform: translateY(-3px); /* Efek angkat */
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
+    .login-form button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* --- Heading Styles (consistent with index.html h2) --- */
     h2 {
       text-align: center;
+      margin-top: 0;
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
+    h2 i {
+      color: var(--secondary-color);
+    }
+
+    /* --- Logout Button --- */
     .logout-btn {
-      background-color: #e74c3c;
+      background-color: #e74c3c; /* Warna merah */
       color: white;
-      padding: 12px;
+      padding: 12px 20px;
       font-size: 16px;
       border: none;
-      border-radius: 6px;
-      margin-top: 20px;
+      border-radius: 10px; /* Sudut lebih membulat */
+      margin-top: 30px; /* Margin lebih besar */
       cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: fit-content;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
     .logout-btn:hover {
       background-color: #c0392b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     }
 
+    /* --- Utility Classes --- */
     .hidden {
       display: none;
     }
 
+    /* --- Animations --- */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -96,6 +172,7 @@
       animation: fadeIn 0.3s ease forwards;
     }
 
+    /* --- Loading Spinner --- */
     .loading {
       display: inline-block;
       width: 20px;
@@ -110,6 +187,7 @@
       to { transform: rotate(360deg); }
     }
 
+    /* --- Table Styles --- */
     table {
       width: 100%;
       border-collapse: separate;
@@ -118,6 +196,7 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      background-color: white; /* Background tabel */
     }
 
     th, td {
@@ -128,11 +207,12 @@
     }
 
     th {
-      background-color: #4a6cf7;
+      background-color: var(--primary-color); /* Warna header tabel */
       color: white;
       font-weight: 500;
       position: sticky;
       top: 0;
+      z-index: 1;
     }
 
     tr:hover td {
@@ -143,10 +223,11 @@
       border-bottom: none;
     }
 
+    /* --- View Photo Button --- */
     .view-photo-btn {
       background: rgba(74, 108, 247, 0.1);
       border: none;
-      color: #4a6cf7;
+      color: var(--primary-color);
       cursor: pointer;
       padding: 8px 12px;
       border-radius: 6px;
@@ -155,6 +236,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      text-decoration: none;
     }
 
     .view-photo-btn:hover {
@@ -162,51 +244,206 @@
       transform: translateY(-1px);
     }
 
+    /* --- Photo Preview --- */
     .photo-preview {
       margin-top: 10px;
       max-width: 200px;
+      height: auto;
       border-radius: 6px;
       display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    input[type="text"], select { /* Tambahkan select di sini */
-      padding: 10px;
+    /* --- Filter & Search Inputs (consistent with index.html inputs) --- */
+    input[type="text"], select {
+      padding: 15px; /* Padding lebih besar */
       font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      border-radius: 10px; /* Sudut lebih membulat */
+      border: 1px solid var(--border-color);
+      background-color: rgba(255,255,255,0.7); /* Background input transparan */
+      transition: all 0.3s ease;
+      color: var(--text-color);
+      flex-grow: 1;
+      min-width: 180px;
+    }
+
+    input[type="text"]:focus, select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+      background-color: white;
+    }
+
+    select {
+      appearance: none; /* Hapus gaya default select */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+      background-size: 20px;
+    }
+
+    /* --- Responsive Adjustments (consistent with index.html) --- */
+    @media (max-width: 992px) {
+      .login-form, .logbook-data {
+        padding: 30px;
+        max-width: 600px; /* Batasi lebar pada tablet */
+      }
+
+      .login-form h1, h2 {
+        font-size: 24px;
+        margin-bottom: 25px;
+      }
+
+      .login-form input, .login-form button,
+      input[type="text"], select {
+        padding: 12px;
+        margin-bottom: 15px;
+        font-size: 15px;
+      }
+
+      .logout-btn {
+        margin-top: 25px;
+      }
+
+      /* Responsive table for smaller screens */
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+
+      tr {
+        border: 1px solid #ccc;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      td {
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+
+      td:before {
+        position: absolute;
+        top: 0;
+        left: 6px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: #555;
+      }
+
+      /* Label for each column */
+      td:nth-of-type(1):before { content: "No:"; }
+      td:nth-of-type(2):before { content: "Tanggal & Jam:"; }
+      td:nth-of-type(3):before { content: "Nama:"; }
+      td:nth-of-type(4):before { content: "Perusahaan:"; }
+      td:nth-of-type(5):before { content: "Alamat:"; }
+      td:nth-of-type(6):before { content: "No Telepon:"; }
+      td:nth-of-type(7):before { content: "Tujuan:"; }
+      td:nth-of-type(8):before { content: "Deskripsi:"; }
+      td:nth-of-type(9):before { content: "Foto:"; }
+
+      .view-photo-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .photo-preview {
+        max-width: 100%;
+      }
+
+      .logbook-data > div { /* Flex wrap for filter and search */
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      body {
+        padding: 15px;
+      }
+
+      .login-form, .logbook-data {
+        padding: 25px;
+        border-radius: 15px;
+      }
+
+      .login-form h1, h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+      }
+
+      .login-form input, .login-form button,
+      input[type="text"], select {
+        padding: 10px;
+        font-size: 14px;
+        border-radius: 8px;
+      }
+
+      .logout-btn {
+        margin-top: 20px;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Login Form Section -->
   <div class="login-form" id="loginForm">
     <h1>Login Admin</h1>
-    <input type="email" id="email" placeholder="Email admin" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button onclick="login()">Login</button>
+    <input type="email" id="email" placeholder="Email admin" required aria-label="Email admin">
+    <input type="password" id="password" placeholder="Password" required aria-label="Password">
+    <button onclick="login()" id="loginButton" aria-label="Login">
+        Login
+        <span id="loginSpinner" class="loading hidden"></span>
+    </button>
   </div>
 
+  <!-- Logbook Data Section (Hidden by default) -->
   <div class="logbook-data hidden" id="logbookSection">
-    <h2>📋 Daftar Logbook</h2>
+    <h2><i class="fas fa-book"></i> Daftar Logbook</h2> <!-- Icon sesuai index.html -->
 
+    <!-- Search and Filter Controls -->
     <div style="margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap;">
-      <input type="text" id="searchInput" placeholder="Cari...">
-      <!-- Ganti input date dengan select untuk bulan/tahun -->
-      <select id="filterMonthYear"></select>
+      <input type="text" id="searchInput" placeholder="Cari..." aria-label="Cari logbook">
+      <select id="filterMonthYear" aria-label="Filter berdasarkan bulan dan tahun"></select>
     </div>
 
-    <div id="logbookContainer"></div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+    <!-- Logbook Table Container -->
+    <div id="logbookContainer">
+      <!-- Logbook data will be loaded here by JavaScript -->
+    </div>
+
+    <!-- Logout Button -->
+    <button class="logout-btn" onclick="logout()" aria-label="Logout dari akun admin">Logout</button>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
   <script>
+    // Firebase Configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70", // Ganti dengan API Key Anda
       authDomain: "logbook-e6ab3.firebaseapp.com",
       projectId: "logbook-e6ab3",
       storageBucket: "logbook-e6ab3.appspot.com",
@@ -214,58 +451,102 @@
       appId: "1:484546392348:web:861616b680427c158ecad9"
     };
 
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    // DOM Elements
     const loginForm = document.getElementById("loginForm");
     const logbookSection = document.getElementById("logbookSection");
     const logbookContainer = document.getElementById("logbookContainer");
     const filterMonthYearSelect = document.getElementById("filterMonthYear");
+    const loginButton = document.getElementById("loginButton");
+    const loginSpinner = document.getElementById("loginSpinner");
 
+    // Global variable to store all log data
     let allLogData = [];
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                         "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-    function login() {
+    /**
+     * Handles the user login process.
+     */
+    async function login() {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          loginForm.classList.add("hidden");
-          logbookSection.classList.remove("hidden");
-          loadLogbook();
-        })
-        .catch(error => {
-          alert("Login gagal: " + error.message);
-        });
+      if (!email || !password) {
+        alert("Email dan password harus diisi.");
+        return;
+      }
+
+      // Show loading spinner and disable button
+      loginSpinner.classList.remove("hidden");
+      loginButton.disabled = true;
+      loginButton.innerHTML = 'Logging in... <span class="loading"></span>';
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        // On successful login, Firebase auth state change listener will handle UI update
+      } catch (error) {
+        let errorMessage = "Login gagal. Silakan coba lagi.";
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+          errorMessage = "Email atau password salah.";
+        } else if (error.code === 'auth/invalid-email') {
+          errorMessage = "Format email tidak valid.";
+        }
+        alert(errorMessage + " (" + error.message + ")");
+      } finally {
+        // Hide loading spinner and re-enable button
+        loginSpinner.classList.add("hidden");
+        loginButton.disabled = false;
+        loginButton.innerHTML = 'Login';
+      }
     }
 
+    /**
+     * Handles the user logout process.
+     */
     function logout() {
       auth.signOut().then(() => {
-        logbookContainer.innerHTML = "";
+        logbookContainer.innerHTML = ""; // Clear logbook data
         loginForm.classList.remove("hidden");
         logbookSection.classList.add("hidden");
+        document.getElementById("email").value = ""; // Clear email field
+        document.getElementById("password").value = ""; // Clear password field
+      }).catch(error => {
+        alert("Gagal logout: " + error.message);
       });
     }
 
+    /**
+     * Toggles the visibility of a photo preview.
+     * @param {string} id - The ID of the image element to toggle.
+     */
     function togglePhoto(id) {
       const img = document.getElementById(id);
-      img.style.display = img.style.display === 'none' ? 'block' : 'none';
+      if (img) {
+        img.style.display = img.style.display === 'none' || img.style.display === '' ? 'block' : 'none';
+      }
     }
 
+    /**
+     * Populates the month/year filter dropdown with unique months from the log data.
+     * @param {Array<Object>} data - The array of logbook data.
+     */
     function populateMonthYearFilter(data) {
       const uniqueMonths = new Set();
       data.forEach(d => {
-        // Tanggal disimpan dalam format YYYY-MM-DD HH:mm:ss
-        const datePart = d.tanggal.substring(0, 7); // Ambil YYYY-MM
+        // Date is stored in YYYY-MM-DD HH:mm:ss format
+        const datePart = d.tanggal.substring(0, 7); // Extract YYYY-MM
         uniqueMonths.add(datePart);
       });
 
-      const sortedMonths = Array.from(uniqueMonths).sort((a, b) => b.localeCompare(a)); // Urutkan dari terbaru
+      // Sort months from newest to oldest
+      const sortedMonths = Array.from(uniqueMonths).sort((a, b) => b.localeCompare(a));
 
-      filterMonthYearSelect.innerHTML = '<option value="">Semua Bulan</option>'; // Opsi default
+      filterMonthYearSelect.innerHTML = '<option value="">Semua Bulan</option>'; // Default option
       sortedMonths.forEach(monthYear => {
         const [year, month] = monthYear.split('-');
         const monthName = monthNames[parseInt(month) - 1];
@@ -275,67 +556,83 @@
         filterMonthYearSelect.appendChild(option);
       });
 
-      // Set filter ke bulan terbaru secara default jika ada data
+      // Set filter to the latest month by default if data exists
       if (sortedMonths.length > 0) {
         filterMonthYearSelect.value = sortedMonths[0];
       }
     }
 
+    /**
+     * Loads logbook data from Firestore and sets up real-time listener.
+     */
     function loadLogbook() {
+      // Listen for real-time updates to the 'logbook' collection, ordered by date
       db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
-        allLogData = [];
+        allLogData = []; // Clear previous data
         snapshot.forEach(doc => {
           const data = doc.data();
-          allLogData.push({ id: doc.id, ...data });
+          allLogData.push({ id: doc.id, ...data }); // Store document ID along with data
         });
-        populateMonthYearFilter(allLogData); // Isi filter setelah data dimuat
-        renderLogbook(allLogData); // Render dengan filter default (bulan terbaru)
+        populateMonthYearFilter(allLogData); // Populate filter dropdown
+        renderLogbook(allLogData); // Render logbook with current filters
+      }, error => {
+        console.error("Error loading logbook data: ", error);
+        alert("Gagal memuat data logbook: " + error.message);
       });
     }
 
+    /**
+     * Renders the logbook data into a table, applying search and month/year filters.
+     * @param {Array<Object>} dataList - The array of logbook data to render.
+     */
     function renderLogbook(dataList) {
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
-      const selectedMonthYear = filterMonthYearSelect.value; // Ambil nilai dari select
+      const selectedMonthYear = filterMonthYearSelect.value;
 
       const filteredData = dataList.filter(d => {
+        // Combine relevant fields for search
         const combined = `${d.nama} ${d.perusahaan} ${d.alamat} ${d.telepon} ${d.tujuan} ${d.deskripsi || ''}`.toLowerCase();
         const matchesSearch = combined.includes(searchValue);
 
-        // Filter berdasarkan bulan/tahun yang dipilih
+        // Filter by selected month/year
         const matchesMonthYear = !selectedMonthYear || d.tanggal.startsWith(selectedMonthYear);
 
         return matchesSearch && matchesMonthYear;
       });
 
-      logbookContainer.innerHTML = "";
+      logbookContainer.innerHTML = ""; // Clear previous table
 
       if (filteredData.length === 0) {
         logbookContainer.innerHTML = "<p style='text-align: center; margin-top: 30px; color: #666;'>Tidak ada data logbook yang ditemukan untuk filter ini.</p>";
         return;
       }
 
+      // Create table elements
       const table = document.createElement("table");
+      table.setAttribute("role", "grid"); // ARIA role for table
       const thead = document.createElement("thead");
       const tbody = document.createElement("tbody");
 
+      // Table Header
       thead.innerHTML = `
         <tr>
-          <th>No</th>
-          <th>Tanggal & Jam</th>
-          <th>Nama</th>
-          <th>Perusahaan</th>
-          <th>Alamat</th>
-          <th>No Telepon</th>
-          <th>Tujuan</th>
-          <th>Deskripsi</th>
-          <th>Foto</th>
+          <th scope="col">No</th>
+          <th scope="col">Tanggal & Jam</th>
+          <th scope="col">Nama</th>
+          <th scope="col">Perusahaan</th>
+          <th scope="col">Alamat</th>
+          <th scope="col">No Telepon</th>
+          <th scope="col">Tujuan</th>
+          <th scope="col">Deskripsi</th>
+          <th scope="col">Foto</th>
         </tr>
       `;
 
+      // Table Body (Rows)
       let no = 1;
       filteredData.forEach(d => {
         const row = document.createElement("tr");
-        const photoId = "photo-" + d.id;
+        const photoId = "photo-" + d.id; // Unique ID for each photo preview
         row.innerHTML = `
           <td>${no++}</td>
           <td>${d.tanggal}</td>
@@ -346,11 +643,11 @@
           <td>${d.tujuan}</td>
           <td>${d.deskripsi || '-'}</td>
           <td>
-            <button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
-              <i class="fas fa-eye"></i> Lihat Foto
+            <button class="view-photo-btn" onclick="togglePhoto('${photoId}')" aria-expanded="false" aria-controls="${photoId}">
+              <i class="fas fa-eye" aria-hidden="true"></i> Lihat Foto
             </button>
             <br>
-            <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto Kegiatan">
+            <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto Kegiatan ${d.nama}" aria-hidden="true">
           </td>
         `;
         tbody.appendChild(row);
@@ -361,17 +658,27 @@
       logbookContainer.appendChild(table);
     }
 
+    // Event Listeners
     document.addEventListener("DOMContentLoaded", () => {
+      // Trigger renderLogbook on search input change
       document.getElementById("searchInput").addEventListener("input", () => renderLogbook(allLogData));
-      // Ganti event listener untuk filter tanggal menjadi filter bulan/tahun
+      // Trigger renderLogbook on month/year filter change
       filterMonthYearSelect.addEventListener("change", () => renderLogbook(allLogData));
     });
 
+    // Firebase Authentication State Change Listener
+    // This function runs whenever the user's sign-in state changes (login/logout)
     auth.onAuthStateChanged(user => {
       if (user) {
+        // User is signed in
         loginForm.classList.add("hidden");
         logbookSection.classList.remove("hidden");
-        loadLogbook();
+        logbookSection.classList.add("fade-in"); // Add fade-in animation
+        loadLogbook(); // Load logbook data
+      } else {
+        // User is signed out
+        loginForm.classList.remove("hidden");
+        logbookSection.classList.add("hidden");
       }
     });
   </script>
