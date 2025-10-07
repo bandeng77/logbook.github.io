@@ -510,8 +510,6 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-  <!-- AppWrite SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
 
   <script>
     // Konfigurasi Firebase
@@ -527,20 +525,6 @@
     // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    // Konfigurasi AppWrite
-    const APPWRITE_ENDPOINT = 'https://syd.cloud.appwrite.io/v1';
-    const APPWRITE_PROJECT_ID = '68d0d675000ecb06f0c8';
-    const APPWRITE_BUCKET_ID = '68e48d0900162d805fa4';
-
-    // Inisialisasi AppWrite Client
-    const client = new Appwrite.Client();
-    client
-      .setEndpoint(APPWRITE_ENDPOINT)
-      .setProject(APPWRITE_PROJECT_ID);
-
-    // Inisialisasi Storage
-    const storage = new Appwrite.Storage(client);
 
     // Elemen DOM
     const video = document.getElementById('video');
@@ -596,15 +580,13 @@
       navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: "user" // Gunakan kamera depan
+          height: { ideal: 720 }
         } 
       })
       .then(mediaStream => {
         stream = mediaStream;
         video.srcObject = stream;
         captureBtn.disabled = false;
-        showNotification('Kamera siap digunakan', 'success');
       })
       .catch(err => {
         console.error('Akses kamera ditolak:', err);
@@ -628,8 +610,8 @@
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       context.restore();
 
-      // Ambil data gambar sebagai Base64 string dengan kualitas 60%
-      photoData = canvas.toDataURL('image/jpeg', 0.6);
+      // Ambil data gambar sebagai Base64 string dengan kualitas 40%
+      photoData = canvas.toDataURL('image/jpeg', 0.4);
       preview.src = photoData;
       preview.style.display = 'block';
       
@@ -657,32 +639,6 @@
       // Tampilkan tombol ambil foto
       captureBtn.style.display = 'block';
       retakeBtn.style.display = 'none';
-    }
-
-    // Fungsi untuk mengupload foto ke AppWrite
-    async function uploadPhotoToAppWrite(base64Data) {
-      try {
-        // Konversi Base64 ke Blob
-        const response = await fetch(base64Data);
-        const blob = await response.blob();
-        
-        // Buat file dari Blob
-        const timestamp = new Date().getTime();
-        const fileName = `foto_tamu_${timestamp}.jpg`;
-        const file = new File([blob], fileName, { type: 'image/jpeg' });
-        
-        // Upload file ke AppWrite Storage
-        const uploadResponse = await storage.createFile(
-          APPWRITE_BUCKET_ID,
-          'unique()', // ID unik untuk file
-          file
-        );
-        
-        return uploadResponse;
-      } catch (error) {
-        console.error('Error uploading photo:', error);
-        throw error;
-      }
     }
 
     // Fungsi validasi form
@@ -771,7 +727,7 @@
     });
 
     // Handler saat formulir disubmit
-    document.getElementById('logForm').onsubmit = async function(e) {
+    document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
       
       // Validasi form
@@ -784,62 +740,49 @@
       loading.classList.add('show');
       submitBtn.disabled = true;
       
-      try {
-        const tanggal = document.getElementById('tanggal').value;
-        const nama = document.getElementById('nama').value;
-        const perusahaan = document.getElementById('perusahaan').value;
-        const alamat = document.getElementById('alamat').value;
-        const telepon = document.getElementById('telepon').value;
-        const tujuan = document.getElementById('tujuan').value;
-        const deskripsi = document.getElementById('deskripsi').value;
+      const tanggal = document.getElementById('tanggal').value;
+      const nama = document.getElementById('nama').value;
+      const perusahaan = document.getElementById('perusahaan').value;
+      const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const tujuan = document.getElementById('tujuan').value;
+      const deskripsi = document.getElementById('deskripsi').value;
 
-        // Upload foto ke AppWrite
-        let photoFileId = '';
-        let photoUrl = '';
-        
-        if (photoData) {
-          const uploadResponse = await uploadPhotoToAppWrite(photoData);
-          photoFileId = uploadResponse.$id;
-          photoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${APPWRITE_BUCKET_ID}/files/${photoFileId}/preview?project=${APPWRITE_PROJECT_ID}`;
-        }
+      // Data yang akan disimpan di Firestore
+      const dataToFirestore = {
+        tanggal,
+        nama,
+        perusahaan,
+        alamat,
+        telepon,
+        tujuan,
+        deskripsi,
+        foto: photoData
+      };
 
-        // Data yang akan disimpan di Firestore
-        const dataToFirestore = {
-          tanggal,
-          nama,
-          perusahaan,
-          alamat,
-          telepon,
-          tujuan,
-          deskripsi,
-          foto: photoUrl, // URL preview dari AppWrite
-          fotoFileId: photoFileId, // ID file di AppWrite
-          createdAt: new Date().toISOString()
-        };
-
-        // Simpan ke Firestore
-        await db.collection("logbook").add(dataToFirestore);
-        
-        showNotification("Data berhasil disimpan di buku tamu", 'success');
-        
-        // Reset formulir dan tampilan setelah berhasil
-        document.getElementById('logForm').reset();
-        retakePhoto();
-        
-        // Reset status fokus
-        const formGroups = document.querySelectorAll('.form-group');
-        formGroups.forEach(group => {
-          group.classList.remove('focused');
+      db.collection("logbook").add(dataToFirestore)
+        .then(() => {
+          showNotification("Data berhasil disimpan di buku tamu", 'success');
+          
+          // Reset formulir dan tampilan setelah berhasil
+          document.getElementById('logForm').reset();
+          retakePhoto();
+          
+          // Reset status fokus
+          const formGroups = document.querySelectorAll('.form-group');
+          formGroups.forEach(group => {
+            group.classList.remove('focused');
+          });
+        })
+        .catch(err => {
+          console.error("Gagal menyimpan data:", err);
+          showNotification("Gagal menyimpan data: " + err.message, 'error');
+        })
+        .finally(() => {
+          // Sembunyikan loading
+          loading.classList.remove('show');
+          submitBtn.disabled = false;
         });
-
-      } catch (error) {
-        console.error("Gagal menyimpan data:", error);
-        showNotification("Gagal menyimpan data: " + error.message, 'error');
-      } finally {
-        // Sembunyikan loading
-        loading.classList.remove('show');
-        submitBtn.disabled = false;
-      }
     };
   </script>
 </body>
