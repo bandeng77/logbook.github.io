@@ -507,13 +507,31 @@
     <div class="spinner"></div>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <!-- AppWrite SDK -->
   <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
 
   <script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+      authDomain: "logbook-e6ab3.firebaseapp.com",
+      projectId: "logbook-e6ab3",
+      storageBucket: "logbook-e6ab3.appspot.com",
+      messagingSenderId: "484546392348",
+      appId: "1:484546392348:web:861616b680427c158ecad9"
+    };
+
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     // Konfigurasi AppWrite
     const APPWRITE_ENDPOINT = 'https://syd.cloud.appwrite.io/v1';
     const APPWRITE_PROJECT_ID = '68d0d675000ecb06f0c8';
+    const APPWRITE_BUCKET_ID = '68e48d0900162d805fa4';
 
     // Inisialisasi AppWrite Client
     const client = new Appwrite.Client();
@@ -537,7 +555,6 @@
     
     let photoData = '';
     let stream = null;
-    let photoFile = null;
 
     // Fungsi untuk menampilkan notifikasi
     function showNotification(message, type = 'success') {
@@ -579,34 +596,21 @@
       navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 720 },
+          facingMode: "user" // Gunakan kamera depan
         } 
       })
       .then(mediaStream => {
         stream = mediaStream;
         video.srcObject = stream;
         captureBtn.disabled = false;
+        showNotification('Kamera siap digunakan', 'success');
       })
       .catch(err => {
         console.error('Akses kamera ditolak:', err);
         showNotification('Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.', 'error');
         captureBtn.disabled = true;
       });
-    }
-
-    // Fungsi untuk mengonversi Base64 ke File
-    function dataURLtoFile(dataurl, filename) {
-      const arr = dataurl.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      
-      while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      
-      return new File([u8arr], filename, { type: mime });
     }
 
     // Fungsi untuk mengambil foto
@@ -624,15 +628,10 @@
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       context.restore();
 
-      // Ambil data gambar sebagai Base64 string dengan kualitas 40%
-      photoData = canvas.toDataURL('image/jpeg', 0.4);
+      // Ambil data gambar sebagai Base64 string dengan kualitas 60%
+      photoData = canvas.toDataURL('image/jpeg', 0.6);
       preview.src = photoData;
       preview.style.display = 'block';
-      
-      // Buat file dari Base64
-      const timestamp = new Date().getTime();
-      const fileName = `foto_tamu_${timestamp}.jpg`;
-      photoFile = dataURLtoFile(photoData, fileName);
       
       // Update status foto
       photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil';
@@ -648,7 +647,6 @@
     // Fungsi untuk mengambil ulang foto
     function retakePhoto() {
       photoData = '';
-      photoFile = null;
       preview.src = '';
       preview.style.display = 'none';
       
@@ -662,28 +660,29 @@
     }
 
     // Fungsi untuk mengupload foto ke AppWrite
-    async function uploadPhotoToAppWrite(file) {
+    async function uploadPhotoToAppWrite(base64Data) {
       try {
+        // Konversi Base64 ke Blob
+        const response = await fetch(base64Data);
+        const blob = await response.blob();
+        
+        // Buat file dari Blob
+        const timestamp = new Date().getTime();
+        const fileName = `foto_tamu_${timestamp}.jpg`;
+        const file = new File([blob], fileName, { type: 'image/jpeg' });
+        
         // Upload file ke AppWrite Storage
-        // CATATAN: Anda perlu membuat bucket di AppWrite terlebih dahulu
-        // dan mengganti '68e48d0900162d805fa4' dengan ID bucket yang sesuai
-        const response = await storage.createFile(
-          '68e48d0900162d805fa4', // Ganti dengan bucket ID Anda
+        const uploadResponse = await storage.createFile(
+          APPWRITE_BUCKET_ID,
           'unique()', // ID unik untuk file
           file
         );
         
-        return response;
+        return uploadResponse;
       } catch (error) {
         console.error('Error uploading photo:', error);
         throw error;
       }
-    }
-
-    // Fungsi untuk mendapatkan URL file dari AppWrite
-    function getFilePreview(fileId) {
-      // CATATAN: Ganti '68e48d0900162d805fa4' dengan ID bucket yang sesuai
-      return storage.getFilePreview('68e48d0900162d805fa4', fileId);
     }
 
     // Fungsi validasi form
@@ -795,14 +794,17 @@
         const deskripsi = document.getElementById('deskripsi').value;
 
         // Upload foto ke AppWrite
+        let photoFileId = '';
         let photoUrl = '';
-        if (photoFile) {
-          const uploadResponse = await uploadPhotoToAppWrite(photoFile);
-          photoUrl = getFilePreview(uploadResponse.$id);
+        
+        if (photoData) {
+          const uploadResponse = await uploadPhotoToAppWrite(photoData);
+          photoFileId = uploadResponse.$id;
+          photoUrl = `${APPWRITE_ENDPOINT}/storage/buckets/${APPWRITE_BUCKET_ID}/files/${photoFileId}/preview?project=${APPWRITE_PROJECT_ID}`;
         }
 
-        // Data yang akan disimpan (bisa disimpan di database lain atau AppWrite Database)
-        const visitorData = {
+        // Data yang akan disimpan di Firestore
+        const dataToFirestore = {
           tanggal,
           nama,
           perusahaan,
@@ -810,14 +812,13 @@
           telepon,
           tujuan,
           deskripsi,
-          fotoUrl: photoUrl,
-          fotoFileId: photoFile ? 'uploaded' : '',
+          foto: photoUrl, // URL preview dari AppWrite
+          fotoFileId: photoFileId, // ID file di AppWrite
           createdAt: new Date().toISOString()
         };
 
-        // CATATAN: Di sini Anda bisa menyimpan data ke AppWrite Database
-        // atau ke sistem backend lainnya
-        console.log('Data tamu:', visitorData);
+        // Simpan ke Firestore
+        await db.collection("logbook").add(dataToFirestore);
         
         showNotification("Data berhasil disimpan di buku tamu", 'success');
         
