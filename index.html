@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Buku Tamu</title>
+  <title>Buku Tamu - Genetek</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link
     rel="stylesheet"
@@ -10,19 +10,22 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
-  <!-- Tambahkan Google Fonts untuk tipografi yang lebih baik -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #4a6cf7; /* Biru cerah */
-      --secondary-color: #6a5acd; /* Ungu */
-      --accent-color: #7FFFD4; /* Hijau mint */
+      --primary-color: #4a6cf7;
+      --primary-light: #6a8af8;
+      --secondary-color: #6a5acd;
+      --accent-color: #7FFFD4;
       --text-color: #333;
       --light-text-color: #666;
       --border-color: rgba(0,0,0,0.1);
       --bg-light: rgba(255,255,255,0.95);
       --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.15);
       --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
+      --success-color: #28a745;
+      --error-color: #dc3545;
+      --warning-color: #ffc107;
     }
 
     * {
@@ -33,7 +36,7 @@
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%); /* Gradien latar belakang */
+      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -48,13 +51,25 @@
       gap: 40px;
       background: var(--bg-light);
       padding: 40px;
-      border-radius: 20px; /* Sudut lebih membulat */
+      border-radius: 20px;
       box-shadow: var(--shadow-light);
-      max-width: 1100px; /* Sedikit lebih lebar */
+      max-width: 1100px;
       width: 100%;
-      border: 1px solid rgba(255,255,255,0.3); /* Border transparan */
-      backdrop-filter: blur(10px); /* Efek glassmorphism */
+      border: 1px solid rgba(255,255,255,0.3);
+      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
     }
 
     .container:hover {
@@ -63,7 +78,7 @@
 
     .form-wrapper, .camera-wrapper {
       flex: 1;
-      max-width: 550px; /* Sesuaikan max-width */
+      max-width: 550px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -71,22 +86,27 @@
 
     .camera-wrapper {
       text-align: center;
-      padding-left: 20px; /* Sedikit padding untuk pemisah visual */
-      border-left: 1px solid var(--border-color); /* Garis pemisah */
+      padding-left: 20px;
+      border-left: 1px solid var(--border-color);
     }
 
     img.logo {
       display: block;
-      margin: 0 auto 25px; /* Margin lebih besar */
-      max-width: 200px; /* Ukuran logo sedikit lebih besar */
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); /* Bayangan pada logo */
+      margin: 0 auto 25px;
+      max-width: 200px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+      transition: transform 0.3s ease;
+    }
+
+    img.logo:hover {
+      transform: scale(1.05);
     }
 
     h2 {
       text-align: center;
       margin-top: 0;
-      margin-bottom: 30px; /* Margin lebih besar */
-      font-size: 28px; /* Ukuran font lebih besar */
+      margin-bottom: 30px;
+      font-size: 28px;
       color: var(--primary-color);
       display: flex;
       align-items: center;
@@ -98,16 +118,21 @@
       color: var(--secondary-color);
     }
 
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
     input, textarea, select {
       width: 100%;
-      padding: 15px; /* Padding lebih besar */
-      margin-bottom: 20px; /* Margin lebih besar */
+      padding: 15px;
       font-size: 16px;
-      border-radius: 10px; /* Sudut lebih membulat */
+      border-radius: 10px;
       border: 1px solid var(--border-color);
-      background-color: rgba(255,255,255,0.7); /* Background input transparan */
+      background-color: rgba(255,255,255,0.7);
       transition: all 0.3s ease;
       color: var(--text-color);
+      font-family: 'Poppins', sans-serif;
     }
 
     input::placeholder, textarea::placeholder, select option[disabled] {
@@ -118,12 +143,12 @@
     input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2); /* Bayangan fokus */
+      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
       background-color: white;
     }
 
     select {
-      appearance: none; /* Hapus gaya default select */
+      appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
       background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
@@ -132,33 +157,120 @@
       background-size: 20px;
     }
 
+    .form-group label {
+      position: absolute;
+      top: -10px;
+      left: 15px;
+      background: var(--bg-light);
+      padding: 0 5px;
+      font-size: 12px;
+      color: var(--primary-color);
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .form-group.focused label {
+      opacity: 1;
+    }
+
+    .error-message {
+      color: var(--error-color);
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error input,
+    .form-group.error textarea,
+    .form-group.error select {
+      border-color: var(--error-color);
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+
     button {
       width: 100%;
       padding: 15px;
-      font-size: 18px; /* Ukuran font lebih besar */
-      font-weight: 600; /* Lebih tebal */
+      font-size: 18px;
+      font-weight: 600;
       border-radius: 10px;
       border: none;
       cursor: pointer;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color)); /* Gradien tombol */
+      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
       color: white;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Bayangan tombol */
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
     }
 
     button:hover {
-      transform: translateY(-3px); /* Efek angkat */
+      transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    button:focus:not(:active)::after {
+      animation: ripple 1s ease-out;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+
+    .camera-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .camera-controls button {
+      flex: 1;
     }
 
     video {
       width: 100%;
       max-width: 100%;
-      border-radius: 12px; /* Sudut lebih membulat */
-      margin: 15px auto; /* Margin lebih besar */
+      border-radius: 12px;
+      margin: 15px auto;
       display: block;
-      transform: scaleX(-1); /* Mirror camera view */
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Bayangan pada video */
+      transform: scaleX(-1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: #f0f0f0;
     }
 
     #preview {
@@ -175,20 +287,96 @@
       display: none;
     }
 
+    .photo-status {
+      margin: 10px 0;
+      font-size: 14px;
+      color: var(--light-text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .photo-status.has-photo {
+      color: var(--success-color);
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      transform: translateX(150%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      max-width: 300px;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      background-color: var(--success-color);
+    }
+
+    .notification.error {
+      background-color: var(--error-color);
+    }
+
+    .notification.warning {
+      background-color: var(--warning-color);
+      color: #333;
+    }
+
+    .loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     /* Responsive Design */
     @media (max-width: 992px) {
       .container {
         flex-direction: column;
         gap: 30px;
         padding: 30px;
-        max-width: 600px; /* Batasi lebar pada tablet */
+        max-width: 600px;
       }
 
       .camera-wrapper {
-        border-left: none; /* Hapus garis pemisah */
+        border-left: none;
         padding-left: 0;
-        padding-top: 30px; /* Tambah padding atas */
-        border-top: 1px solid var(--border-color); /* Garis pemisah horizontal */
+        padding-top: 30px;
+        border-top: 1px solid var(--border-color);
       }
 
       img.logo {
@@ -241,6 +429,10 @@
         max-height: 240px;
         margin: 10px auto;
       }
+
+      .camera-controls {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -250,56 +442,121 @@
       <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
       <h2><i class="fas fa-book"></i> Buku Tamu</h2>
       <form id="logForm">
-        <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: rgba(245,245,245,0.7);" />
-        <input type="text" id="nama" placeholder="Nama Lengkap" required />
-        <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-        <input type="text" id="alamat" placeholder="Alamat Perusahaan" required />
-        <input type="tel" id="telepon" placeholder="Nomor Telepon (cth: 081234567890)" required />
-        <select id="tujuan" required>
-          <option value="" disabled selected>Pilih Tujuan Kunjungan</option>
-          <option value="Antar Dokumen">Antar Dokumen</option>
-          <option value="Ambil Dokumen">Ambil Dokumen</option>
-          <option value="Antar Barang">Antar Barang</option>
-          <option value="Ambil Barang">Ambil Barang</option>
-          <option value="Antar Dokumen dan Barang">Antar Dokumen dan Barang</option>
-          <option value="Kunjungan">Kunjungan</option>
-          <option value="Lain-lain">Lain-lain</option>
-        </select>
-        <input type="text" id="deskripsi" placeholder="Deskripsi Singkat Kunjungan (cth: Bertemu Bpk. Andi)" required />
-        <button type="submit"><i class="fas fa-plus-circle"></i> Tambah ke Buku Tamu</button>
+        <div class="form-group">
+          <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: rgba(245,245,245,0.7);" />
+          <label for="tanggal">Tanggal & Waktu</label>
+        </div>
+        <div class="form-group">
+          <input type="text" id="nama" placeholder="Nama Lengkap" required />
+          <label for="nama">Nama Lengkap</label>
+          <div class="error-message">Nama lengkap harus diisi</div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
+          <label for="perusahaan">Nama Perusahaan</label>
+          <div class="error-message">Nama perusahaan harus diisi</div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="alamat" placeholder="Alamat Perusahaan" required />
+          <label for="alamat">Alamat Perusahaan</label>
+          <div class="error-message">Alamat perusahaan harus diisi</div>
+        </div>
+        <div class="form-group">
+          <input type="tel" id="telepon" placeholder="Nomor Telepon (cth: 081234567890)" required />
+          <label for="telepon">Nomor Telepon</label>
+          <div class="error-message">Format nomor telepon tidak valid</div>
+        </div>
+        <div class="form-group">
+          <select id="tujuan" required>
+            <option value="" disabled selected>Pilih Tujuan Kunjungan</option>
+            <option value="Antar Dokumen">Antar Dokumen</option>
+            <option value="Ambil Dokumen">Ambil Dokumen</option>
+            <option value="Antar Barang">Antar Barang</option>
+            <option value="Ambil Barang">Ambil Barang</option>
+            <option value="Antar Dokumen dan Barang">Antar Dokumen dan Barang</option>
+            <option value="Kunjungan">Kunjungan</option>
+            <option value="Lain-lain">Lain-lain</option>
+          </select>
+          <label for="tujuan">Tujuan Kunjungan</label>
+          <div class="error-message">Tujuan kunjungan harus dipilih</div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="deskripsi" placeholder="Deskripsi Singkat Kunjungan (cth: Bertemu Bpk. Andi)" required />
+          <label for="deskripsi">Deskripsi Kunjungan</label>
+          <div class="error-message">Deskripsi kunjungan harus diisi</div>
+        </div>
+        <button type="submit" id="submitBtn"><i class="fas fa-plus-circle"></i> Tambah ke Buku Tamu</button>
       </form>
     </div>
 
     <div class="camera-wrapper">
       <video id="video" autoplay></video>
-      <button type="button" onclick="takePhoto()">📸 Ambil Foto</button>
+      <div class="photo-status" id="photoStatus">
+        <i class="fas fa-times-circle"></i> Belum ada foto yang diambil
+      </div>
+      <div class="camera-controls">
+        <button type="button" onclick="takePhoto()" id="captureBtn">📸 Ambil Foto</button>
+        <button type="button" onclick="retakePhoto()" id="retakeBtn" style="display: none;">🔄 Ambil Ulang</button>
+      </div>
       <canvas id="canvas"></canvas>
       <img id="preview" alt="Preview Foto" />
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- AppWrite SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70", // Ganti dengan API Key Anda
-      authDomain: "logbook-e6ab3.firebaseapp.com", // Ganti dengan Auth Domain Anda
-      projectId: "logbook-e6ab3", // Ganti dengan Project ID Anda
-      storageBucket: "logbook-e6ab3.appspot.com", // Ganti dengan Storage Bucket Anda
-      messagingSenderId: "484546392348", // Ganti dengan Messaging Sender ID Anda
-      appId: "1:484546392348:web:861616b680427c158ecad9" // Ganti dengan App ID Anda
-    };
+    // Konfigurasi AppWrite
+    const APPWRITE_ENDPOINT = 'https://syd.cloud.appwrite.io/v1';
+    const APPWRITE_PROJECT_ID = '68d0d675000ecb06f0c8';
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Inisialisasi AppWrite Client
+    const client = new Appwrite.Client();
+    client
+      .setEndpoint(APPWRITE_ENDPOINT)
+      .setProject(APPWRITE_PROJECT_ID);
 
+    // Inisialisasi Storage
+    const storage = new Appwrite.Storage(client);
+
+    // Elemen DOM
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const preview = document.getElementById('preview');
-    let photoData = ''; // Akan menyimpan Base64 string dari foto
+    const captureBtn = document.getElementById('captureBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const photoStatus = document.getElementById('photoStatus');
+    const submitBtn = document.getElementById('submitBtn');
+    const loading = document.getElementById('loading');
+    
+    let photoData = '';
+    let stream = null;
+    let photoFile = null;
+
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.classList.add('show');
+      }, 100);
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 400);
+      }, 4000);
+    }
 
     // Fungsi untuk memperbarui tanggal dan waktu secara real-time
     function updateDateTimeRealtime() {
@@ -317,75 +574,271 @@
       }, 1000);
     }
 
-    // Panggil fungsi updateDateTimeRealtime saat halaman dimuat
-    window.onload = () => {
-      updateDateTimeRealtime();
-    };
+    // Fungsi untuk memulai kamera
+    function startCamera() {
+      navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      })
+      .then(mediaStream => {
+        stream = mediaStream;
+        video.srcObject = stream;
+        captureBtn.disabled = false;
+      })
+      .catch(err => {
+        console.error('Akses kamera ditolak:', err);
+        showNotification('Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.', 'error');
+        captureBtn.disabled = true;
+      });
+    }
 
-    // Meminta akses kamera
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => console.error('Akses kamera ditolak:', err));
+    // Fungsi untuk mengonversi Base64 ke File
+    function dataURLtoFile(dataurl, filename) {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      
+      return new File([u8arr], filename, { type: mime });
+    }
 
-    // Fungsi untuk mengambil foto dari kamera
+    // Fungsi untuk mengambil foto
     function takePhoto() {
+      if (!stream) {
+        showNotification('Kamera belum siap. Silakan tunggu sebentar.', 'warning');
+        return;
+      }
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
       context.save();
-      context.scale(-1, 1); // Mirror the image horizontally
+      context.scale(-1, 1);
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       context.restore();
 
-      // Ambil data gambar sebagai Base64 string (kualitas 30%)
-      // Kualitas rendah sangat disarankan untuk mengurangi ukuran data
-      photoData = canvas.toDataURL('image/jpeg', 0.3);
+      // Ambil data gambar sebagai Base64 string dengan kualitas 40%
+      photoData = canvas.toDataURL('image/jpeg', 0.4);
       preview.src = photoData;
       preview.style.display = 'block';
+      
+      // Buat file dari Base64
+      const timestamp = new Date().getTime();
+      const fileName = `foto_tamu_${timestamp}.jpg`;
+      photoFile = dataURLtoFile(photoData, fileName);
+      
+      // Update status foto
+      photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil';
+      photoStatus.classList.add('has-photo');
+      
+      // Tampilkan tombol ambil ulang
+      captureBtn.style.display = 'none';
+      retakeBtn.style.display = 'block';
+      
+      showNotification('Foto berhasil diambil', 'success');
     }
 
-    // Handler saat formulir disubmit
-    document.getElementById('logForm').onsubmit = function(e) {
-      e.preventDefault();
+    // Fungsi untuk mengambil ulang foto
+    function retakePhoto() {
+      photoData = '';
+      photoFile = null;
+      preview.src = '';
+      preview.style.display = 'none';
+      
+      // Reset status foto
+      photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto yang diambil';
+      photoStatus.classList.remove('has-photo');
+      
+      // Tampilkan tombol ambil foto
+      captureBtn.style.display = 'block';
+      retakeBtn.style.display = 'none';
+    }
 
+    // Fungsi untuk mengupload foto ke AppWrite
+    async function uploadPhotoToAppWrite(file) {
+      try {
+        // Upload file ke AppWrite Storage
+        // CATATAN: Anda perlu membuat bucket di AppWrite terlebih dahulu
+        // dan mengganti '68e48d0900162d805fa4' dengan ID bucket yang sesuai
+        const response = await storage.createFile(
+          '68e48d0900162d805fa4', // Ganti dengan bucket ID Anda
+          'unique()', // ID unik untuk file
+          file
+        );
+        
+        return response;
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        throw error;
+      }
+    }
+
+    // Fungsi untuk mendapatkan URL file dari AppWrite
+    function getFilePreview(fileId) {
+      // CATATAN: Ganti '68e48d0900162d805fa4' dengan ID bucket yang sesuai
+      return storage.getFilePreview('68e48d0900162d805fa4', fileId);
+    }
+
+    // Fungsi validasi form
+    function validateForm() {
+      let isValid = true;
+      const formGroups = document.querySelectorAll('.form-group');
+      
+      formGroups.forEach(group => {
+        const input = group.querySelector('input, select, textarea');
+        const errorMessage = group.querySelector('.error-message');
+        
+        // Reset status error
+        group.classList.remove('error');
+        
+        // Validasi field kosong
+        if (input.value.trim() === '') {
+          group.classList.add('error');
+          isValid = false;
+          return;
+        }
+        
+        // Validasi khusus untuk telepon
+        if (input.id === 'telepon') {
+          const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+          if (!phoneRegex.test(input.value.trim())) {
+            group.classList.add('error');
+            errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
+            isValid = false;
+          }
+        }
+      });
+      
+      // Validasi foto
       if (!photoData) {
-        alert("Silakan ambil foto terlebih dahulu sebelum submit.");
+        showNotification('Silakan ambil foto terlebih dahulu', 'warning');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+
+    // Event listeners untuk form
+    document.addEventListener('DOMContentLoaded', () => {
+      // Update tanggal dan waktu
+      updateDateTimeRealtime();
+      
+      // Mulai kamera
+      startCamera();
+      
+      // Tambah event listener untuk form input
+      const inputs = document.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => {
+        const formGroup = input.closest('.form-group');
+        
+        // Fokus dan blur untuk efek label
+        input.addEventListener('focus', () => {
+          formGroup.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', () => {
+          if (input.value.trim() === '') {
+            formGroup.classList.remove('focused');
+          }
+        });
+        
+        // Validasi real-time untuk telepon
+        if (input.id === 'telepon') {
+          input.addEventListener('input', () => {
+            const formGroup = input.closest('.form-group');
+            const errorMessage = formGroup.querySelector('.error-message');
+            
+            if (input.value.trim() !== '') {
+              const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+              if (!phoneRegex.test(input.value.trim())) {
+                formGroup.classList.add('error');
+                errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
+              } else {
+                formGroup.classList.remove('error');
+              }
+            } else {
+              formGroup.classList.remove('error');
+            }
+          });
+        }
+      });
+    });
+
+    // Handler saat formulir disubmit
+    document.getElementById('logForm').onsubmit = async function(e) {
+      e.preventDefault();
+      
+      // Validasi form
+      if (!validateForm()) {
+        showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
         return;
       }
+      
+      // Tampilkan loading
+      loading.classList.add('show');
+      submitBtn.disabled = true;
+      
+      try {
+        const tanggal = document.getElementById('tanggal').value;
+        const nama = document.getElementById('nama').value;
+        const perusahaan = document.getElementById('perusahaan').value;
+        const alamat = document.getElementById('alamat').value;
+        const telepon = document.getElementById('telepon').value;
+        const tujuan = document.getElementById('tujuan').value;
+        const deskripsi = document.getElementById('deskripsi').value;
 
-      const tanggal = document.getElementById('tanggal').value;
-      const nama = document.getElementById('nama').value;
-      const perusahaan = document.getElementById('perusahaan').value;
-      const alamat = document.getElementById('alamat').value;
-      const telepon = document.getElementById('telepon').value;
-      const tujuan = document.getElementById('tujuan').value;
-      const deskripsi = document.getElementById('deskripsi').value;
+        // Upload foto ke AppWrite
+        let photoUrl = '';
+        if (photoFile) {
+          const uploadResponse = await uploadPhotoToAppWrite(photoFile);
+          photoUrl = getFilePreview(uploadResponse.$id);
+        }
 
-      // Data yang akan disimpan di Firestore, termasuk foto Base64
-      const dataToFirestore = {
-        tanggal,
-        nama,
-        perusahaan,
-        alamat,
-        telepon,
-        tujuan,
-        deskripsi,
-        foto: photoData
-      };
+        // Data yang akan disimpan (bisa disimpan di database lain atau AppWrite Database)
+        const visitorData = {
+          tanggal,
+          nama,
+          perusahaan,
+          alamat,
+          telepon,
+          tujuan,
+          deskripsi,
+          fotoUrl: photoUrl,
+          fotoFileId: photoFile ? 'uploaded' : '',
+          createdAt: new Date().toISOString()
+        };
 
-      db.collection("logbook").add(dataToFirestore)
-        .then(() => {
-          alert("Data berhasil disimpan di Firestore");
-          // Reset formulir dan tampilan setelah berhasil
-          document.getElementById('logForm').reset();
-          photoData = ''; // Kosongkan data foto
-          preview.src = ''; // Kosongkan preview
-          preview.style.display = 'none'; // Sembunyikan preview
-        })
-        .catch(err => {
-          console.error("Gagal menyimpan data:", err);
-          alert("Gagal menyimpan data: " + err.message);
+        // CATATAN: Di sini Anda bisa menyimpan data ke AppWrite Database
+        // atau ke sistem backend lainnya
+        console.log('Data tamu:', visitorData);
+        
+        showNotification("Data berhasil disimpan di buku tamu", 'success');
+        
+        // Reset formulir dan tampilan setelah berhasil
+        document.getElementById('logForm').reset();
+        retakePhoto();
+        
+        // Reset status fokus
+        const formGroups = document.querySelectorAll('.form-group');
+        formGroups.forEach(group => {
+          group.classList.remove('focused');
         });
+
+      } catch (error) {
+        console.error("Gagal menyimpan data:", error);
+        showNotification("Gagal menyimpan data: " + error.message, 'error');
+      } finally {
+        // Sembunyikan loading
+        loading.classList.remove('show');
+        submitBtn.disabled = false;
+      }
     };
   </script>
 </body>
