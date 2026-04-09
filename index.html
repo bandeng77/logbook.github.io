@@ -264,19 +264,15 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .connection-status {
-      text-align: center;
-      padding: 8px;
+    .info-box {
+      background: #e7f3ff;
+      border-left: 4px solid var(--primary-color);
+      padding: 10px;
       margin-bottom: 15px;
       border-radius: 8px;
       font-size: 12px;
-      background: #f8f9fa;
-      color: #666;
+      color: #0066cc;
     }
-
-    .connection-status.connected { background: #d4edda; color: #155724; }
-    .connection-status.disconnected { background: #f8d7da; color: #721c24; }
-    .connection-status.checking { background: #fff3cd; color: #856404; }
 
     @media (max-width: 992px) {
       .container { flex-direction: column; gap: 30px; padding: 30px; max-width: 600px; }
@@ -296,8 +292,8 @@
       <img src="genetek-logo.png" alt="Genetek Logo" class="logo" onerror="this.src='https://via.placeholder.com/200x80?text=Genetek'" />
       <h2><i class="fas fa-book"></i> Buku Tamu</h2>
       
-      <div class="connection-status checking" id="connectionStatus">
-        <i class="fas fa-spinner fa-pulse"></i> Mengecek koneksi ke server...
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i> Foto akan otomatis tersimpan ke Dropbox
       </div>
       
       <form id="logForm">
@@ -396,66 +392,21 @@
     const photoStatus = document.getElementById('photoStatus');
     const submitBtn = document.getElementById('submitBtn');
     const loading = document.getElementById('loading');
-    const connectionStatus = document.getElementById('connectionStatus');
     
     let photoData = '';
     let stream = null;
-    let isN8NReady = false;
 
     // ==================== NOTIFICATION ====================
     function showNotification(message, type = 'success') {
       const notification = document.createElement('div');
       notification.className = `notification ${type}`;
-      notification.textContent = message;
+      notification.innerHTML = message;
       document.body.appendChild(notification);
       setTimeout(() => notification.classList.add('show'), 100);
       setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 400);
-      }, 4000);
-    }
-
-    // ==================== CEK KONEKSI N8N ====================
-    async function checkN8NConnection() {
-        connectionStatus.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Mengecek koneksi ke server...';
-        connectionStatus.className = 'connection-status checking';
-        
-        try {
-            // Test dengan OPTIONS request dulu
-            const optionsResponse = await fetch(`${N8N_BASE_URL}${WEBHOOK_UPLOAD}`, {
-                method: 'OPTIONS',
-                mode: 'cors'
-            });
-            
-            console.log('OPTIONS response:', optionsResponse.status);
-            
-            // Buat file test kecil
-            const formData = new FormData();
-            const testBlob = new Blob(['test'], {type: 'text/plain'});
-            formData.append('fileData', testBlob, 'test.txt');
-            formData.append('fileName', 'test.txt');
-            
-            const response = await fetch(`${N8N_BASE_URL}${WEBHOOK_UPLOAD}`, {
-                method: 'POST',
-                body: formData,
-                mode: 'cors'
-            });
-            
-            console.log('POST response status:', response.status);
-            
-            if (response.ok) {
-                connectionStatus.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Server siap menerima upload foto';
-                connectionStatus.className = 'connection-status connected';
-                return true;
-            } else {
-                throw new Error(`HTTP ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Connection error:', error);
-            connectionStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ⚠️ Server tidak merespons. Pastikan workflow n8n sudah ACTIVE.';
-            connectionStatus.className = 'connection-status disconnected';
-            return false;
-        }
+      }, 5000);
     }
 
     // ==================== UPLOAD FOTO KE DROPBOX ====================
@@ -482,31 +433,27 @@
         formData.append('fileName', fileName);
         
         console.log('Uploading file:', fileName);
-        console.log('To URL:', `${N8N_BASE_URL}${WEBHOOK_UPLOAD}`);
         
         const response = await fetch(`${N8N_BASE_URL}${WEBHOOK_UPLOAD}`, {
           method: 'POST',
           body: formData,
-          mode: 'cors'
+          mode: 'cors',
+          credentials: 'omit'
         });
         
-        // Baca response sebagai TEXT (bukan JSON) untuk menghindari error parsing
-        const responseText = await response.text();
         console.log('Response status:', response.status);
-        console.log('Response text:', responseText);
         
         if (response.ok) {
-          // Upload sukses meskipun response bukan JSON
           return { 
             success: true, 
-            dropboxPath: `/ownclouddata/foto-tamu/${fileName}`,
-            message: responseText || 'Upload successful'
+            dropboxPath: `/ownclouddata/foto-tamu/${fileName}`
           };
         } else {
-          throw new Error(`HTTP ${response.status}: ${responseText}`);
+          const errorText = await response.text();
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
       } catch (error) {
-        console.error('Upload error details:', error);
+        console.error('Upload error:', error);
         return { success: false, dropboxPath: null, error: error.message };
       }
     }
@@ -536,24 +483,19 @@
         return;
       }
 
-      // Set canvas dimensions
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       
-      // Draw video frame (mirror effect)
       context.save();
       context.scale(-1, 1);
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
       context.restore();
       
-      // Convert to JPEG with 40% quality
       photoData = canvas.toDataURL('image/jpeg', 0.4);
       
-      // Show preview
       preview.src = photoData;
       preview.style.display = 'block';
       
-      // Update UI
       photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil';
       photoStatus.classList.add('has-photo');
       captureBtn.style.display = 'none';
@@ -586,7 +528,6 @@
     function validateForm() {
       let isValid = true;
       
-      // Validate required fields
       const requiredFields = ['nama', 'perusahaan', 'alamat', 'telepon', 'tujuan', 'deskripsi'];
       requiredFields.forEach(field => {
         const input = document.getElementById(field);
@@ -599,7 +540,6 @@
         }
       });
       
-      // Validate phone number
       const telepon = document.getElementById('telepon');
       const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
       if (telepon.value.trim() && !phoneRegex.test(telepon.value.trim())) {
@@ -607,7 +547,6 @@
         isValid = false;
       }
       
-      // Validate photo
       if (!photoData) {
         showNotification('Silakan ambil foto terlebih dahulu', 'warning');
         isValid = false;
@@ -625,16 +564,6 @@
         return;
       }
       
-      // Check n8n connection
-      if (!isN8NReady) {
-        isN8NReady = await checkN8NConnection();
-        if (!isN8NReady) {
-          showNotification('Server tidak tersedia. Foto tidak bisa disimpan ke Dropbox.', 'error');
-          return;
-        }
-      }
-      
-      // Get form data
       const tanggal = document.getElementById('tanggal').value;
       const nama = document.getElementById('nama').value;
       const perusahaan = document.getElementById('perusahaan').value;
@@ -643,12 +572,10 @@
       const tujuan = document.getElementById('tujuan').value;
       const deskripsi = document.getElementById('deskripsi').value;
       
-      // Show loading
       loading.classList.add('show');
       submitBtn.disabled = true;
       
       try {
-        // Upload photo to Dropbox
         showNotification('Mengupload foto ke Dropbox...', 'info');
         const uploadResult = await uploadPhotoToDropbox(photoData, nama, tanggal);
         
@@ -658,7 +585,6 @@
         
         showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
         
-        // Save to Firebase (without photo base64)
         const dataToFirestore = {
           tanggal,
           nama,
@@ -677,16 +603,13 @@
         
         showNotification('✅ Data berhasil disimpan!', 'success');
         
-        // Reset form
         document.getElementById('logForm').reset();
         retakePhoto();
         
-        // Remove focus from all form groups
         document.querySelectorAll('.form-group').forEach(group => {
           group.classList.remove('focused');
         });
         
-        // Reset tanggal field
         updateDateTimeRealtime();
         
       } catch (error) {
@@ -699,16 +622,11 @@
     };
 
     // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
       console.log('Page loaded, initializing...');
-      
       updateDateTimeRealtime();
       startCamera();
       
-      // Check n8n connection
-      isN8NReady = await checkN8NConnection();
-      
-      // Setup form group focus effects
       document.querySelectorAll('#logForm input, #logForm select').forEach(input => {
         const group = input.closest('.form-group');
         input.addEventListener('focus', () => group.classList.add('focused'));
@@ -717,7 +635,6 @@
         });
       });
       
-      // Phone validation on input
       document.getElementById('telepon').addEventListener('input', function() {
         const group = this.closest('.form-group');
         const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
