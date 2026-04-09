@@ -508,15 +508,15 @@
     console.log('📤 Uploading file:', fileName);
     console.log('📦 File size:', blob.size, 'bytes');
 
-    // Kirim sebagai FormData (bukan Base64) untuk menghindari corrupt file
+    // === METHOD 1: FormData (Recommended) ===
     const formData = new FormData();
     formData.append('file', blob, fileName);
     formData.append('fileName', fileName);
 
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'POST',
-      body: formData,
-      // Jangan set Content-Type, biar browser yang set dengan boundary
+      body: formData
+      // Jangan set Content-Type, biar browser yang set dengan boundary yang benar
     });
 
     const responseText = await response.text();
@@ -524,7 +524,9 @@
     console.log('📥 Response body:', responseText);
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${responseText}`);
+      // Jika FormData gagal, coba Method 2: Base64
+      console.log('FormData gagal, mencoba Base64...');
+      return await uploadPhotoAsBase64(blob, fileName);
     }
 
     let result;
@@ -539,6 +541,42 @@
       fileName: fileName,
       response: result
     };
+  }
+
+  // Fallback: Upload sebagai Base64
+  async function uploadPhotoAsBase64(blob, fileName) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = async function() {
+        const base64Data = reader.result.split(',')[1];
+        
+        const payload = {
+          fileName: fileName,
+          fileData: base64Data,
+          fileSize: blob.size
+        };
+
+        try {
+          const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          resolve({ success: true, fileName: fileName });
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   }
 
   // ==================== SUBMIT FORM ====================
