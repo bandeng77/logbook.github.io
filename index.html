@@ -362,25 +362,14 @@
     <div class="spinner"></div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
   <script>
     // ==================== KONFIGURASI ====================
     const N8N_BASE_URL = 'https://n8n.genetek.co.id';
     const WEBHOOK_UPLOAD = '/webhook/upload-foto-tamu';
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.appspot.com",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    
+    // Firebase REST API (tidak kena blokir AdBlock)
+    const FIREBASE_PROJECT_ID = 'logbook-e6ab3';
+    const FIRESTORE_API_URL = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents/logbook`;
 
     // ==================== DOM ELEMENTS ====================
     const video = document.getElementById('video');
@@ -409,6 +398,42 @@
       }, 5000);
     }
 
+    // ==================== SAVE TO FIREBASE VIA REST API ====================
+    async function saveToFirebase(data) {
+      try {
+        const response = await fetch(FIRESTORE_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fields: {
+              tanggal: { stringValue: data.tanggal },
+              nama: { stringValue: data.nama },
+              perusahaan: { stringValue: data.perusahaan },
+              alamat: { stringValue: data.alamat },
+              telepon: { stringValue: data.telepon },
+              tujuan: { stringValue: data.tujuan },
+              deskripsi: { stringValue: data.deskripsi },
+              dropboxPath: { stringValue: data.dropboxPath },
+              uploadedToDropbox: { booleanValue: data.uploadedToDropbox },
+              uploadTimestamp: { stringValue: data.uploadTimestamp }
+            }
+          })
+        });
+        
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`HTTP ${response.status}: ${error}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('Firebase save error:', error);
+        throw error;
+      }
+    }
+
     // ==================== UPLOAD FOTO KE DROPBOX ====================
     function dataURLtoBlob(dataURL) {
       const arr = dataURL.split(',');
@@ -432,28 +457,30 @@
         formData.append('fileData', blob, fileName);
         formData.append('fileName', fileName);
         
-        console.log('Uploading file:', fileName);
+        console.log('📤 Uploading file:', fileName);
+        console.log('📤 File size:', blob.size, 'bytes');
         
         const response = await fetch(`${N8N_BASE_URL}${WEBHOOK_UPLOAD}`, {
           method: 'POST',
           body: formData,
-          mode: 'cors',
-          credentials: 'omit'
+          mode: 'cors'
         });
         
-        console.log('Response status:', response.status);
+        console.log('📥 Response status:', response.status);
         
         if (response.ok) {
+          console.log('✅ Upload SUCCESS!');
           return { 
             success: true, 
             dropboxPath: `/ownclouddata/foto-tamu/${fileName}`
           };
         } else {
           const errorText = await response.text();
+          console.error('❌ Upload FAILED:', errorText);
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
       } catch (error) {
-        console.error('Upload error:', error);
+        console.error('❌ Upload error:', error);
         return { success: false, dropboxPath: null, error: error.message };
       }
     }
@@ -555,80 +582,69 @@
       return isValid;
     }
 
-// ==================== SUBMIT FORM ====================
-document.getElementById('logForm').onsubmit = async function(e) {
-  e.preventDefault();
-  
-  if (!validateForm()) {
-    showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
-    return;
-  }
-  
-  const tanggal = document.getElementById('tanggal').value;
-  const nama = document.getElementById('nama').value;
-  const perusahaan = document.getElementById('perusahaan').value;
-  const alamat = document.getElementById('alamat').value;
-  const telepon = document.getElementById('telepon').value;
-  const tujuan = document.getElementById('tujuan').value;
-  const deskripsi = document.getElementById('deskripsi').value;
-  
-  loading.classList.add('show');
-  submitBtn.disabled = true;
-  
-  try {
-    showNotification('Mengupload foto ke Dropbox...', 'info');
-    const uploadResult = await uploadPhotoToDropbox(photoData, nama, tanggal);
-    
-    if (!uploadResult.success) {
-      throw new Error(uploadResult.error || 'Upload ke Dropbox gagal');
-    }
-    
-    showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
-    
-    const dataToFirestore = {
-      tanggal,
-      nama,
-      perusahaan,
-      alamat,
-      telepon,
-      tujuan,
-      deskripsi,
-      dropboxPath: uploadResult.dropboxPath,
-      uploadedToDropbox: true,
-      uploadTimestamp: new Date().toISOString(),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    // ==================== SUBMIT FORM ====================
+    document.getElementById('logForm').onsubmit = async function(e) {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
+        return;
+      }
+      
+      const tanggal = document.getElementById('tanggal').value;
+      const nama = document.getElementById('nama').value;
+      const perusahaan = document.getElementById('perusahaan').value;
+      const alamat = document.getElementById('alamat').value;
+      const telepon = document.getElementById('telepon').value;
+      const tujuan = document.getElementById('tujuan').value;
+      const deskripsi = document.getElementById('deskripsi').value;
+      
+      loading.classList.add('show');
+      submitBtn.disabled = true;
+      
+      try {
+        // STEP 1: Upload foto ke Dropbox
+        showNotification('📤 Mengupload foto ke Dropbox...', 'info');
+        const uploadResult = await uploadPhotoToDropbox(photoData, nama, tanggal);
+        
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || 'Upload ke Dropbox gagal');
+        }
+        
+        showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
+        
+        // STEP 2: Simpan data ke Firebase via REST API
+        showNotification('💾 Menyimpan data ke database...', 'info');
+        const firebaseData = {
+          tanggal, nama, perusahaan, alamat, telepon, tujuan, deskripsi,
+          dropboxPath: uploadResult.dropboxPath,
+          uploadedToDropbox: true,
+          uploadTimestamp: new Date().toISOString()
+        };
+        
+        await saveToFirebase(firebaseData);
+        
+        showNotification('✅ Semua data berhasil disimpan!', 'success');
+        
+        // Reset form
+        document.getElementById('logForm').reset();
+        retakePhoto();
+        
+        document.querySelectorAll('.form-group').forEach(group => {
+          group.classList.remove('focused');
+        });
+        
+        updateDateTimeRealtime();
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showNotification('❌ Gagal: ' + error.message, 'error');
+      } finally {
+        loading.classList.remove('show');
+        submitBtn.disabled = false;
+      }
     };
-    
-    console.log('Menyimpan ke Firebase:', dataToFirestore);
-    
-    await db.collection("logbook").add(dataToFirestore);
-    
-    showNotification('✅ Data berhasil disimpan ke database!', 'success');
-    
-    // Reset form
-    document.getElementById('logForm').reset();
-    retakePhoto();
-    
-    document.querySelectorAll('.form-group').forEach(group => {
-      group.classList.remove('focused');
-    });
-    
-    updateDateTimeRealtime();
-    
-  } catch (error) {
-    console.error('Error detail:', error);
-    
-    if (error.code === 'permission-denied' || error.message.includes('permission')) {
-      showNotification('❌ Error: Tidak ada izin menulis ke database. Hubungi administrator untuk memperbaiki Firestore rules.', 'error');
-    } else {
-      showNotification('❌ Gagal: ' + error.message, 'error');
-    }
-  } finally {
-    loading.classList.remove('show');
-    submitBtn.disabled = false;
-  }
-};
-    
+
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', () => {
       console.log('Page loaded, initializing...');
