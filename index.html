@@ -29,7 +29,6 @@
       border-radius: 28px;
       padding: 40px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(2px);
     }
 
     .form-wrapper, .camera-wrapper {
@@ -324,10 +323,10 @@
       <i class="fas fa-times-circle"></i> Belum ada foto
     </div>
     <div class="camera-controls">
-      <button type="button" onclick="takePhoto()" id="captureBtn">
+      <button type="button" id="captureBtn">
         <i class="fas fa-camera"></i> Ambil Foto
       </button>
-      <button type="button" onclick="retakePhoto()" id="retakeBtn" style="display:none;">
+      <button type="button" id="retakeBtn" style="display:none;">
         <i class="fas fa-redo-alt"></i> Ambil Ulang
       </button>
     </div>
@@ -381,7 +380,8 @@
   function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
-    notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
     document.body.appendChild(notification);
     setTimeout(() => notification.classList.add('show'), 100);
     setTimeout(() => {
@@ -405,19 +405,19 @@
   setInterval(updateDateTime, 1000);
 
   // ==================== KAMERA ====================
-  function startCamera() {
-    navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
-      .then(mediaStream => {
-        stream = mediaStream;
-        video.srcObject = stream;
-        captureBtn.disabled = false;
-        console.log('✅ Kamera siap');
-      })
-      .catch(err => {
-        console.error('Kamera error:', err);
-        showNotification('Tidak dapat mengakses kamera. Pastikan izin diberikan.', 'error');
-        captureBtn.disabled = true;
+  async function startCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } } 
       });
+      video.srcObject = stream;
+      captureBtn.disabled = false;
+      console.log('✅ Kamera siap');
+    } catch (err) {
+      console.error('Kamera error:', err);
+      showNotification('Tidak dapat mengakses kamera. Pastikan izin diberikan.', 'error');
+      captureBtn.disabled = true;
+    }
   }
 
   function takePhoto() {
@@ -448,7 +448,7 @@
       retakeBtn.style.display = 'block';
       console.log('📸 Foto diambil, ukuran:', blob.size, 'bytes');
       showNotification(`Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`, 'success');
-    }, 'image/jpeg', 0.9); // Kualitas 90% untuk hasil lebih baik
+    }, 'image/jpeg', 0.92);
   }
 
   function retakePhoto() {
@@ -508,59 +508,41 @@
     console.log('📤 Uploading file:', fileName);
     console.log('📦 File size:', blob.size, 'bytes');
 
-    // Kirim sebagai base64 untuk menghindari masalah FormData
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = async function() {
-        const base64Data = reader.result.split(',')[1];
-        
-        const payload = {
-          fileName: fileName,
-          fileData: base64Data,
-          fileSize: blob.size,
-          mimeType: 'image/jpeg'
-        };
+    // Kirim sebagai FormData (bukan Base64) untuk menghindari corrupt file
+    const formData = new FormData();
+    formData.append('file', blob, fileName);
+    formData.append('fileName', fileName);
 
-        try {
-          const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-          });
-
-          const responseText = await response.text();
-          console.log('📥 Response status:', response.status);
-          console.log('📥 Response body:', responseText);
-
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${responseText}`);
-          }
-
-          let result;
-          try {
-            result = JSON.parse(responseText);
-          } catch(e) {
-            result = { success: true, message: responseText };
-          }
-
-          resolve({
-            success: true,
-            fileName: fileName,
-            response: result
-          });
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      body: formData,
+      // Jangan set Content-Type, biar browser yang set dengan boundary
     });
+
+    const responseText = await response.text();
+    console.log('📥 Response status:', response.status);
+    console.log('📥 Response body:', responseText);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${responseText}`);
+    }
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch(e) {
+      result = { success: true, message: responseText };
+    }
+
+    return {
+      success: true,
+      fileName: fileName,
+      response: result
+    };
   }
 
   // ==================== SUBMIT FORM ====================
-  document.getElementById('logForm').onsubmit = async function(e) {
+  document.getElementById('logForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -614,6 +596,9 @@
         group.classList.remove('error');
       });
 
+      // Reset select ke default
+      document.getElementById('tujuan').value = '';
+
     } catch (error) {
       console.error('Error:', error);
       showNotification('❌ Gagal: ' + error.message, 'error');
@@ -621,12 +606,13 @@
       loading.classList.remove('show');
       submitBtn.disabled = false;
     }
-  };
+  });
 
-  // ==================== INIT ====================
-  startCamera();
+  // ==================== EVENT LISTENERS ====================
+  captureBtn.addEventListener('click', takePhoto);
+  retakeBtn.addEventListener('click', retakePhoto);
 
-  // Event listener untuk validasi realtime telepon
+  // Validasi realtime telepon
   document.getElementById('telepon').addEventListener('input', function() {
     const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
     const group = this.closest('.form-group');
@@ -636,6 +622,20 @@
       group.classList.remove('error');
     }
   });
+
+  // Validasi realtime untuk field lain
+  const fields = ['nama', 'perusahaan', 'alamat', 'tujuan', 'deskripsi'];
+  fields.forEach(field => {
+    document.getElementById(field).addEventListener('input', function() {
+      const group = this.closest('.form-group');
+      if (this.value.trim()) {
+        group.classList.remove('error');
+      }
+    });
+  });
+
+  // ==================== INIT ====================
+  startCamera();
 </script>
 </body>
 </html>
