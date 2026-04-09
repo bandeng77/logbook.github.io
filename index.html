@@ -29,6 +29,7 @@
       border-radius: 28px;
       padding: 40px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(2px);
     }
 
     .form-wrapper, .camera-wrapper {
@@ -435,7 +436,7 @@
     ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    // Konversi ke Blob (kualitas 90%)
+    // Konversi ke JPEG dengan kualitas tinggi
     canvas.toBlob(blob => {
       photoBlob = blob;
       const url = URL.createObjectURL(blob);
@@ -447,7 +448,7 @@
       retakeBtn.style.display = 'block';
       console.log('📸 Foto diambil, ukuran:', blob.size, 'bytes');
       showNotification(`Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`, 'success');
-    }, 'image/jpeg', 0.9);
+    }, 'image/jpeg', 0.9); // Kualitas 90% untuk hasil lebih baik
   }
 
   function retakePhoto() {
@@ -489,7 +490,7 @@
     if (!photoBlob) {
       showNotification('Silakan ambil foto terlebih dahulu', 'warning');
       isValid = false;
-    } else if (photoBlob.size < 1000) {
+    } else if (photoBlob.size < 5000) {
       showNotification('Ukuran foto terlalu kecil, coba ambil foto ulang', 'warning');
       isValid = false;
     }
@@ -507,28 +508,55 @@
     console.log('📤 Uploading file:', fileName);
     console.log('📦 File size:', blob.size, 'bytes');
 
-    const formData = new FormData();
-    formData.append('fileData', blob, fileName);
-    formData.append('fileName', fileName);
+    // Kirim sebagai base64 untuk menghindari masalah FormData
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = async function() {
+        const base64Data = reader.result.split(',')[1];
+        
+        const payload = {
+          fileName: fileName,
+          fileData: base64Data,
+          fileSize: blob.size,
+          mimeType: 'image/jpeg'
+        };
 
-    const response = await fetch(N8N_WEBHOOK_URL, {
-      method: 'POST',
-      body: formData,
-      mode: 'cors'
+        try {
+          const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const responseText = await response.text();
+          console.log('📥 Response status:', response.status);
+          console.log('📥 Response body:', responseText);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${responseText}`);
+          }
+
+          let result;
+          try {
+            result = JSON.parse(responseText);
+          } catch(e) {
+            result = { success: true, message: responseText };
+          }
+
+          resolve({
+            success: true,
+            fileName: fileName,
+            response: result
+          });
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
     });
-
-    const responseText = await response.text();
-    console.log('📥 Response status:', response.status);
-    console.log('📥 Response body:', responseText);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${responseText}`);
-    }
-
-    return {
-      success: true,
-      fileName: fileName
-    };
   }
 
   // ==================== SUBMIT FORM ====================
@@ -558,7 +586,7 @@
       const uploadResult = await uploadPhotoToDropbox(photoBlob, nama, tanggal);
       showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
 
-      // STEP 2: Simpan data ke Firebase (tanpa foto Base64)
+      // STEP 2: Simpan data ke Firebase
       const dataToFirestore = {
         tanggal,
         nama,
