@@ -437,7 +437,7 @@
     ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    // Konversi ke Base64
+    // Konversi ke Base64 - PASTIKAN TIDAK ADA PREFIX
     const base64Full = canvas.toDataURL('image/jpeg', 0.92);
     photoBase64 = base64Full.split(',')[1];
     
