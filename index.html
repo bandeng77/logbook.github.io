@@ -373,7 +373,8 @@
   const submitBtn = document.getElementById('submitBtn');
   const loading = document.getElementById('loading');
 
-  let photoBlob = null;
+  let photoBase64 = null;
+  let photoSizeBytes = 0;
   let stream = null;
 
   // ==================== NOTIFIKASI ====================
@@ -436,23 +437,29 @@
     ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    // Konversi ke JPEG dengan kualitas tinggi
-    canvas.toBlob(blob => {
-      photoBlob = blob;
-      const url = URL.createObjectURL(blob);
-      preview.src = url;
-      preview.style.display = 'block';
-      photoStatus.innerHTML = `<i class="fas fa-check-circle"></i> Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`;
-      photoStatus.classList.add('has-photo');
-      captureBtn.style.display = 'none';
-      retakeBtn.style.display = 'block';
-      console.log('📸 Foto diambil, ukuran:', blob.size, 'bytes');
-      showNotification(`Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`, 'success');
-    }, 'image/jpeg', 0.92);
+    // Konversi ke Base64
+    const base64Full = canvas.toDataURL('image/jpeg', 0.92);
+    photoBase64 = base64Full.split(',')[1];
+    
+    // Hitung ukuran file dalam bytes
+    photoSizeBytes = Math.round((photoBase64.length * 3) / 4);
+    
+    // Tampilkan preview
+    preview.src = base64Full;
+    preview.style.display = 'block';
+    photoStatus.innerHTML = `<i class="fas fa-check-circle"></i> Foto berhasil diambil (${Math.round(photoSizeBytes / 1024)} KB)`;
+    photoStatus.classList.add('has-photo');
+    captureBtn.style.display = 'none';
+    retakeBtn.style.display = 'block';
+    
+    console.log('📸 Foto diambil');
+    console.log('📊 Base64 length:', photoBase64.length);
+    console.log('📊 Estimated file size:', photoSizeBytes, 'bytes');
   }
 
   function retakePhoto() {
-    photoBlob = null;
+    photoBase64 = null;
+    photoSizeBytes = 0;
     preview.src = '';
     preview.style.display = 'none';
     photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto';
@@ -487,10 +494,10 @@
     }
 
     // Validasi foto
-    if (!photoBlob) {
+    if (!photoBase64) {
       showNotification('Silakan ambil foto terlebih dahulu', 'warning');
       isValid = false;
-    } else if (photoBlob.size < 5000) {
+    } else if (photoSizeBytes < 5000) {
       showNotification('Ukuran foto terlalu kecil, coba ambil foto ulang', 'warning');
       isValid = false;
     }
@@ -499,24 +506,28 @@
   }
 
   // ==================== UPLOAD FOTO KE DROPBOX via N8N ====================
-  async function uploadPhotoToDropbox(blob, nama, tanggal) {
+  async function uploadPhotoToDropbox(nama, tanggal) {
     const timestamp = Date.now();
     const cleanNama = nama.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
     const formattedDate = tanggal.split(' ')[0];
     const fileName = `${formattedDate}_${cleanNama}_${timestamp}.jpg`;
 
     console.log('📤 Uploading file:', fileName);
-    console.log('📦 File size:', blob.size, 'bytes');
+    console.log('📦 Base64 length:', photoBase64.length);
+    console.log('📦 File size:', photoSizeBytes, 'bytes');
 
-    // === METHOD 1: FormData (Recommended) ===
-    const formData = new FormData();
-    formData.append('file', blob, fileName);
-    formData.append('fileName', fileName);
+    const payload = {
+      fileName: fileName,
+      fileData: photoBase64,
+      fileSize: photoSizeBytes
+    };
 
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'POST',
-      body: formData
-      // Jangan set Content-Type, biar browser yang set dengan boundary yang benar
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
     });
 
     const responseText = await response.text();
@@ -524,9 +535,7 @@
     console.log('📥 Response body:', responseText);
 
     if (!response.ok) {
-      // Jika FormData gagal, coba Method 2: Base64
-      console.log('FormData gagal, mencoba Base64...');
-      return await uploadPhotoAsBase64(blob, fileName);
+      throw new Error(`HTTP ${response.status}: ${responseText}`);
     }
 
     let result;
@@ -539,44 +548,9 @@
     return {
       success: true,
       fileName: fileName,
+      fileSize: photoSizeBytes,
       response: result
     };
-  }
-
-  // Fallback: Upload sebagai Base64
-  async function uploadPhotoAsBase64(blob, fileName) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = async function() {
-        const base64Data = reader.result.split(',')[1];
-        
-        const payload = {
-          fileName: fileName,
-          fileData: base64Data,
-          fileSize: blob.size
-        };
-
-        try {
-          const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-          }
-
-          resolve({ success: true, fileName: fileName });
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
   }
 
   // ==================== SUBMIT FORM ====================
@@ -603,19 +577,20 @@
     try {
       // STEP 1: Upload foto ke Dropbox via n8n
       showNotification('📤 Mengupload foto ke Dropbox...', 'info');
-      const uploadResult = await uploadPhotoToDropbox(photoBlob, nama, tanggal);
+      const uploadResult = await uploadPhotoToDropbox(nama, tanggal);
       showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
 
       // STEP 2: Simpan data ke Firebase
       const dataToFirestore = {
-        tanggal,
-        nama,
-        perusahaan,
-        alamat,
-        telepon,
-        tujuan,
-        deskripsi,
+        tanggal: tanggal,
+        nama: nama,
+        perusahaan: perusahaan,
+        alamat: alamat,
+        telepon: telepon,
+        tujuan: tujuan,
+        deskripsi: deskripsi,
         fileName: uploadResult.fileName,
+        fileSize: uploadResult.fileSize,
         uploadedToDropbox: true,
         uploadTimestamp: new Date().toISOString(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
