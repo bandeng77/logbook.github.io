@@ -29,7 +29,6 @@
       border-radius: 28px;
       padding: 40px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(2px);
     }
 
     .form-wrapper, .camera-wrapper {
@@ -436,7 +435,7 @@
     ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    // Konversi ke Blob (kualitas 85%)
+    // Konversi ke Blob (kualitas 90%)
     canvas.toBlob(blob => {
       photoBlob = blob;
       const url = URL.createObjectURL(blob);
@@ -448,7 +447,7 @@
       retakeBtn.style.display = 'block';
       console.log('📸 Foto diambil, ukuran:', blob.size, 'bytes');
       showNotification(`Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`, 'success');
-    }, 'image/jpeg', 0.85);
+    }, 'image/jpeg', 0.9);
   }
 
   function retakePhoto() {
