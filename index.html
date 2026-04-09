@@ -267,7 +267,6 @@
 <body>
 
 <div class="container">
-  <!-- FORM SECTION -->
   <div class="form-wrapper">
     <h2><i class="fas fa-book-open"></i> Buku Tamu Genetek</h2>
     <form id="logForm">
@@ -305,7 +304,7 @@
         <div class="error-message">Tujuan harus dipilih</div>
       </div>
       <div class="form-group">
-        <input type="text" id="deskripsi" placeholder="Deskripsi Kunjungan (contoh: Bertemu dengan Bpk. Andi)" required />
+        <input type="text" id="deskripsi" placeholder="Deskripsi Kunjungan" required />
         <div class="error-message">Deskripsi harus diisi</div>
       </div>
       <button type="submit" id="submitBtn">
@@ -314,7 +313,6 @@
     </form>
   </div>
 
-  <!-- CAMERA SECTION -->
   <div class="camera-wrapper">
     <h2><i class="fas fa-camera"></i> Foto Tamu</h2>
     <video id="video" autoplay playsinline></video>
@@ -339,7 +337,6 @@
   <div class="loading-text">Mengupload foto ke Dropbox...</div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
@@ -347,7 +344,6 @@
   // ==================== KONFIGURASI ====================
   const N8N_WEBHOOK_URL = 'https://n8n.genetek.co.id/webhook/upload-foto';
 
-  // Konfigurasi Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
     authDomain: "logbook-e6ab3.firebaseapp.com",
@@ -357,7 +353,6 @@
     appId: "1:484546392348:web:861616b680427c158ecad9"
   };
 
-  // Inisialisasi Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
@@ -375,77 +370,47 @@
   let photoBlob = null;
   let stream = null;
 
-  // ==================== NOTIFIKASI ====================
   function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.classList.add('show'), 100);
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 400);
-    }, 4000);
+    const n = document.createElement('div');
+    n.className = `notification ${type}`;
+    n.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+    document.body.appendChild(n);
+    setTimeout(() => n.classList.add('show'), 100);
+    setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 400); }, 4000);
   }
 
-  // ==================== UPDATE TANGGAL ====================
   function updateDateTime() {
     const now = new Date();
-    const tahun = now.getFullYear();
-    const bulan = String(now.getMonth() + 1).padStart(2, '0');
-    const tgl = String(now.getDate()).padStart(2, '0');
-    const jam = String(now.getHours()).padStart(2, '0');
-    const menit = String(now.getMinutes()).padStart(2, '0');
-    const detik = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('tanggal').value = `${tahun}-${bulan}-${tgl} ${jam}:${menit}:${detik}`;
+    document.getElementById('tanggal').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
   }
   updateDateTime();
   setInterval(updateDateTime, 1000);
 
-  // ==================== KAMERA ====================
   function startCamera() {
-    navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
-      .then(mediaStream => {
-        stream = mediaStream;
-        video.srcObject = stream;
-        captureBtn.disabled = false;
-        console.log('✅ Kamera siap');
-      })
-      .catch(err => {
-        console.error('Kamera error:', err);
-        showNotification('Tidak dapat mengakses kamera. Pastikan izin diberikan.', 'error');
-        captureBtn.disabled = true;
-      });
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(s => { stream = s; video.srcObject = s; captureBtn.disabled = false; })
+      .catch(err => { showNotification('Tidak dapat mengakses kamera', 'error'); captureBtn.disabled = true; });
   }
 
   function takePhoto() {
-    if (!stream) {
-      showNotification('Kamera belum siap, tunggu sebentar', 'warning');
-      return;
-    }
-
-    // Set canvas ukuran sesuai video
+    if (!stream) { showNotification('Kamera belum siap', 'warning'); return; }
+    
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    // Gambar video ke canvas (dengan flip horizontal untuk mirror)
     ctx.save();
     ctx.scale(-1, 1);
     ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
     ctx.restore();
-
-    // Konversi ke Blob (kualitas 85%)
+    
     canvas.toBlob(blob => {
       photoBlob = blob;
       const url = URL.createObjectURL(blob);
       preview.src = url;
       preview.style.display = 'block';
-      photoStatus.innerHTML = `<i class="fas fa-check-circle"></i> Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`;
+      photoStatus.innerHTML = `<i class="fas fa-check-circle"></i> Foto berhasil (${Math.round(blob.size/1024)} KB)`;
       photoStatus.classList.add('has-photo');
       captureBtn.style.display = 'none';
       retakeBtn.style.display = 'block';
-      console.log('📸 Foto diambil, ukuran:', blob.size, 'bytes');
-      showNotification(`Foto berhasil diambil (${Math.round(blob.size / 1024)} KB)`, 'success');
     }, 'image/jpeg', 0.85);
   }
 
@@ -459,87 +424,49 @@
     retakeBtn.style.display = 'none';
   }
 
-  // ==================== VALIDASI FORM ====================
   function validateForm() {
-    let isValid = true;
-
-    // Validasi field wajib
-    const requiredFields = ['nama', 'perusahaan', 'alamat', 'telepon', 'tujuan', 'deskripsi'];
-    requiredFields.forEach(field => {
-      const input = document.getElementById(field);
-      const group = input.closest('.form-group');
-      if (!input.value.trim()) {
-        group.classList.add('error');
-        isValid = false;
-      } else {
-        group.classList.remove('error');
-      }
+    let valid = true;
+    ['nama', 'perusahaan', 'alamat', 'telepon', 'tujuan', 'deskripsi'].forEach(f => {
+      const el = document.getElementById(f);
+      if (!el.value.trim()) { el.style.borderColor = '#ef4444'; valid = false; }
+      else { el.style.borderColor = '#e5e7eb'; }
     });
-
-    // Validasi nomor telepon
-    const telepon = document.getElementById('telepon');
+    
     const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+    const telepon = document.getElementById('telepon');
     if (telepon.value.trim() && !phoneRegex.test(telepon.value.trim())) {
-      telepon.closest('.form-group').classList.add('error');
-      isValid = false;
+      telepon.style.borderColor = '#ef4444';
+      valid = false;
     }
-
-    // Validasi foto
-    if (!photoBlob) {
-      showNotification('Silakan ambil foto terlebih dahulu', 'warning');
-      isValid = false;
-    } else if (photoBlob.size < 1000) {
-      showNotification('Ukuran foto terlalu kecil, coba ambil foto ulang', 'warning');
-      isValid = false;
-    }
-
-    return isValid;
+    
+    if (!photoBlob) { showNotification('Ambil foto dulu!', 'warning'); valid = false; }
+    return valid;
   }
 
-  // ==================== UPLOAD FOTO KE DROPBOX via N8N ====================
-  async function uploadPhotoToDropbox(blob, nama, tanggal) {
+  async function uploadToDropbox(blob, nama, tanggal) {
     const timestamp = Date.now();
-    const cleanNama = nama.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
-    const formattedDate = tanggal.split(' ')[0];
-    const fileName = `${formattedDate}_${cleanNama}_${timestamp}.jpg`;
-
-    console.log('📤 Uploading file:', fileName);
-    console.log('📦 File size:', blob.size, 'bytes');
-
+    const cleanNama = nama.replace(/[^a-zA-Z0-9]/g, '_');
+    const fileName = `${tanggal.split(' ')[0]}_${cleanNama}_${timestamp}.jpg`;
+    
     const formData = new FormData();
     formData.append('fileData', blob, fileName);
     formData.append('fileName', fileName);
-
+    
     const response = await fetch(N8N_WEBHOOK_URL, {
       method: 'POST',
       body: formData,
       mode: 'cors'
     });
-
-    const responseText = await response.text();
-    console.log('📥 Response status:', response.status);
-    console.log('📥 Response body:', responseText);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${responseText}`);
-    }
-
-    return {
-      success: true,
-      fileName: fileName
-    };
+    
+    const text = await response.text();
+    if (!response.ok) throw new Error(text);
+    return fileName;
   }
 
-  // ==================== SUBMIT FORM ====================
-  document.getElementById('logForm').onsubmit = async function(e) {
+  document.getElementById('logForm').onsubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      showNotification('Harap periksa kembali data yang dimasukkan', 'error');
-      return;
-    }
-
-    // Ambil data form
+    if (!validateForm()) return;
+    
     const tanggal = document.getElementById('tanggal').value;
     const nama = document.getElementById('nama').value.trim();
     const perusahaan = document.getElementById('perusahaan').value.trim();
@@ -547,65 +474,34 @@
     const telepon = document.getElementById('telepon').value.trim();
     const tujuan = document.getElementById('tujuan').value;
     const deskripsi = document.getElementById('deskripsi').value.trim();
-
+    
     loading.classList.add('show');
     submitBtn.disabled = true;
-
+    
     try {
-      // STEP 1: Upload foto ke Dropbox via n8n
-      const uploadResult = await uploadPhotoToDropbox(photoBlob, nama, tanggal);
-      showNotification('✅ Foto berhasil tersimpan di Dropbox!', 'success');
-
-      // STEP 2: Simpan data ke Firebase (tanpa foto Base64)
-      const dataToFirestore = {
-        tanggal,
-        nama,
-        perusahaan,
-        alamat,
-        telepon,
-        tujuan,
-        deskripsi,
-        fileName: uploadResult.fileName,
-        uploadedToDropbox: true,
-        uploadTimestamp: new Date().toISOString(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      await db.collection('logbook').add(dataToFirestore);
+      const fileName = await uploadToDropbox(photoBlob, nama, tanggal);
+      showNotification('✅ Foto tersimpan di Dropbox!', 'success');
+      
+      await db.collection("logbook").add({
+        tanggal, nama, perusahaan, alamat, telepon, tujuan, deskripsi,
+        fileName: fileName,
+        uploadedAt: new Date().toISOString()
+      });
+      
       showNotification('✅ Data berhasil disimpan!', 'success');
-
-      // Reset form
       document.getElementById('logForm').reset();
       retakePhoto();
       updateDateTime();
-
-      // Hapus error style
-      document.querySelectorAll('.form-group').forEach(group => {
-        group.classList.remove('error');
-      });
-
-    } catch (error) {
-      console.error('Error:', error);
-      showNotification('❌ Gagal: ' + error.message, 'error');
+      
+    } catch (err) {
+      showNotification('❌ Gagal: ' + err.message, 'error');
     } finally {
       loading.classList.remove('show');
       submitBtn.disabled = false;
     }
   };
 
-  // ==================== INIT ====================
   startCamera();
-
-  // Event listener untuk validasi realtime telepon
-  document.getElementById('telepon').addEventListener('input', function() {
-    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-    const group = this.closest('.form-group');
-    if (this.value.trim() !== '' && !phoneRegex.test(this.value.trim())) {
-      group.classList.add('error');
-    } else {
-      group.classList.remove('error');
-    }
-  });
 </script>
 </body>
 </html>
