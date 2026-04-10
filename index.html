@@ -2,285 +2,138 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Buku Tamu - Genetek</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Buku Tamu Genetek - Kualitas Foto Tinggi</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    :root {
-      --primary-color: #4a6cf7;
-      --primary-light: #6a8af8;
-      --secondary-color: #6a5acd;
-      --accent-color: #7FFFD4;
-      --text-color: #333;
-      --light-text-color: #666;
-      --border-color: rgba(0,0,0,0.1);
-      --bg-light: rgba(255,255,255,0.95);
-      --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.15);
-      --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
-      --success-color: #28a745;
-      --error-color: #dc3545;
-      --warning-color: #ffc107;
-    }
-
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       padding: 20px;
-      color: var(--text-color);
     }
 
     .container {
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
-      flex-direction: row;
       gap: 40px;
-      background: var(--bg-light);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 28px;
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-light);
-      max-width: 1100px;
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.3);
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    }
-
-    .container:hover {
-      box-shadow: var(--shadow-hover);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
     }
 
     .form-wrapper, .camera-wrapper {
       flex: 1;
-      max-width: 550px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
 
     .camera-wrapper {
       text-align: center;
-      padding-left: 20px;
-      border-left: 1px solid var(--border-color);
-    }
-
-    img.logo {
-      display: block;
-      margin: 0 auto 25px;
-      max-width: 200px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-      transition: transform 0.3s ease;
-    }
-
-    img.logo:hover {
-      transform: scale(1.05);
+      padding-left: 30px;
+      border-left: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     h2 {
       text-align: center;
-      margin-top: 0;
+      color: #4f46e5;
       margin-bottom: 30px;
       font-size: 28px;
-      color: var(--primary-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     h2 i {
-      color: var(--secondary-color);
+      color: #7c3aed;
     }
 
     .form-group {
-      position: relative;
       margin-bottom: 20px;
     }
 
-    input, textarea, select {
+    input, select, textarea {
       width: 100%;
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background-color: rgba(255,255,255,0.7);
-      transition: all 0.3s ease;
-      color: var(--text-color);
+      padding: 14px 16px;
+      font-size: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 14px;
       font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      background: white;
     }
 
-    input::placeholder, textarea::placeholder, select option[disabled] {
-      color: var(--light-text-color);
-      opacity: 0.8;
-    }
-
-    input:focus, textarea:focus, select:focus {
+    input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
-      background-color: white;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
 
-    select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 15px center;
-      background-size: 20px;
-    }
-
-    .form-group label {
-      position: absolute;
-      top: -10px;
-      left: 15px;
-      background: var(--bg-light);
-      padding: 0 5px;
-      font-size: 12px;
-      color: var(--primary-color);
-      font-weight: 500;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .form-group.focused label {
-      opacity: 1;
-    }
-
-    .error-message {
-      color: var(--error-color);
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .form-group.error input,
-    .form-group.error textarea,
-    .form-group.error select {
-      border-color: var(--error-color);
-    }
-
-    .form-group.error .error-message {
-      display: block;
+    input.readonly {
+      background: #f3f4f6;
+      cursor: default;
     }
 
     button {
       width: 100%;
-      padding: 15px;
-      font-size: 18px;
+      padding: 14px;
+      font-size: 16px;
       font-weight: 600;
-      border-radius: 10px;
       border: none;
-      cursor: pointer;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
       color: white;
+      cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      position: relative;
-      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      margin-top: 10px;
     }
 
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    button:active {
-      transform: translateY(-1px);
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
     }
 
     button:disabled {
-      background: #cccccc;
+      background: #9ca3af;
       cursor: not-allowed;
       transform: none;
-      box-shadow: none;
-    }
-
-    button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 5px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.5);
-      opacity: 0;
-      border-radius: 100%;
-      transform: scale(1, 1) translate(-50%);
-      transform-origin: 50% 50%;
-    }
-
-    button:focus:not(:active)::after {
-      animation: ripple 1s ease-out;
-    }
-
-    @keyframes ripple {
-      0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(20, 20);
-        opacity: 0;
-      }
     }
 
     .camera-controls {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: 15px;
     }
 
     .camera-controls button {
       flex: 1;
+      margin-top: 0;
     }
 
     video {
       width: 100%;
-      max-width: 100%;
-      border-radius: 12px;
-      margin: 15px auto;
-      display: block;
+      border-radius: 20px;
+      background: #1f2937;
+      margin-bottom: 15px;
       transform: scaleX(-1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      background: #f0f0f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     #preview {
       width: 100%;
-      max-width: 100%;
-      border-radius: 12px;
-      margin: 15px auto;
+      border-radius: 20px;
       display: none;
-      object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     canvas {
@@ -288,32 +141,52 @@
     }
 
     .photo-status {
-      margin: 10px 0;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 14px;
       font-size: 14px;
-      color: var(--light-text-color);
+      background: #f3f4f6;
+      color: #4b5563;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 8px;
     }
 
     .photo-status.has-photo {
-      color: var(--success-color);
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .error-message {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .form-group.error input,
+    .form-group.error select {
+      border-color: #dc2626;
+    }
+
+    .form-group.error .error-message {
+      display: block;
     }
 
     .notification {
       position: fixed;
       top: 20px;
       right: 20px;
-      padding: 15px 20px;
-      border-radius: 10px;
+      padding: 14px 20px;
+      border-radius: 14px;
       color: white;
       font-weight: 500;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
       transform: translateX(150%);
-      transition: transform 0.4s ease;
+      transition: transform 0.3s ease;
       z-index: 1000;
-      max-width: 300px;
+      max-width: 350px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
     .notification.show {
@@ -321,16 +194,19 @@
     }
 
     .notification.success {
-      background-color: var(--success-color);
+      background: #10b981;
     }
 
     .notification.error {
-      background-color: var(--error-color);
+      background: #ef4444;
     }
 
     .notification.warning {
-      background-color: var(--warning-color);
-      color: #333;
+      background: #f59e0b;
+    }
+
+    .notification.info {
+      background: #3b82f6;
     }
 
     .loading {
@@ -340,10 +216,12 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.8);
       z-index: 999;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      gap: 15px;
     }
 
     .loading.show {
@@ -353,437 +231,561 @@
     .spinner {
       width: 50px;
       height: 50px;
-      border: 5px solid rgba(255,255,255,0.3);
+      border: 4px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    /* Responsive Design */
-    @media (max-width: 992px) {
-      .container {
-        flex-direction: column;
-        gap: 30px;
-        padding: 30px;
-        max-width: 600px;
-      }
-
-      .camera-wrapper {
-        border-left: none;
-        padding-left: 0;
-        padding-top: 30px;
-        border-top: 1px solid var(--border-color);
-      }
-
-      img.logo {
-        max-width: 180px;
-      }
-
-      h2 {
-        font-size: 24px;
-        margin-bottom: 25px;
-      }
-
-      input, textarea, select, button {
-        padding: 12px;
-        margin-bottom: 15px;
-        font-size: 15px;
-      }
-
-      video, #preview {
-        max-height: 300px;
-      }
+    /* Quality indicator badge */
+    .quality-badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
     }
 
-    @media (max-width: 576px) {
-      body {
-        padding: 15px;
-      }
+    .res-hint {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 8px;
+      text-align: center;
+    }
 
+    @media (max-width: 768px) {
       .container {
+        flex-direction: column;
         padding: 25px;
-        border-radius: 15px;
+        gap: 25px;
       }
-
-      img.logo {
-        max-width: 150px;
-        margin-bottom: 20px;
+      .camera-wrapper {
+        padding-left: 0;
+        border-left: none;
+        padding-top: 20px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
       }
-
       h2 {
         font-size: 22px;
-        margin-bottom: 20px;
-      }
-
-      input, textarea, select, button {
-        padding: 10px;
-        font-size: 14px;
-        border-radius: 8px;
-      }
-
-      video, #preview {
-        max-height: 240px;
-        margin: 10px auto;
-      }
-
-      .camera-controls {
-        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-wrapper">
-      <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
-      <h2><i class="fas fa-book"></i> Buku Tamu</h2>
-      <form id="logForm">
-        <div class="form-group">
-          <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: rgba(245,245,245,0.7);" />
-          <label for="tanggal">Tanggal & Waktu</label>
-        </div>
-        <div class="form-group">
-          <input type="text" id="nama" placeholder="Nama Lengkap" required />
-          <label for="nama">Nama Lengkap</label>
-          <div class="error-message">Nama lengkap harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-          <label for="perusahaan">Nama Perusahaan</label>
-          <div class="error-message">Nama perusahaan harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="alamat" placeholder="Alamat Perusahaan" required />
-          <label for="alamat">Alamat Perusahaan</label>
-          <div class="error-message">Alamat perusahaan harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="tel" id="telepon" placeholder="Nomor Telepon (cth: 081234567890)" required />
-          <label for="telepon">Nomor Telepon</label>
-          <div class="error-message">Format nomor telepon tidak valid</div>
-        </div>
-        <div class="form-group">
-          <select id="tujuan" required>
-            <option value="" disabled selected>Pilih Tujuan Kunjungan</option>
-            <option value="Antar Dokumen">Antar Dokumen</option>
-            <option value="Ambil Dokumen">Ambil Dokumen</option>
-            <option value="Antar Barang">Antar Barang</option>
-            <option value="Ambil Barang">Ambil Barang</option>
-            <option value="Antar Dokumen dan Barang">Antar Dokumen dan Barang</option>
-            <option value="Kunjungan">Kunjungan</option>
-            <option value="Lain-lain">Lain-lain</option>
-          </select>
-          <label for="tujuan">Tujuan Kunjungan</label>
-          <div class="error-message">Tujuan kunjungan harus dipilih</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="deskripsi" placeholder="Deskripsi Singkat Kunjungan (cth: Bertemu Bpk. Andi)" required />
-          <label for="deskripsi">Deskripsi Kunjungan</label>
-          <div class="error-message">Deskripsi kunjungan harus diisi</div>
-        </div>
-        <button type="submit" id="submitBtn"><i class="fas fa-plus-circle"></i> Tambah ke Buku Tamu</button>
-      </form>
-    </div>
 
-    <div class="camera-wrapper">
-      <video id="video" autoplay></video>
-      <div class="photo-status" id="photoStatus">
-        <i class="fas fa-times-circle"></i> Belum ada foto yang diambil
+<div class="container">
+  <!-- FORM SECTION -->
+  <div class="form-wrapper">
+    <h2><i class="fas fa-book-open"></i> Buku Tamu Genetek</h2>
+    <form id="logForm">
+      <div class="form-group">
+        <input type="text" id="tanggal" class="readonly" readonly required />
+        <div class="error-message">Tanggal harus diisi</div>
       </div>
-      <div class="camera-controls">
-        <button type="button" onclick="takePhoto()" id="captureBtn">📸 Ambil Foto</button>
-        <button type="button" onclick="retakePhoto()" id="retakeBtn" style="display: none;">🔄 Ambil Ulang</button>
+      <div class="form-group">
+        <input type="text" id="nama" placeholder="Nama Lengkap" required />
+        <div class="error-message">Nama lengkap harus diisi</div>
       </div>
-      <canvas id="canvas"></canvas>
-      <img id="preview" alt="Preview Foto" />
-    </div>
+      <div class="form-group">
+        <input type="text" id="perusahaan" placeholder="Nama Perusahaan / Instansi" required />
+        <div class="error-message">Nama perusahaan harus diisi</div>
+      </div>
+      <div class="form-group">
+        <input type="text" id="alamat" placeholder="Alamat Perusahaan" required />
+        <div class="error-message">Alamat harus diisi</div>
+      </div>
+      <div class="form-group">
+        <input type="tel" id="telepon" placeholder="Nomor Telepon (contoh: 081234567890)" required />
+        <div class="error-message">Format nomor telepon tidak valid</div>
+      </div>
+      <div class="form-group">
+        <select id="tujuan" required>
+          <option value="" disabled selected>Pilih Tujuan Kunjungan</option>
+          <option value="Antar Dokumen">📄 Antar Dokumen</option>
+          <option value="Ambil Dokumen">📄 Ambil Dokumen</option>
+          <option value="Antar Barang">📦 Antar Barang</option>
+          <option value="Ambil Barang">📦 Ambil Barang</option>
+          <option value="Konsultasi">💬 Konsultasi</option>
+          <option value="Rapat">🤝 Rapat</option>
+          <option value="Lain-lain">📌 Lain-lain</option>
+        </select>
+        <div class="error-message">Tujuan harus dipilih</div>
+      </div>
+      <div class="form-group">
+        <input type="text" id="deskripsi" placeholder="Deskripsi Kunjungan (contoh: Bertemu dengan Bpk. Andi)" required />
+        <div class="error-message">Deskripsi harus diisi</div>
+      </div>
+      <button type="submit" id="submitBtn">
+        <i class="fas fa-save"></i> Simpan ke Buku Tamu
+      </button>
+    </form>
   </div>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
+  <!-- CAMERA SECTION - HIGH QUALITY -->
+  <div class="camera-wrapper">
+    <h2><i class="fas fa-camera"></i> Foto Tamu <span class="quality-badge">HD Quality</span></h2>
+    <video id="video" autoplay playsinline></video>
+    <div class="photo-status" id="photoStatus">
+      <i class="fas fa-times-circle"></i> Belum ada foto
+    </div>
+    <div class="camera-controls">
+      <button type="button" id="captureBtn">
+        <i class="fas fa-camera"></i> Ambil Foto HD
+      </button>
+      <button type="button" id="retakeBtn" style="display:none;">
+        <i class="fas fa-redo-alt"></i> Ambil Ulang
+      </button>
+    </div>
+    <div class="res-hint">
+      <i class="fas fa-info-circle"></i> Foto berkualitas tinggi (max 1920x1080) dengan kompresi optimal
+    </div>
+    <canvas id="canvas"></canvas>
+    <img id="preview" alt="Preview Foto" />
   </div>
+</div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Mengupload foto ke Dropbox...</div>
+</div>
 
-  <script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.appspot.com",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
-    };
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<script>
+  // ==================== KONFIGURASI ====================
+  const N8N_WEBHOOK_URL = 'https://n8n.genetek.co.id/webhook/upload-foto';
 
-    // Elemen DOM
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    const preview = document.getElementById('preview');
-    const captureBtn = document.getElementById('captureBtn');
-    const retakeBtn = document.getElementById('retakeBtn');
-    const photoStatus = document.getElementById('photoStatus');
-    const submitBtn = document.getElementById('submitBtn');
-    const loading = document.getElementById('loading');
-    
-    let photoData = '';
-    let stream = null;
+  // Konfigurasi Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+    authDomain: "logbook-e6ab3.firebaseapp.com",
+    projectId: "logbook-e6ab3",
+    storageBucket: "logbook-e6ab3.appspot.com",
+    messagingSenderId: "484546392348",
+    appId: "1:484546392348:web:861616b680427c158ecad9"
+  };
 
-    // Fungsi untuk menampilkan notifikasi
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
+  // Inisialisasi Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // ==================== DOM ELEMENTS ====================
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const preview = document.getElementById('preview');
+  const captureBtn = document.getElementById('captureBtn');
+  const retakeBtn = document.getElementById('retakeBtn');
+  const photoStatus = document.getElementById('photoStatus');
+  const submitBtn = document.getElementById('submitBtn');
+  const loading = document.getElementById('loading');
+
+  let photoBase64 = null;
+  let photoSizeBytes = 0;
+  let stream = null;
+  let currentVideoWidth = 0;
+  let currentVideoHeight = 0;
+
+  // Quality settings - HIGH QUALITY
+  const QUALITY_SETTINGS = {
+    maxWidth: 1920,      // HD maksimal
+    maxHeight: 1080,     // HD maksimal
+    jpegQuality: 0.92,   // Kompresi ringan (92%) untuk kualitas bagus
+    minSizeBytes: 15000  // Minimal 15KB (foto HD minimal segini)
+  };
+
+  // ==================== NOTIFIKASI ====================
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+    notification.innerHTML = `<i class="fas ${icon}"></i> ${message}`;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.classList.add('show'), 100);
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 400);
+    }, 4000);
+  }
+
+  // ==================== UPDATE TANGGAL ====================
+  function updateDateTime() {
+    const now = new Date();
+    const tahun = now.getFullYear();
+    const bulan = String(now.getMonth() + 1).padStart(2, '0');
+    const tgl = String(now.getDate()).padStart(2, '0');
+    const jam = String(now.getHours()).padStart(2, '0');
+    const menit = String(now.getMinutes()).padStart(2, '0');
+    const detik = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('tanggal').value = `${tahun}-${bulan}-${tgl} ${jam}:${menit}:${detik}`;
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+
+  // ==================== KAMERA RESOLUTION HIGH QUALITY ====================
+  async function startCamera() {
+    try {
+      // Minta kamera dengan resolusi tinggi (prioritas 1920x1080)
+      const constraints = {
+        video: {
+          width: { ideal: 1920, min: 1280 },
+          height: { ideal: 1080, min: 720 },
+          frameRate: { ideal: 30 }
+        }
+      };
       
-      setTimeout(() => {
-        notification.classList.add('show');
-      }, 100);
+      stream = await navigator.mediaDevices.getUserMedia(constraints);
+      video.srcObject = stream;
       
-      setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 400);
-      }, 4000);
-    }
-
-    // Fungsi untuk memperbarui tanggal dan waktu secara real-time
-    function updateDateTimeRealtime() {
-      setInterval(() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-
-        const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        document.getElementById('tanggal').value = formattedTime;
-      }, 1000);
-    }
-
-    // Fungsi untuk memulai kamera
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        } 
-      })
-      .then(mediaStream => {
-        stream = mediaStream;
+      // Tunggu video metadata loaded untuk dapat dimensi real
+      await new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          currentVideoWidth = video.videoWidth;
+          currentVideoHeight = video.videoHeight;
+          console.log(`📹 Kamera aktif: ${currentVideoWidth}x${currentVideoHeight}`);
+          resolve();
+        };
+      });
+      
+      captureBtn.disabled = false;
+      showNotification(`Kamera siap - Resolusi ${currentVideoWidth}x${currentVideoHeight}`, 'success');
+      console.log('✅ Kamera high quality siap');
+    } catch (err) {
+      console.error('Kamera error:', err);
+      // Fallback ke resolusi standar
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream = fallbackStream;
         video.srcObject = stream;
+        await new Promise((resolve) => {
+          video.onloadedmetadata = () => {
+            currentVideoWidth = video.videoWidth;
+            currentVideoHeight = video.videoHeight;
+            resolve();
+          };
+        });
         captureBtn.disabled = false;
-      })
-      .catch(err => {
-        console.error('Akses kamera ditolak:', err);
-        showNotification('Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.', 'error');
+        showNotification(`Kamera siap (standar: ${currentVideoWidth}x${currentVideoHeight})`, 'info');
+      } catch (fallbackErr) {
+        showNotification('Tidak dapat mengakses kamera. Pastikan izin diberikan.', 'error');
         captureBtn.disabled = true;
-      });
-    }
-
-    // Fungsi untuk mengambil foto
-    function takePhoto() {
-      if (!stream) {
-        showNotification('Kamera belum siap. Silakan tunggu sebentar.', 'warning');
-        return;
       }
+    }
+  }
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+  // Fungsi resize proporsional untuk menjaga rasio aspek
+  function calculateDimensions(srcWidth, srcHeight, maxWidth, maxHeight) {
+    let width = srcWidth;
+    let height = srcHeight;
+    
+    if (width > maxWidth) {
+      height = (height * maxWidth) / width;
+      width = maxWidth;
+    }
+    if (height > maxHeight) {
+      width = (width * maxHeight) / height;
+      height = maxHeight;
+    }
+    
+    return { width: Math.floor(width), height: Math.floor(height) };
+  }
 
-      context.save();
-      context.scale(-1, 1);
-      context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      context.restore();
-
-      // Ambil data gambar sebagai Base64 string dengan kualitas 40%
-      photoData = canvas.toDataURL('image/jpeg', 0.4);
-      preview.src = photoData;
-      preview.style.display = 'block';
-      
-      // Update status foto
-      photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil';
-      photoStatus.classList.add('has-photo');
-      
-      // Tampilkan tombol ambil ulang
-      captureBtn.style.display = 'none';
-      retakeBtn.style.display = 'block';
-      
-      showNotification('Foto berhasil diambil', 'success');
+  // Enhanced photo capture with high quality and optional image enhancement
+  function takePhoto() {
+    if (!stream || !video.videoWidth || !video.videoHeight) {
+      showNotification('Kamera belum siap, tunggu sebentar', 'warning');
+      return;
     }
 
-    // Fungsi untuk mengambil ulang foto
-    function retakePhoto() {
-      photoData = '';
-      preview.src = '';
-      preview.style.display = 'none';
-      
-      // Reset status foto
-      photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto yang diambil';
-      photoStatus.classList.remove('has-photo');
-      
-      // Tampilkan tombol ambil foto
-      captureBtn.style.display = 'block';
-      retakeBtn.style.display = 'none';
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+    
+    // Dapatkan dimensi target dengan menjaga rasio aspek dan kualitas HD
+    let targetWidth = videoWidth;
+    let targetHeight = videoHeight;
+    
+    // Jika video lebih besar dari max HD, resize proporsional
+    if (videoWidth > QUALITY_SETTINGS.maxWidth || videoHeight > QUALITY_SETTINGS.maxHeight) {
+      const dims = calculateDimensions(videoWidth, videoHeight, QUALITY_SETTINGS.maxWidth, QUALITY_SETTINGS.maxHeight);
+      targetWidth = dims.width;
+      targetHeight = dims.height;
     }
+    
+    // Set canvas ke ukuran target (HD atau original jika lebih kecil)
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Gambar video ke canvas dengan flip horizontal (mirror effect)
+    ctx.save();
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+    ctx.restore();
+    
+    // Optional: Enhance kontras & brightness untuk kualitas lebih baik
+    // Baca pixel data untuk enhancement ringan
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // Light enhancement: slight contrast improvement (optional - comment if not needed)
+    let contrast = 1.05; // slight contrast boost
+    let brightness = 5;   // slight brightness boost
+    for (let i = 0; i < data.length; i += 4) {
+      data[i] = Math.min(255, Math.max(0, (data[i] - 128) * contrast + 128 + brightness));     // Red
+      data[i+1] = Math.min(255, Math.max(0, (data[i+1] - 128) * contrast + 128 + brightness)); // Green
+      data[i+2] = Math.min(255, Math.max(0, (data[i+2] - 128) * contrast + 128 + brightness)); // Blue
+    }
+    ctx.putImageData(imageData, 0, 0);
+    
+    // Konversi ke JPEG dengan kualitas tinggi
+    const base64Full = canvas.toDataURL('image/jpeg', QUALITY_SETTINGS.jpegQuality);
+    photoBase64 = base64Full.split(',')[1];
+    
+    // Hitung ukuran file dalam bytes (base64 -> bytes)
+    photoSizeBytes = Math.round((photoBase64.length * 3) / 4);
+    
+    // Tampilkan preview dengan ukuran asli
+    preview.src = base64Full;
+    preview.style.display = 'block';
+    
+    const fileSizeKB = (photoSizeBytes / 1024).toFixed(1);
+    const resolutionInfo = `${canvas.width}x${canvas.height}`;
+    
+    photoStatus.innerHTML = `<i class="fas fa-check-circle"></i> Foto HD berhasil! (${resolutionInfo}, ${fileSizeKB} KB)`;
+    photoStatus.classList.add('has-photo');
+    captureBtn.style.display = 'none';
+    retakeBtn.style.display = 'block';
+    
+    console.log(`📸 Foto HD diambil: ${resolutionInfo}, size: ${photoSizeBytes} bytes, quality: ${QUALITY_SETTINGS.jpegQuality * 100}%`);
+    
+    // Validasi kualitas
+    if (photoSizeBytes < QUALITY_SETTINGS.minSizeBytes) {
+      console.warn('⚠️ Ukuran foto kecil, mungkin resolusi rendah');
+      showNotification('Foto berhasil, namun resolusi agak rendah. Pastikan pencahayaan cukup.', 'warning');
+    } else {
+      showNotification(`Foto berkualitas HD (${resolutionInfo}) berhasil diambil!`, 'success');
+    }
+  }
 
-    // Fungsi validasi form
-    function validateForm() {
-      let isValid = true;
-      const formGroups = document.querySelectorAll('.form-group');
-      
-      formGroups.forEach(group => {
-        const input = group.querySelector('input, select, textarea');
-        const errorMessage = group.querySelector('.error-message');
-        
-        // Reset status error
-        group.classList.remove('error');
-        
-        // Validasi field kosong
-        if (input.value.trim() === '') {
-          group.classList.add('error');
-          isValid = false;
-          return;
-        }
-        
-        // Validasi khusus untuk telepon
-        if (input.id === 'telepon') {
-          const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-          if (!phoneRegex.test(input.value.trim())) {
-            group.classList.add('error');
-            errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
-            isValid = false;
-          }
-        }
-      });
-      
-      // Validasi foto
-      if (!photoData) {
-        showNotification('Silakan ambil foto terlebih dahulu', 'warning');
+  function retakePhoto() {
+    photoBase64 = null;
+    photoSizeBytes = 0;
+    preview.src = '';
+    preview.style.display = 'none';
+    photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto';
+    photoStatus.classList.remove('has-photo');
+    captureBtn.style.display = 'block';
+    retakeBtn.style.display = 'none';
+  }
+
+  // ==================== VALIDASI FORM ====================
+  function validateForm() {
+    let isValid = true;
+
+    // Validasi field wajib
+    const requiredFields = ['nama', 'perusahaan', 'alamat', 'telepon', 'tujuan', 'deskripsi'];
+    requiredFields.forEach(field => {
+      const input = document.getElementById(field);
+      const group = input.closest('.form-group');
+      if (!input.value.trim()) {
+        group.classList.add('error');
         isValid = false;
+      } else {
+        group.classList.remove('error');
       }
-      
-      return isValid;
-    }
-
-    // Event listeners untuk form
-    document.addEventListener('DOMContentLoaded', () => {
-      // Update tanggal dan waktu
-      updateDateTimeRealtime();
-      
-      // Mulai kamera
-      startCamera();
-      
-      // Tambah event listener untuk form input
-      const inputs = document.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        const formGroup = input.closest('.form-group');
-        
-        // Fokus dan blur untuk efek label
-        input.addEventListener('focus', () => {
-          formGroup.classList.add('focused');
-        });
-        
-        input.addEventListener('blur', () => {
-          if (input.value.trim() === '') {
-            formGroup.classList.remove('focused');
-          }
-        });
-        
-        // Validasi real-time untuk telepon
-        if (input.id === 'telepon') {
-          input.addEventListener('input', () => {
-            const formGroup = input.closest('.form-group');
-            const errorMessage = formGroup.querySelector('.error-message');
-            
-            if (input.value.trim() !== '') {
-              const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-              if (!phoneRegex.test(input.value.trim())) {
-                formGroup.classList.add('error');
-                errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
-              } else {
-                formGroup.classList.remove('error');
-              }
-            } else {
-              formGroup.classList.remove('error');
-            }
-          });
-        }
-      });
     });
 
-    // Handler saat formulir disubmit
-    document.getElementById('logForm').onsubmit = function(e) {
-      e.preventDefault();
-      
-      // Validasi form
-      if (!validateForm()) {
-        showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
-        return;
-      }
-      
-      // Tampilkan loading
-      loading.classList.add('show');
-      submitBtn.disabled = true;
-      
-      const tanggal = document.getElementById('tanggal').value;
-      const nama = document.getElementById('nama').value;
-      const perusahaan = document.getElementById('perusahaan').value;
-      const alamat = document.getElementById('alamat').value;
-      const telepon = document.getElementById('telepon').value;
-      const tujuan = document.getElementById('tujuan').value;
-      const deskripsi = document.getElementById('deskripsi').value;
+    // Validasi nomor telepon
+    const telepon = document.getElementById('telepon');
+    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+    if (telepon.value.trim() && !phoneRegex.test(telepon.value.trim())) {
+      telepon.closest('.form-group').classList.add('error');
+      isValid = false;
+    }
 
-      // Data yang akan disimpan di Firestore
+    // Validasi foto dengan standar kualitas
+    if (!photoBase64) {
+      showNotification('Silakan ambil foto terlebih dahulu', 'warning');
+      isValid = false;
+    } else if (photoSizeBytes < 8000) {
+      showNotification('Kualitas foto terlalu rendah (kurang dari 8KB), coba ambil ulang dengan pencahayaan lebih terang', 'warning');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // ==================== UPLOAD FOTO KE DROPBOX via N8N ====================
+  async function uploadPhotoToDropbox(nama, tanggal) {
+    const timestamp = Date.now();
+    const cleanNama = nama.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
+    const formattedDate = tanggal.split(' ')[0];
+    // Tambahkan resolusi info ke filename untuk tracking
+    const resolution = `${canvas.width}x${canvas.height}`;
+    const fileName = `HD_${formattedDate}_${cleanNama}_${timestamp}_${resolution}.jpg`;
+
+    console.log('📤 Uploading high quality file:', fileName);
+    console.log('📦 Base64 length:', photoBase64.length);
+    console.log('📦 File size:', photoSizeBytes, 'bytes');
+
+    const payload = {
+      fileName: fileName,
+      fileData: photoBase64,
+      fileSize: photoSizeBytes,
+      resolution: resolution,
+      quality: QUALITY_SETTINGS.jpegQuality
+    };
+
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const responseText = await response.text();
+    console.log('📥 Response status:', response.status);
+    console.log('📥 Response body:', responseText);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${responseText}`);
+    }
+
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch(e) {
+      result = { success: true, message: responseText };
+    }
+
+    return {
+      success: true,
+      fileName: fileName,
+      fileSize: photoSizeBytes,
+      resolution: resolution,
+      response: result
+    };
+  }
+
+  // ==================== SUBMIT FORM ====================
+  document.getElementById('logForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      showNotification('Harap periksa kembali data yang dimasukkan', 'error');
+      return;
+    }
+
+    // Ambil data form
+    const tanggal = document.getElementById('tanggal').value;
+    const nama = document.getElementById('nama').value.trim();
+    const perusahaan = document.getElementById('perusahaan').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    const telepon = document.getElementById('telepon').value.trim();
+    const tujuan = document.getElementById('tujuan').value;
+    const deskripsi = document.getElementById('deskripsi').value.trim();
+
+    loading.classList.add('show');
+    submitBtn.disabled = true;
+
+    try {
+      // STEP 1: Upload foto ke Dropbox via n8n
+      showNotification('📤 Mengupload foto HD ke Dropbox...', 'info');
+      const uploadResult = await uploadPhotoToDropbox(nama, tanggal);
+      showNotification(`✅ Foto HD (${uploadResult.resolution}) berhasil tersimpan di Dropbox!`, 'success');
+
+      // STEP 2: Simpan data ke Firebase dengan metadata kualitas
       const dataToFirestore = {
-        tanggal,
-        nama,
-        perusahaan,
-        alamat,
-        telepon,
-        tujuan,
-        deskripsi,
-        foto: photoData
+        tanggal: tanggal,
+        nama: nama,
+        perusahaan: perusahaan,
+        alamat: alamat,
+        telepon: telepon,
+        tujuan: tujuan,
+        deskripsi: deskripsi,
+        fileName: uploadResult.fileName,
+        fileSize: uploadResult.fileSize,
+        photoResolution: uploadResult.resolution,
+        photoQuality: QUALITY_SETTINGS.jpegQuality,
+        uploadedToDropbox: true,
+        uploadTimestamp: new Date().toISOString(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      db.collection("logbook").add(dataToFirestore)
-        .then(() => {
-          showNotification("Data berhasil disimpan di buku tamu", 'success');
-          
-          // Reset formulir dan tampilan setelah berhasil
-          document.getElementById('logForm').reset();
-          retakePhoto();
-          
-          // Reset status fokus
-          const formGroups = document.querySelectorAll('.form-group');
-          formGroups.forEach(group => {
-            group.classList.remove('focused');
-          });
-        })
-        .catch(err => {
-          console.error("Gagal menyimpan data:", err);
-          showNotification("Gagal menyimpan data: " + err.message, 'error');
-        })
-        .finally(() => {
-          // Sembunyikan loading
-          loading.classList.remove('show');
-          submitBtn.disabled = false;
-        });
-    };
-  </script>
+      await db.collection('logbook').add(dataToFirestore);
+      showNotification('✅ Data berhasil disimpan ke Firebase!', 'success');
+
+      // Reset form
+      document.getElementById('logForm').reset();
+      retakePhoto();
+      updateDateTime();
+
+      // Hapus error style
+      document.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error');
+      });
+
+      // Reset select ke default
+      document.getElementById('tujuan').value = '';
+
+      // Tampilkan ringkasan
+      showNotification(`✨ Buku tamu tersimpan! Foto HD ${uploadResult.resolution} | ${(uploadResult.fileSize/1024).toFixed(1)}KB`, 'success');
+
+    } catch (error) {
+      console.error('Error:', error);
+      showNotification('❌ Gagal: ' + error.message, 'error');
+    } finally {
+      loading.classList.remove('show');
+      submitBtn.disabled = false;
+    }
+  });
+
+  // ==================== EVENT LISTENERS ====================
+  captureBtn.addEventListener('click', takePhoto);
+  retakeBtn.addEventListener('click', retakePhoto);
+
+  // Validasi realtime telepon
+  document.getElementById('telepon').addEventListener('input', function() {
+    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
+    const group = this.closest('.form-group');
+    if (this.value.trim() !== '' && !phoneRegex.test(this.value.trim())) {
+      group.classList.add('error');
+    } else {
+      group.classList.remove('error');
+    }
+  });
+
+  // Validasi realtime untuk field lain
+  const fields = ['nama', 'perusahaan', 'alamat', 'tujuan', 'deskripsi'];
+  fields.forEach(field => {
+    document.getElementById(field).addEventListener('input', function() {
+      const group = this.closest('.form-group');
+      if (this.value.trim()) {
+        group.classList.remove('error');
+      }
+    });
+  });
+
+  // ==================== INIT ====================
+  startCamera();
+</script>
 </body>
 </html>
