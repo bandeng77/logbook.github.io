@@ -575,17 +575,28 @@
       }, 1000);
     }
 
-    // Fungsi untuk memulai kamera
+    // Fungsi untuk memulai kamera dengan resolusi tinggi untuk kualitas foto maksimal
     function startCamera() {
+      // Gunakan resolusi tinggi untuk hasil foto yang lebih baik
       navigator.mediaDevices.getUserMedia({ 
         video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          width: { ideal: 1920, min: 1280 },
+          height: { ideal: 1080, min: 720 },
+          frameRate: { ideal: 30 }
         } 
       })
       .then(mediaStream => {
         stream = mediaStream;
         video.srcObject = stream;
+        
+        // Tunggu video siap untuk mendapatkan dimensi yang benar
+        video.onloadedmetadata = () => {
+          // Set canvas ke resolusi video asli (bukan viewport)
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          captureBtn.disabled = false;
+        };
+        
         captureBtn.disabled = false;
       })
       .catch(err => {
@@ -595,35 +606,52 @@
       });
     }
 
-    // Fungsi untuk mengambil foto
+    // Fungsi untuk mengambil foto dengan kualitas tinggi
     function takePhoto() {
       if (!stream) {
         showNotification('Kamera belum siap. Silakan tunggu sebentar.', 'warning');
         return;
       }
 
+      // Pastikan video sudah memiliki dimensi
+      if (video.videoWidth === 0 || video.videoHeight === 0) {
+        showNotification('Kamera sedang memuat, coba lagi sebentar.', 'warning');
+        return;
+      }
+
+      // Set canvas ke resolusi video asli untuk kualitas maksimal
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
+      // Simpan konteks untuk mirroring
       context.save();
+      
+      // Terapkan mirror horizontal (karena video dimirror untuk tampilan)
       context.scale(-1, 1);
+      
+      // Gambar video ke canvas dengan ukuran asli (kualitas tinggi)
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      
       context.restore();
 
-      // Ambil data gambar sebagai Base64 string dengan kualitas 40%
-      photoData = canvas.toDataURL('image/jpeg', 0.4);
+      // Ambil data gambar sebagai Base64 dengan kualitas 0.9 (90% - kualitas tinggi)
+      // Menggunakan PNG untuk kualitas lossless yang lebih baik (ukuran lebih besar tapi kualitas terbaik)
+      // Atau JPEG dengan kualitas tinggi 0.95
+      photoData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      // Tampilkan preview dengan ukuran yang sesuai
       preview.src = photoData;
       preview.style.display = 'block';
       
       // Update status foto
-      photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil';
+      photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil (Kualitas Tinggi)';
       photoStatus.classList.add('has-photo');
       
       // Tampilkan tombol ambil ulang
       captureBtn.style.display = 'none';
       retakeBtn.style.display = 'block';
       
-      showNotification('Foto berhasil diambil', 'success');
+      showNotification('Foto berhasil diambil dengan kualitas tinggi', 'success');
     }
 
     // Fungsi untuk mengambil ulang foto
