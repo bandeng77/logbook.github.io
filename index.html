@@ -462,9 +462,9 @@
           <div class="error-message">Alamat perusahaan harus diisi</div>
         </div>
         <div class="form-group">
-          <input type="tel" id="telepon" placeholder="Nomor Telepon (cth: 081234567890)" required />
-          <label for="telepon">Nomor Telepon</label>
-          <div class="error-message">Format nomor telepon tidak valid</div>
+          <input type="text" id="telepon" placeholder="No. HP / No. Kantor (hanya angka)" required />
+          <label for="telepon">No. HP / No. Kantor</label>
+          <div class="error-message">Nomor telepon harus diisi (hanya angka)</div>
         </div>
         <div class="form-group">
           <select id="tujuan" required>
@@ -577,7 +577,6 @@
 
     // Fungsi untuk memulai kamera dengan resolusi tinggi untuk kualitas foto maksimal
     function startCamera() {
-      // Gunakan resolusi tinggi untuk hasil foto yang lebih baik
       navigator.mediaDevices.getUserMedia({ 
         video: { 
           width: { ideal: 1920, min: 1280 },
@@ -589,9 +588,7 @@
         stream = mediaStream;
         video.srcObject = stream;
         
-        // Tunggu video siap untuk mendapatkan dimensi yang benar
         video.onloadedmetadata = () => {
-          // Set canvas ke resolusi video asli (bukan viewport)
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           captureBtn.disabled = false;
@@ -613,41 +610,27 @@
         return;
       }
 
-      // Pastikan video sudah memiliki dimensi
       if (video.videoWidth === 0 || video.videoHeight === 0) {
         showNotification('Kamera sedang memuat, coba lagi sebentar.', 'warning');
         return;
       }
 
-      // Set canvas ke resolusi video asli untuk kualitas maksimal
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      // Simpan konteks untuk mirroring
       context.save();
-      
-      // Terapkan mirror horizontal (karena video dimirror untuk tampilan)
       context.scale(-1, 1);
-      
-      // Gambar video ke canvas dengan ukuran asli (kualitas tinggi)
       context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      
       context.restore();
 
-      // Ambil data gambar sebagai Base64 dengan kualitas 0.9 (90% - kualitas tinggi)
-      // Menggunakan PNG untuk kualitas lossless yang lebih baik (ukuran lebih besar tapi kualitas terbaik)
-      // Atau JPEG dengan kualitas tinggi 0.95
       photoData = canvas.toDataURL('image/jpeg', 0.95);
       
-      // Tampilkan preview dengan ukuran yang sesuai
       preview.src = photoData;
       preview.style.display = 'block';
       
-      // Update status foto
       photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil (Kualitas Tinggi)';
       photoStatus.classList.add('has-photo');
       
-      // Tampilkan tombol ambil ulang
       captureBtn.style.display = 'none';
       retakeBtn.style.display = 'block';
       
@@ -660,11 +643,9 @@
       preview.src = '';
       preview.style.display = 'none';
       
-      // Reset status foto
       photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto yang diambil';
       photoStatus.classList.remove('has-photo');
       
-      // Tampilkan tombol ambil foto
       captureBtn.style.display = 'block';
       retakeBtn.style.display = 'none';
     }
@@ -678,28 +659,26 @@
         const input = group.querySelector('input, select, textarea');
         const errorMessage = group.querySelector('.error-message');
         
-        // Reset status error
         group.classList.remove('error');
         
-        // Validasi field kosong
         if (input.value.trim() === '') {
           group.classList.add('error');
           isValid = false;
           return;
         }
         
-        // Validasi khusus untuk telepon
+        // Validasi khusus untuk telepon: hanya angka, tanpa batasan panjang
         if (input.id === 'telepon') {
-          const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-          if (!phoneRegex.test(input.value.trim())) {
+          const phoneVal = input.value.trim();
+          // Hanya angka yang diperbolehkan, tidak ada batasan panjang
+          if (!/^[0-9]+$/.test(phoneVal)) {
             group.classList.add('error');
-            errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
+            errorMessage.textContent = 'Nomor telepon harus berupa angka (0-9)';
             isValid = false;
           }
         }
       });
       
-      // Validasi foto
       if (!photoData) {
         showNotification('Silakan ambil foto terlebih dahulu', 'warning');
         isValid = false;
@@ -710,18 +689,13 @@
 
     // Event listeners untuk form
     document.addEventListener('DOMContentLoaded', () => {
-      // Update tanggal dan waktu
       updateDateTimeRealtime();
-      
-      // Mulai kamera
       startCamera();
       
-      // Tambah event listener untuk form input
       const inputs = document.querySelectorAll('input, select, textarea');
       inputs.forEach(input => {
         const formGroup = input.closest('.form-group');
         
-        // Fokus dan blur untuk efek label
         input.addEventListener('focus', () => {
           formGroup.classList.add('focused');
         });
@@ -732,17 +706,17 @@
           }
         });
         
-        // Validasi real-time untuk telepon
+        // Validasi real-time untuk telepon: hanya angka
         if (input.id === 'telepon') {
           input.addEventListener('input', () => {
             const formGroup = input.closest('.form-group');
             const errorMessage = formGroup.querySelector('.error-message');
+            const val = input.value.trim();
             
-            if (input.value.trim() !== '') {
-              const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{6,9}$/;
-              if (!phoneRegex.test(input.value.trim())) {
+            if (val !== '') {
+              if (!/^[0-9]+$/.test(val)) {
                 formGroup.classList.add('error');
-                errorMessage.textContent = 'Format nomor telepon tidak valid. Contoh: 081234567890';
+                errorMessage.textContent = 'Nomor telepon harus berupa angka (0-9)';
               } else {
                 formGroup.classList.remove('error');
               }
@@ -758,13 +732,11 @@
     document.getElementById('logForm').onsubmit = function(e) {
       e.preventDefault();
       
-      // Validasi form
       if (!validateForm()) {
         showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
         return;
       }
       
-      // Tampilkan loading
       loading.classList.add('show');
       submitBtn.disabled = true;
       
@@ -776,7 +748,6 @@
       const tujuan = document.getElementById('tujuan').value;
       const deskripsi = document.getElementById('deskripsi').value;
 
-      // Data yang akan disimpan di Firestore
       const dataToFirestore = {
         tanggal,
         nama,
@@ -791,12 +762,9 @@
       db.collection("logbook").add(dataToFirestore)
         .then(() => {
           showNotification("Data berhasil disimpan di buku tamu", 'success');
-          
-          // Reset formulir dan tampilan setelah berhasil
           document.getElementById('logForm').reset();
           retakePhoto();
           
-          // Reset status fokus
           const formGroups = document.querySelectorAll('.form-group');
           formGroups.forEach(group => {
             group.classList.remove('focused');
@@ -807,7 +775,6 @@
           showNotification("Gagal menyimpan data: " + err.message, 'error');
         })
         .finally(() => {
-          // Sembunyikan loading
           loading.classList.remove('show');
           submitBtn.disabled = false;
         });
