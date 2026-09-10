@@ -13,11 +13,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    /* --- CSS Variables (Persis Sesuai File Asli Anda) --- */
+    /* --- CSS Variables (Sesuai File Asli Anda) --- */
     :root {
       --primary-color: #4a6cf7; /* Biru cerah */
       --secondary-color: #6a5acd; /* Ungu */
-      --accent-color: #7FFFD4; /* Hijau mint - digunakan untuk background body */
+      --accent-color: #7FFFD4; /* Hijau mint - background body */
       --text-color: #333;
       --light-text-color: #666;
       --border-color: rgba(0,0,0,0.1);
@@ -62,7 +62,7 @@
       box-shadow: var(--shadow-hover);
     }
 
-    /* --- Login Form Specific Styles --- */
+    /* --- Login Form Styles --- */
     .login-form h1 {
       text-align: center;
       color: var(--primary-color);
@@ -139,7 +139,7 @@
       color: var(--secondary-color);
     }
 
-    /* --- Controls & Filter Bar --- */
+    /* --- Controls Bar --- */
     .controls-container {
       margin-bottom: 20px;
       display: flex;
@@ -157,7 +157,6 @@
       flex-wrap: wrap;
     }
 
-    /* --- Filter & Search Inputs --- */
     input[type="text"], select {
       padding: 15px;
       font-size: 16px;
@@ -187,7 +186,6 @@
       background-size: 20px;
     }
 
-    /* --- Export PDF Button --- */
     .export-btn {
       background: linear-gradient(to right, #27ae60, #2ecc71);
       color: white;
@@ -221,7 +219,7 @@
 
     table {
       width: 100%;
-      table-layout: fixed; /* KUNCI PRESISI KOMPONEN */
+      table-layout: fixed;
       border-collapse: collapse;
       border-spacing: 0;
     }
@@ -231,7 +229,7 @@
       text-align: left;
       border-bottom: 1px solid rgba(0,0,0,0.05);
       vertical-align: middle;
-      word-break: break-word; /* Mencegah pelebaran sel akibat kata panjang */
+      word-break: break-word;
       overflow: hidden;
       font-size: 14px;
     }
@@ -243,7 +241,6 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      font-size: 14px;
     }
 
     tr:hover td {
@@ -265,35 +262,106 @@
     .col-deskripsi { width: 13%; }
     .col-foto { width: 8%; text-align: center; }
 
-    /* --- View Photo Button & Preview --- */
     .view-photo-btn {
       background: rgba(74, 108, 247, 0.1);
       border: none;
       color: var(--primary-color);
       cursor: pointer;
-      padding: 8px 10px;
+      padding: 8px 12px;
       border-radius: 6px;
       font-weight: 500;
-      font-size: 12px;
+      font-size: 13px;
       transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      text-decoration: none;
     }
 
     .view-photo-btn:hover {
-      background: rgba(74, 108, 247, 0.2);
+      background: var(--primary-color);
+      color: white;
       transform: translateY(-1px);
     }
 
-    .photo-preview {
-      margin-top: 10px;
+    /* --- POP-UP MODAL GAMBAR (FOTO) --- */
+    .img-modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .img-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .img-modal-container {
+      position: relative;
+      background: white;
+      padding: 15px;
+      border-radius: 16px;
+      max-width: 90%;
+      max-height: 90vh;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: modalZoom 0.3s ease forwards;
+    }
+
+    @keyframes modalZoom {
+      from { transform: scale(0.8); }
+      to { transform: scale(1); }
+    }
+
+    .img-modal-container img {
       max-width: 100%;
-      height: auto;
-      border-radius: 6px;
-      display: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-height: 75vh;
+      border-radius: 10px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .img-modal-close {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+    }
+
+    .img-modal-close:hover {
+      background: #c0392b;
+      transform: scale(1.1);
+    }
+
+    .img-modal-caption {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color);
+      text-align: center;
     }
 
     /* --- Logout Button --- */
@@ -386,7 +454,7 @@
       font-size: 14px;
     }
 
-    /* --- Utility Classes & Animations --- */
+    /* --- Utilities & Animations --- */
     .hidden { display: none; }
 
     @keyframes fadeIn {
@@ -414,9 +482,8 @@
       .controls-container { flex-direction: column; align-items: stretch; }
       .search-filter-group { flex-direction: column; }
       .export-btn { justify-content: center; }
-
       .table-wrapper { overflow-x: auto; }
-      table { min-width: 900px; } /* Mencegah tabel terlalu sempit pada layar sedang */
+      table { min-width: 900px; }
     }
 
     @media (max-width: 576px) {
@@ -438,7 +505,7 @@
     </button>
   </div>
 
-  <!-- Logbook Data Section (Hidden by default) -->
+  <!-- Logbook Data Section -->
   <div class="logbook-data hidden" id="logbookSection">
     <h2><i class="fas fa-book"></i> Daftar Logbook</h2>
 
@@ -454,15 +521,22 @@
     </div>
 
     <!-- Logbook Table Container -->
-    <div id="logbookContainer">
-      <!-- Logbook data will be loaded here by JavaScript -->
-    </div>
+    <div id="logbookContainer"></div>
 
     <!-- Logout Button -->
     <button class="logout-btn" onclick="logout()" aria-label="Logout dari akun admin">Logout</button>
   </div>
 
-  <!-- PDF Export Selection Modal -->
+  <!-- Pop-Up Modal Foto Jelas -->
+  <div class="img-modal-overlay" id="imgModal" onclick="closePhotoModal()">
+    <div class="img-modal-container" onclick="event.stopPropagation()">
+      <button class="img-modal-close" onclick="closePhotoModal()">&times;</button>
+      <img id="imgModalSrc" src="" alt="Foto Tamu">
+      <div class="img-modal-caption" id="imgModalCaption"></div>
+    </div>
+  </div>
+
+  <!-- Export PDF Option Modal -->
   <div class="pdf-modal" id="pdfModal">
     <div class="pdf-modal-card">
       <h3><i class="fas fa-file-pdf"></i> Opsi Export PDF</h3>
@@ -488,7 +562,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase Configuration
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
       authDomain: "logbook-e6ab3.firebaseapp.com",
@@ -498,12 +572,10 @@
       appId: "1:484546392348:web:861616b680427c158ecad9"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // DOM Elements
     const loginForm = document.getElementById("loginForm");
     const logbookSection = document.getElementById("logbookSection");
     const logbookContainer = document.getElementById("logbookContainer");
@@ -511,7 +583,6 @@
     const loginButton = document.getElementById("loginButton");
     const loginSpinner = document.getElementById("loginSpinner");
 
-    // Global variable
     let allLogData = [];
     const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
                         "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -560,12 +631,19 @@
       });
     }
 
-    // Toggle Photo
-    function togglePhoto(id) {
-      const img = document.getElementById(id);
-      if (img) {
-        img.style.display = img.style.display === 'none' || img.style.display === '' ? 'block' : 'none';
-      }
+    // POP-UP FOTO MODAL FUNCTIONS
+    function showPhotoModal(url, nama) {
+      const modal = document.getElementById("imgModal");
+      const img = document.getElementById("imgModalSrc");
+      const caption = document.getElementById("imgModalCaption");
+
+      img.src = url;
+      caption.textContent = nama ? `Foto Kegiatan: ${nama}` : "Foto Kegiatan";
+      modal.classList.add("active");
+    }
+
+    function closePhotoModal() {
+      document.getElementById("imgModal").classList.remove("active");
     }
 
     // Modal Control PDF Export
@@ -620,7 +698,7 @@
       });
     }
 
-    // Render Logbook Table (Presisi Lebar Kolom)
+    // Render Table
     function renderLogbook(dataList) {
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
       const selectedMonthYear = filterMonthYearSelect.value;
@@ -665,13 +743,14 @@
       let no = 1;
       filteredData.forEach(d => {
         const row = document.createElement("tr");
-        const photoId = "photo-" + d.id;
+        
+        // Escape nama untuk fungsi onclick
+        const safeNama = (d.nama || '').replace(/'/g, "\\'");
         
         const photoContent = d.foto 
-          ? `<button class="view-photo-btn" onclick="togglePhoto('${photoId}')">
+          ? `<button class="view-photo-btn" onclick="showPhotoModal('${d.foto}', '${safeNama}')">
                <i class="fas fa-eye"></i> Lihat
-             </button>
-             <img id="${photoId}" src="${d.foto}" class="photo-preview" alt="Foto">`
+             </button>`
           : `-`;
 
         row.innerHTML = `
@@ -694,7 +773,7 @@
       logbookContainer.appendChild(tableWrapper);
     }
 
-    // Export to PDF Implementation
+    // Export to PDF
     function exportPDF(type) {
       closePdfModal();
       const { jsPDF } = window.jspdf;
@@ -723,7 +802,6 @@
         return;
       }
 
-      // Title & Header in PDF
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.setTextColor(74, 108, 247);
@@ -735,7 +813,6 @@
       doc.text(periodTitle, 14, 22);
       doc.text(`Tanggal Cetak: ${new Date().toLocaleString('id-ID')}`, 14, 27);
 
-      // Data Rows
       const tableRows = [];
       targetData.forEach((item, index) => {
         tableRows.push([
@@ -750,7 +827,6 @@
         ]);
       });
 
-      // Generate AutoTable PDF
       doc.autoTable({
         startY: 32,
         head: [['No', 'Tanggal & Jam', 'Nama', 'Perusahaan', 'Alamat', 'No Telepon', 'Tujuan', 'Deskripsi']],
@@ -788,9 +864,17 @@
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("searchInput").addEventListener("input", () => renderLogbook(allLogData));
       filterMonthYearSelect.addEventListener("change", () => renderLogbook(allLogData));
+
+      // Tutup Pop-up foto menggunakan tombol Escape (ESC)
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closePhotoModal();
+          closePdfModal();
+        }
+      });
     });
 
-    // Auth State Changed
+    // Auth Listener
     auth.onAuthStateChanged(user => {
       if (user) {
         loginForm.classList.add("hidden");
