@@ -1,784 +1,360 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Buku Tamu - Genetek</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary-color: #4a6cf7;
-      --primary-light: #6a8af8;
-      --secondary-color: #6a5acd;
-      --accent-color: #7FFFD4;
-      --text-color: #333;
-      --light-text-color: #666;
-      --border-color: rgba(0,0,0,0.1);
-      --bg-light: rgba(255,255,255,0.95);
-      --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.15);
-      --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
-      --success-color: #28a745;
-      --error-color: #dc3545;
-      --warning-color: #ffc107;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buku Tamu · Genetek</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff4e0;--ink:#111;--y:#ffd23f;--p:#ff5c8a;--t:#2ec4b6;--b:#4d7cfe;--v:#a78bfa;--o:#ff8c42;--red:#e63946;--bounce:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(rgba(17,17,17,.13) 1.2px,transparent 1.2px);background-size:22px 22px}
+.hidden{display:none!important}
+body.quake{animation:quake .45s}
+@keyframes quake{20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* Marquee */
+.marquee{background:var(--ink);color:var(--y);border-bottom:3px solid var(--ink);overflow:hidden;white-space:nowrap;padding:12px 0;font-family:'Archivo Black';font-size:15px;letter-spacing:.06em}
+.track{display:inline-flex;animation:marq 22s linear infinite}
+.track span{padding-right:20px}
+@keyframes marq{to{transform:translateX(-50%)}}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      color: var(--text-color);
-    }
+/* Floating shapes */
+.shape{position:fixed;z-index:-1;border:3px solid var(--ink);pointer-events:none}
+.s1{width:90px;height:90px;background:var(--y);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);border:0;top:14%;left:3%;animation:spinS 14s linear infinite}
+.s2{width:70px;height:70px;border-radius:50%;background:var(--p);bottom:10%;left:6%;animation:bob 4s ease-in-out infinite}
+.s3{width:60px;height:60px;background:var(--t);top:20%;right:4%;animation:bob 5s ease-in-out infinite reverse,spinS 18s linear infinite}
+.s4{width:110px;height:36px;border-radius:40px;background:var(--v);bottom:8%;right:8%;animation:bob 6s ease-in-out infinite}
+@keyframes spinS{to{rotate:360deg}}
+@keyframes bob{50%{translate:0 -22px}}
 
-    .container {
-      display: flex;
-      flex-direction: row;
-      gap: 40px;
-      background: var(--bg-light);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-light);
-      max-width: 1100px;
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.3);
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
+.wrap{max-width:1200px;margin:0 auto;padding:36px 20px 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:start}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:8px 8px 0 var(--ink);padding:32px;animation:slam .7s var(--bounce) both}
+@keyframes slam{from{opacity:0;transform:translateY(60px) rotate(-3deg)}to{opacity:1;transform:none}}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.logo-box{border:3px solid var(--ink);border-radius:12px;padding:8px 14px;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.logo-box img{height:28px;display:block}
+.logo-box b{font-family:'Archivo Black';letter-spacing:.1em}
+.sticker{display:inline-flex;align-items:center;gap:8px;background:var(--t);border:3px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;box-shadow:4px 4px 0 var(--ink);transform:rotate(3deg);font-variant-numeric:tabular-nums}
+h1{font-family:'Archivo Black';font-size:clamp(48px,7vw,86px);line-height:.92;letter-spacing:-.02em;margin:6px 0 12px}
+h1 .ch{display:inline-block;animation:drop .7s var(--bounce) both;animation-delay:calc(var(--i)*55ms + .2s)}
+@keyframes drop{from{opacity:0;transform:translateY(-80px) rotate(-20deg)}to{opacity:1;transform:none}}
+.hl{background:linear-gradient(var(--y),var(--y)) no-repeat 0 85%/0% 45%;animation:mark .8s 1s ease-out forwards;padding:0 6px}
+@keyframes mark{to{background-size:100% 45%}}
+.wave{display:inline-block;animation:waveh 2s ease-in-out infinite;transform-origin:70% 70%}
+@keyframes waveh{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-10deg)}}
+.sub{font-size:17px;font-weight:500;margin-bottom:24px}
+.sub b{background:var(--p);color:#fff;padding:1px 8px;border-radius:6px;border:2px solid var(--ink)}
 
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 5px;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    }
+form{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.full{grid-column:1/-1}
+.field{animation:slam .6s var(--bounce) both;animation-delay:calc(var(--i)*70ms + .4s)}
+.field>label,.lbl{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.field>label i{width:24px;height:24px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:6px;background:var(--y);font-size:11px}
+.field input{width:100%;height:56px;padding:0 16px;border:3px solid var(--ink);border-radius:12px;background:#fff;font:inherit;font-size:16px;font-weight:500;color:var(--ink);box-shadow:4px 4px 0 var(--ink);outline:none;transition:transform .15s,box-shadow .15s,background .2s}
+.field input::placeholder{color:#9a9a9a}
+.field input:focus{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--b);background:#fffbea}
+.err-msg{display:none;margin-top:10px;font-size:13px;font-weight:700;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:4px 10px;width:fit-content;transform:rotate(-1deg);animation:pop .35s var(--bounce)}
+.field.error .err-msg{display:block}
+.field.error input{background:#ffe1e8}
+.field.error input,.field.error .chips{animation:wobble .4s}
+@keyframes wobble{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+@keyframes pop{from{transform:scale(.5) rotate(-6deg)}}
+.chips{display:flex;flex-wrap:wrap;gap:12px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:3px solid var(--ink);border-radius:10px;background:#fff;font-weight:700;font-size:14px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transform:rotate(var(--r));transition:transform .2s var(--bounce),box-shadow .15s,background .2s;user-select:none}
+.chip:hover span{animation:jiggle .4s}
+@keyframes jiggle{25%{transform:rotate(-4deg) scale(1.05)}75%{transform:rotate(4deg) scale(1.05)}}
+.chip input:checked+span{background:var(--c);transform:rotate(0) scale(1.06);box-shadow:5px 5px 0 var(--ink)}
+.chip input:focus-visible+span{outline:3px dashed var(--b);outline-offset:3px}
 
-    .container:hover {
-      box-shadow: var(--shadow-hover);
-    }
+/* Camera polaroid */
+.cam-col{display:flex;flex-direction:column;gap:20px;position:sticky;top:20px}
+.polaroid{position:relative;background:#fff;border:3px solid var(--ink);border-radius:8px;padding:16px 16px 0;box-shadow:10px 10px 0 var(--ink);transform:rotate(-2deg);animation:slam .8s .25s var(--bounce) both;transition:transform .3s var(--bounce)}
+.polaroid:hover{transform:rotate(0) scale(1.01)}
+.polaroid.shake{animation:polshake .6s}
+@keyframes polshake{20%{transform:rotate(4deg)}40%{transform:rotate(-6deg)}60%{transform:rotate(3deg)}80%{transform:rotate(-3deg)}}
+.tape{position:absolute;top:-18px;left:50%;width:120px;height:34px;transform:translateX(-50%) rotate(-4deg);background:rgba(255,210,63,.85);border:2px solid var(--ink)}
+.cam{position:relative;aspect-ratio:4/3;border:3px solid var(--ink);background:#222;overflow:hidden}
+.cam video,#preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cam video{transform:scaleX(-1)}
+#preview{display:none}
+#preview.show{display:block;animation:develop 2.4s ease-out forwards}
+@keyframes develop{0%{filter:brightness(2.4) saturate(0) blur(8px) sepia(.7);opacity:.4}60%{filter:brightness(1.2) saturate(.6) blur(1px) sepia(.3);opacity:1}100%{filter:none}}
+.caption{font-family:'Caveat',cursive;font-size:30px;text-align:center;padding:12px 0 16px;min-height:66px}
+.count{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:var(--y);border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);display:none;place-items:center;font-family:'Archivo Black';font-size:64px}
+.count.pop{display:grid;animation:bump .7s var(--bounce)}
+@keyframes bump{0%{transform:scale(0) rotate(-30deg)}50%{transform:scale(1.1) rotate(5deg)}100%{transform:scale(1)}}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .6s ease-out}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.cam-off{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--y);font-weight:700;text-align:center;padding:16px}
+.cam-off.show{display:flex}
+.cam-off i{font-size:36px}
 
-    .form-wrapper, .camera-wrapper {
-      flex: 1;
-      max-width: 550px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:58px;padding:0 22px;border:3px solid var(--ink);border-radius:14px;font:inherit;font-weight:700;font-size:17px;cursor:pointer;color:var(--ink);background:#fff;box-shadow:5px 5px 0 var(--ink);transition:transform .12s,box-shadow .12s;flex:1}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.btn:active:not(:disabled){transform:translate(5px,5px);box-shadow:0 0 0 var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.yellow{background:var(--y)}
+.btn-row{display:flex;gap:14px}
+.send{flex:none;width:100%;height:76px;font-family:'Archivo Black';font-size:22px;letter-spacing:.04em;background:var(--p);color:#fff;-webkit-text-stroke:1px var(--ink);box-shadow:8px 8px 0 var(--ink)}
+.send:hover:not(:disabled){box-shadow:11px 11px 0 var(--ink)}
+.send:active:not(:disabled){transform:translate(8px,8px)}
+.send .arr{transition:transform .25s var(--bounce)}
+.send:hover .arr{transform:translateX(8px) rotate(-12deg)}
+.send .spin{display:none;width:26px;height:26px;border:4px solid var(--ink);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.send.loading .txt,.send.loading .arr{display:none}.send.loading .spin{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .camera-wrapper {
-      text-align: center;
-      padding-left: 20px;
-      border-left: 1px solid var(--border-color);
-    }
+/* Toast */
+.toasts{position:fixed;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:100;width:max-content;max-width:92vw}
+.toast{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:10px 16px 10px 10px;font-weight:700;box-shadow:5px 5px 0 var(--ink);animation:tin .5s var(--bounce) both}
+.toast i{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:8px;flex:none}
+.toast.success i{background:var(--t)}.toast.error i{background:var(--red);color:#fff}.toast.warning i{background:var(--y)}
+.toast.out{animation:tout .3s ease-in forwards}
+@keyframes tin{from{opacity:0;transform:translateY(-40px) rotate(-6deg) scale(.8)}}
+@keyframes tout{to{opacity:0;transform:translateY(-30px) scale(.8)}}
 
-    img.logo {
-      display: block;
-      margin: 0 auto 25px;
-      max-width: 200px;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-      transition: transform 0.3s ease;
-    }
+/* Stamp success */
+.stamp-wrap{position:fixed;inset:0;display:grid;place-items:center;background:rgba(255,244,224,.75);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:90}
+.stamp-wrap.show{opacity:1;pointer-events:auto}
+.stamp{font-family:'Archivo Black';font-size:clamp(52px,11vw,120px);color:var(--red);border:10px solid var(--red);border-radius:22px;padding:12px 36px;line-height:1;text-align:center;opacity:0;transform:rotate(-12deg) scale(3);background:rgba(255,255,255,.55)}
+.stamp small{display:block;font-family:'Space Grotesk';font-weight:700;font-size:clamp(16px,2.4vw,22px);color:var(--ink);margin-top:10px;letter-spacing:.02em}
+.stamp-wrap.show .stamp{animation:stamp .45s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes stamp{to{opacity:1;transform:rotate(-12deg) scale(1)}}
 
-    img.logo:hover {
-      transform: scale(1.05);
-    }
-
-    h2 {
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 30px;
-      font-size: 28px;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    h2 i {
-      color: var(--secondary-color);
-    }
-
-    .form-group {
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background-color: rgba(255,255,255,0.7);
-      transition: all 0.3s ease;
-      color: var(--text-color);
-      font-family: 'Poppins', sans-serif;
-    }
-
-    input::placeholder, textarea::placeholder, select option[disabled] {
-      color: var(--light-text-color);
-      opacity: 0.8;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
-      background-color: white;
-    }
-
-    select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 15px center;
-      background-size: 20px;
-    }
-
-    .form-group label {
-      position: absolute;
-      top: -10px;
-      left: 15px;
-      background: var(--bg-light);
-      padding: 0 5px;
-      font-size: 12px;
-      color: var(--primary-color);
-      font-weight: 500;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .form-group.focused label {
-      opacity: 1;
-    }
-
-    .error-message {
-      color: var(--error-color);
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
-    }
-
-    .form-group.error input,
-    .form-group.error textarea,
-    .form-group.error select {
-      border-color: var(--error-color);
-    }
-
-    .form-group.error .error-message {
-      display: block;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-      color: white;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    button:active {
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      background: #cccccc;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 5px;
-      height: 5px;
-      background: rgba(255, 255, 255, 0.5);
-      opacity: 0;
-      border-radius: 100%;
-      transform: scale(1, 1) translate(-50%);
-      transform-origin: 50% 50%;
-    }
-
-    button:focus:not(:active)::after {
-      animation: ripple 1s ease-out;
-    }
-
-    @keyframes ripple {
-      0% {
-        transform: scale(0, 0);
-        opacity: 0.5;
-      }
-      100% {
-        transform: scale(20, 20);
-        opacity: 0;
-      }
-    }
-
-    .camera-controls {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .camera-controls button {
-      flex: 1;
-    }
-
-    video {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 12px;
-      margin: 15px auto;
-      display: block;
-      transform: scaleX(-1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      background: #f0f0f0;
-    }
-
-    #preview {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 12px;
-      margin: 15px auto;
-      display: none;
-      object-fit: cover;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    canvas {
-      display: none;
-    }
-
-    .photo-status {
-      margin: 10px 0;
-      font-size: 14px;
-      color: var(--light-text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .photo-status.has-photo {
-      color: var(--success-color);
-    }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      border-radius: 10px;
-      color: white;
-      font-weight: 500;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      transform: translateX(150%);
-      transition: transform 0.4s ease;
-      z-index: 1000;
-      max-width: 300px;
-    }
-
-    .notification.show {
-      transform: translateX(0);
-    }
-
-    .notification.success {
-      background-color: var(--success-color);
-    }
-
-    .notification.error {
-      background-color: var(--error-color);
-    }
-
-    .notification.warning {
-      background-color: var(--warning-color);
-      color: #333;
-    }
-
-    .loading {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .loading.show {
-      display: flex;
-    }
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 992px) {
-      .container {
-        flex-direction: column;
-        gap: 30px;
-        padding: 30px;
-        max-width: 600px;
-      }
-
-      .camera-wrapper {
-        border-left: none;
-        padding-left: 0;
-        padding-top: 30px;
-        border-top: 1px solid var(--border-color);
-      }
-
-      img.logo {
-        max-width: 180px;
-      }
-
-      h2 {
-        font-size: 24px;
-        margin-bottom: 25px;
-      }
-
-      input, textarea, select, button {
-        padding: 12px;
-        margin-bottom: 15px;
-        font-size: 15px;
-      }
-
-      video, #preview {
-        max-height: 300px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      body {
-        padding: 15px;
-      }
-
-      .container {
-        padding: 25px;
-        border-radius: 15px;
-      }
-
-      img.logo {
-        max-width: 150px;
-        margin-bottom: 20px;
-      }
-
-      h2 {
-        font-size: 22px;
-        margin-bottom: 20px;
-      }
-
-      input, textarea, select, button {
-        padding: 10px;
-        font-size: 14px;
-        border-radius: 8px;
-      }
-
-      video, #preview {
-        max-height: 240px;
-        margin: 10px auto;
-      }
-
-      .camera-controls {
-        flex-direction: column;
-      }
-    }
-  </style>
+@media (max-width:960px){.wrap{grid-template-columns:1fr}.cam-col{position:static}}
+@media (max-width:560px){form{grid-template-columns:1fr}.card{padding:22px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-wrapper">
-      <img src="genetek-logo.png" alt="Genetek Logo" class="logo" />
-      <h2><i class="fas fa-book"></i> Buku Tamu</h2>
-      <form id="logForm">
-        <div class="form-group">
-          <input type="text" id="tanggal" required readonly style="pointer-events: none; background-color: rgba(245,245,245,0.7);" />
-          <label for="tanggal">Tanggal & Waktu</label>
-        </div>
-        <div class="form-group">
-          <input type="text" id="nama" placeholder="Nama Lengkap" required />
-          <label for="nama">Nama Lengkap</label>
-          <div class="error-message">Nama lengkap harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="perusahaan" placeholder="Nama Perusahaan" required />
-          <label for="perusahaan">Nama Perusahaan</label>
-          <div class="error-message">Nama perusahaan harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="alamat" placeholder="Alamat Perusahaan" required />
-          <label for="alamat">Alamat Perusahaan</label>
-          <div class="error-message">Alamat perusahaan harus diisi</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="telepon" placeholder="No. HP / No. Kantor" required />
-          <label for="telepon">No. HP / No. Kantor</label>
-          <div class="error-message">Nomor telepon harus diisi (hanya angka)</div>
-        </div>
-        <div class="form-group">
-          <select id="tujuan" required>
-            <option value="" disabled selected>Pilih Tujuan Kunjungan</option>
-            <option value="Antar Dokumen">Antar Dokumen</option>
-            <option value="Ambil Dokumen">Ambil Dokumen</option>
-            <option value="Antar Barang">Antar Barang</option>
-            <option value="Ambil Barang">Ambil Barang</option>
-            <option value="Antar Dokumen dan Barang">Antar Dokumen dan Barang</option>
-            <option value="Kunjungan">Kunjungan</option>
-            <option value="Lain-lain">Lain-lain</option>
-          </select>
-          <label for="tujuan">Tujuan Kunjungan</label>
-          <div class="error-message">Tujuan kunjungan harus dipilih</div>
-        </div>
-        <div class="form-group">
-          <input type="text" id="deskripsi" placeholder="Deskripsi Singkat Kunjungan (cth: Bertemu Bpk. Andi)" required />
-          <label for="deskripsi">Deskripsi Kunjungan</label>
-          <div class="error-message">Deskripsi kunjungan harus diisi</div>
-        </div>
-        <button type="submit" id="submitBtn"><i class="fas fa-plus-circle"></i> Tambah ke Buku Tamu</button>
-      </form>
+<div class="marquee"><div class="track"><span>SELAMAT DATANG ✦ WELCOME ✦ BUKU TAMU GENETEK ✦ SILAKAN ISI DATA KUNJUNGAN ✦ JANGAN LUPA SENYUM ✦ </span><span>SELAMAT DATANG ✦ WELCOME ✦ BUKU TAMU GENETEK ✦ SILAKAN ISI DATA KUNJUNGAN ✦ JANGAN LUPA SENYUM ✦ </span></div></div>
+<div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div><div class="shape s4"></div>
+
+<main class="wrap">
+  <section class="card">
+    <div class="head">
+      <div class="logo-box"><img src="genetek-logo.png" alt="Genetek" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'GENETEK'}))"></div>
+      <span class="sticker"><i class="fa-regular fa-clock"></i><span id="clockT">--:--</span></span>
     </div>
+    <h1 id="title" aria-label="Buku Tamu"></h1>
+    <p class="sub"><span id="greet">Halo!</span> Isi data di bawah, lalu <b>jepret</b> fotomu.</p>
 
-    <div class="camera-wrapper">
-      <video id="video" autoplay></video>
-      <div class="photo-status" id="photoStatus">
-        <i class="fas fa-times-circle"></i> Belum ada foto yang diambil
+    <form id="logForm" novalidate autocomplete="off">
+      <div class="field" style="--i:0" data-field="nama"><label for="f-nama"><i class="fa-solid fa-user"></i>Nama Lengkap</label><input id="f-nama" placeholder="cth: Budi Santoso" maxlength="80"><p class="err-msg"></p></div>
+      <div class="field" style="--i:1" data-field="telepon"><label for="f-telepon"><i class="fa-solid fa-phone"></i>No. HP / Kantor</label><input id="f-telepon" placeholder="08xxxxxxxxxx" inputmode="numeric" maxlength="20"><p class="err-msg"></p></div>
+      <div class="field" style="--i:2" data-field="perusahaan"><label for="f-perusahaan"><i class="fa-solid fa-building"></i>Perusahaan</label><input id="f-perusahaan" placeholder="cth: PT Maju Jaya" maxlength="100"><p class="err-msg"></p></div>
+      <div class="field" style="--i:3" data-field="alamat"><label for="f-alamat"><i class="fa-solid fa-location-dot"></i>Alamat Perusahaan</label><input id="f-alamat" placeholder="Jl. ..." maxlength="160"><p class="err-msg"></p></div>
+      <div class="field full" style="--i:4" data-field="tujuan"><p class="lbl">🎯 Tujuan Kunjungan</p><div class="chips" id="chips"></div><p class="err-msg"></p></div>
+      <div class="field full" style="--i:5" data-field="deskripsi"><label for="f-deskripsi"><i class="fa-solid fa-pen"></i>Deskripsi Singkat</label><input id="f-deskripsi" placeholder="cth: Bertemu Bpk. Andi" maxlength="200"><p class="err-msg"></p></div>
+    </form>
+  </section>
+
+  <aside class="cam-col">
+    <div class="polaroid" id="polaroid">
+      <div class="tape"></div>
+      <div class="cam">
+        <video id="video" autoplay playsinline muted></video>
+        <img id="preview" alt="Foto tamu">
+        <div class="count" id="count"></div>
+        <div class="flash" id="flash"></div>
+        <div class="cam-off" id="camOff"><i class="fa-solid fa-video-slash"></i>Kamera tidak tersedia<button type="button" class="btn" style="flex:0;height:44px" onclick="startCamera()">Coba lagi</button></div>
       </div>
-      <div class="camera-controls">
-        <button type="button" onclick="takePhoto()" id="captureBtn">📸 Ambil Foto</button>
-        <button type="button" onclick="retakePhoto()" id="retakeBtn" style="display: none;">🔄 Ambil Ulang</button>
-      </div>
-      <canvas id="canvas"></canvas>
-      <img id="preview" alt="Preview Foto" />
+      <p class="caption" id="caption">Senyum dulu dong! 😄</p>
     </div>
-  </div>
+    <canvas id="canvas" hidden></canvas>
+    <div class="btn-row">
+      <button type="button" class="btn yellow" id="captureBtn" disabled><i class="fa-solid fa-camera"></i> Jepret!</button>
+      <button type="button" class="btn hidden" id="retakeBtn"><i class="fa-solid fa-rotate-left"></i> Ulangi</button>
+    </div>
+    <button type="submit" form="logForm" class="btn send" id="submitBtn"><span class="txt">KIRIM DATA</span><i class="fa-solid fa-arrow-right arr"></i><span class="spin"></span></button>
+  </aside>
+</main>
 
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-  </div>
+<div class="toasts" id="toasts"></div>
+<div class="stamp-wrap" id="success"><div class="stamp">TERCATAT!<small>Terima kasih, <span id="sName"></span> 🙌</small></div></div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+/* ================= FIREBASE (sama dengan versi lama) ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+  authDomain: "logbook-e6ab3.firebaseapp.com",
+  projectId: "logbook-e6ab3",
+  storageBucket: "logbook-e6ab3.appspot.com",
+  messagingSenderId: "484546392348",
+  appId: "1:484546392348:web:861616b680427c158ecad9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  <script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.appspot.com",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
-    };
+/* ================= UTIL ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const pad = n => String(n).padStart(2, '0');
+const stamp = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+const TUJUAN = [
+  ['Antar Dokumen', 'fa-file-export'], ['Ambil Dokumen', 'fa-file-import'],
+  ['Antar Barang', 'fa-box'], ['Ambil Barang', 'fa-box-open'],
+  ['Antar Dokumen dan Barang', 'fa-boxes-stacked'], ['Kunjungan', 'fa-handshake'], ['Lain-lain', 'fa-ellipsis']
+];
+const FIELDS = {
+  nama: 'Nama lengkap wajib diisi', telepon: 'Nomor telepon wajib diisi',
+  perusahaan: 'Nama perusahaan wajib diisi', alamat: 'Alamat perusahaan wajib diisi',
+  deskripsi: 'Deskripsi kunjungan wajib diisi'
+};
+const val = k => $('#f-' + k).value.trim();
+const tujuanVal = () => ($('input[name="tujuan"]:checked') || {}).value || '';
 
-    // Inisialisasi Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+/* ================= KAMERA ================= */
+const video = $('#video'), canvas = $('#canvas'), ctx = canvas.getContext('2d'), preview = $('#preview');
+let stream = null, photoData = '', busy = false;
 
-    // Elemen DOM
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const context = canvas.getContext('2d');
-    const preview = document.getElementById('preview');
-    const captureBtn = document.getElementById('captureBtn');
-    const retakeBtn = document.getElementById('retakeBtn');
-    const photoStatus = document.getElementById('photoStatus');
-    const submitBtn = document.getElementById('submitBtn');
-    const loading = document.getElementById('loading');
-    
-    let photoData = '';
-    let stream = null;
+async function startCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    cameraState(false); toast('Browser tidak mendukung kamera (halaman harus dibuka lewat HTTPS).', 'error'); return;
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    video.srcObject = stream;
+    await video.play().catch(() => {});
+    cameraState(true);
+  } catch (err) {
+    console.error('Akses kamera ditolak:', err);
+    cameraState(false);
+    toast('Kamera tidak dapat diakses. Izinkan akses kamera di browser.', 'error');
+  }
+}
+// Foto diperkecil (maks 960px) & dikompres agar dokumen Firestore tidak melewati batas 1 MB
+function grabFrame() {
+  const MAX = 960, s = Math.min(1, MAX / video.videoWidth);
+  const w = Math.round(video.videoWidth * s), h = Math.round(video.videoHeight * s);
+  canvas.width = w; canvas.height = h;
+  ctx.save(); ctx.translate(w, 0); ctx.scale(-1, 1); ctx.drawImage(video, 0, 0, w, h); ctx.restore();
+  let q = 0.85, out = canvas.toDataURL('image/jpeg', q);
+  while (out.length > 700000 && q > 0.4) { q -= 0.1; out = canvas.toDataURL('image/jpeg', q); }
+  return out;
+}
+async function takePhoto() {
+  if (busy) return;
+  if (!stream || !video.videoWidth) { toast('Kamera belum siap, tunggu sebentar.', 'warning'); return; }
+  busy = true;
+  await countdown();
+  photoData = grabFrame();
+  preview.src = photoData;
+  onCaptured(); onChange();
+  busy = false;
+}
+function retakePhoto() { photoData = ''; onRetake(); onChange(); }
 
-    // Fungsi untuk menampilkan notifikasi
-    function showNotification(message, type = 'success') {
-      const notification = document.createElement('div');
-      notification.className = `notification ${type}`;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.classList.add('show');
-      }, 100);
-      
-      setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 400);
-      }, 4000);
-    }
+/* ================= VALIDASI & SIMPAN ================= */
+function setErr(key, msg) {
+  const f = document.querySelector(`[data-field="${key}"]`);
+  if (!f) return;
+  f.classList.toggle('error', !!msg);
+  if (msg) { const m = f.querySelector('.err-msg'); if (m) m.textContent = msg; }
+}
+function checkField(key) {
+  if (key === 'tujuan') { const ok = !!tujuanVal(); setErr('tujuan', ok ? '' : 'Pilih salah satu tujuan kunjungan'); return ok; }
+  const v = val(key);
+  let msg = v ? '' : FIELDS[key];
+  if (!msg && key === 'telepon' && !/^[0-9]+$/.test(v)) msg = 'Nomor telepon hanya boleh angka (0-9)';
+  setErr(key, msg); return !msg;
+}
+function validate(keys = [...Object.keys(FIELDS), 'tujuan']) {
+  let first = null;
+  keys.forEach(k => { if (!checkField(k) && !first) first = k; });
+  if (first) { const el = $('#f-' + first) || $('input[name="tujuan"]'); if (el) el.focus(); toast('Ups, ada yang belum diisi!', 'warning'); return false; }
+  return true;
+}
+async function saveVisit() {
+  const data = { tanggal: stamp(), nama: val('nama'), perusahaan: val('perusahaan'), alamat: val('alamat'), telepon: val('telepon'), tujuan: tujuanVal(), deskripsi: val('deskripsi'), foto: photoData };
+  const ref = await db.collection('logbook').add(data);
+  return { data, ref };
+}
+function resetAll() { $('#logForm').reset(); retakePhoto(); $$('[data-field].error').forEach(f => f.classList.remove('error')); onChange(); }
 
-    // Fungsi untuk memperbarui tanggal dan waktu secara real-time
-    function updateDateTimeRealtime() {
-      setInterval(() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
+$('#logForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!validate()) return;
+  if (!photoData) { toast('Fotonya belum diambil 📸', 'warning'); nudgeCamera(); return; }
+  setLoading(true);
+  try { const { data, ref } = await saveVisit(); showSuccess(data.nama, ref.id); resetAll(); }
+  catch (err) { console.error('Gagal menyimpan data:', err); toast('Gagal menyimpan: ' + err.message, 'error'); }
+  finally { setLoading(false); }
+});
 
-        const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        document.getElementById('tanggal').value = formattedTime;
-      }, 1000);
-    }
+/* ================= UI KHUSUS DESAIN INI ================= */
+function cameraState(ok) { $('#camOff').classList.toggle('show', !ok); $('#captureBtn').disabled = !ok; }
+async function countdown() {
+  const c = $('#count'), cap = $('#caption');
+  const words = ['Siap…', 'Senyum…', 'Cheese! 🧀'];
+  for (let i = 0; i < 3; i++) { c.textContent = 3 - i; cap.textContent = words[i]; c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); await wait(750); }
+  c.classList.remove('pop');
+  const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+}
+function onCaptured() {
+  preview.classList.remove('show'); void preview.offsetWidth; preview.classList.add('show');
+  const p = $('#polaroid'); p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake');
+  $('#caption').textContent = 'Kece abis! ✨';
+  $('#captureBtn').classList.add('hidden'); $('#retakeBtn').classList.remove('hidden');
+}
+function onRetake() {
+  preview.classList.remove('show'); $('#caption').textContent = 'Senyum dulu dong! 😄';
+  $('#captureBtn').classList.remove('hidden'); $('#retakeBtn').classList.add('hidden');
+}
+function nudgeCamera() { const p = $('#polaroid'); p.classList.remove('shake'); void p.offsetWidth; p.classList.add('shake'); }
+function setLoading(on) { const b = $('#submitBtn'); b.disabled = on; b.classList.toggle('loading', on); }
+function onChange() {}
+function toast(msg, type = 'success') {
+  const icons = { success: 'fa-check', error: 'fa-xmark', warning: 'fa-exclamation' };
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `<i class="fa-solid ${icons[type] || icons.success}"></i><span></span>`;
+  t.querySelector('span').textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3600);
+}
+let successTimer;
+function showSuccess(name) {
+  $('#sName').textContent = name.split(' ')[0];
+  const s = $('#success'); s.classList.add('show');
+  setTimeout(() => { document.body.classList.remove('quake'); void document.body.offsetWidth; document.body.classList.add('quake'); }, 380);
+  if (window.confetti) setTimeout(() => confetti({ particleCount: 160, spread: 100, origin: { y: .55 }, colors: ['#ffd23f', '#ff5c8a', '#2ec4b6', '#4d7cfe', '#a78bfa', '#111111'], shapes: ['square'], scalar: 1.2 }), 400);
+  clearTimeout(successTimer); successTimer = setTimeout(() => s.classList.remove('show'), 3800);
+}
+$('#success').addEventListener('click', () => $('#success').classList.remove('show'));
 
-    // Fungsi untuk memulai kamera dengan resolusi tinggi untuk kualitas foto maksimal
-    function startCamera() {
-      navigator.mediaDevices.getUserMedia({ 
-        video: { 
-          width: { ideal: 1920, min: 1280 },
-          height: { ideal: 1080, min: 720 },
-          frameRate: { ideal: 30 }
-        } 
-      })
-      .then(mediaStream => {
-        stream = mediaStream;
-        video.srcObject = stream;
-        
-        video.onloadedmetadata = () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          captureBtn.disabled = false;
-        };
-        
-        captureBtn.disabled = false;
-      })
-      .catch(err => {
-        console.error('Akses kamera ditolak:', err);
-        showNotification('Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.', 'error');
-        captureBtn.disabled = true;
-      });
-    }
+/* Judul huruf jatuh + jam */
+(() => {
+  const h = $('#title'); let i = 0;
+  const part = (txt, cls) => { const w = document.createElement('span'); if (cls) w.className = cls; [...txt].forEach(ch => { const s = document.createElement('span'); s.className = 'ch'; s.style.setProperty('--i', i++); s.textContent = ch; w.appendChild(s); }); return w; };
+  h.appendChild(part('BUKU')); h.appendChild(document.createElement('br'));
+  h.appendChild(part('TAMU', 'hl')); h.append(' ');
+  const wv = document.createElement('span'); wv.className = 'wave'; wv.textContent = '👋'; h.appendChild(wv);
+})();
+function tick() {
+  const n = new Date(), hr = n.getHours();
+  $('#clockT').textContent = `${pad(hr)}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  $('#greet').textContent = 'Selamat ' + (hr < 11 ? 'pagi!' : hr < 15 ? 'siang!' : hr < 18 ? 'sore!' : 'malam!');
+}
+tick(); setInterval(tick, 1000);
 
-    // Fungsi untuk mengambil foto dengan kualitas tinggi
-    function takePhoto() {
-      if (!stream) {
-        showNotification('Kamera belum siap. Silakan tunggu sebentar.', 'warning');
-        return;
-      }
-
-      if (video.videoWidth === 0 || video.videoHeight === 0) {
-        showNotification('Kamera sedang memuat, coba lagi sebentar.', 'warning');
-        return;
-      }
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      context.save();
-      context.scale(-1, 1);
-      context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      context.restore();
-
-      photoData = canvas.toDataURL('image/jpeg', 0.95);
-      
-      preview.src = photoData;
-      preview.style.display = 'block';
-      
-      photoStatus.innerHTML = '<i class="fas fa-check-circle"></i> Foto telah diambil (Kualitas Tinggi)';
-      photoStatus.classList.add('has-photo');
-      
-      captureBtn.style.display = 'none';
-      retakeBtn.style.display = 'block';
-      
-      showNotification('Foto berhasil diambil dengan kualitas tinggi', 'success');
-    }
-
-    // Fungsi untuk mengambil ulang foto
-    function retakePhoto() {
-      photoData = '';
-      preview.src = '';
-      preview.style.display = 'none';
-      
-      photoStatus.innerHTML = '<i class="fas fa-times-circle"></i> Belum ada foto yang diambil';
-      photoStatus.classList.remove('has-photo');
-      
-      captureBtn.style.display = 'block';
-      retakeBtn.style.display = 'none';
-    }
-
-    // Fungsi validasi form
-    function validateForm() {
-      let isValid = true;
-      const formGroups = document.querySelectorAll('.form-group');
-      
-      formGroups.forEach(group => {
-        const input = group.querySelector('input, select, textarea');
-        const errorMessage = group.querySelector('.error-message');
-        
-        group.classList.remove('error');
-        
-        if (input.value.trim() === '') {
-          group.classList.add('error');
-          isValid = false;
-          return;
-        }
-        
-        // Validasi khusus untuk telepon: hanya angka, tanpa batasan panjang
-        if (input.id === 'telepon') {
-          const phoneVal = input.value.trim();
-          // Hanya angka yang diperbolehkan, tidak ada batasan panjang
-          if (!/^[0-9]+$/.test(phoneVal)) {
-            group.classList.add('error');
-            errorMessage.textContent = 'Nomor telepon harus berupa angka (0-9)';
-            isValid = false;
-          }
-        }
-      });
-      
-      if (!photoData) {
-        showNotification('Silakan ambil foto terlebih dahulu', 'warning');
-        isValid = false;
-      }
-      
-      return isValid;
-    }
-
-    // Event listeners untuk form
-    document.addEventListener('DOMContentLoaded', () => {
-      updateDateTimeRealtime();
-      startCamera();
-      
-      const inputs = document.querySelectorAll('input, select, textarea');
-      inputs.forEach(input => {
-        const formGroup = input.closest('.form-group');
-        
-        input.addEventListener('focus', () => {
-          formGroup.classList.add('focused');
-        });
-        
-        input.addEventListener('blur', () => {
-          if (input.value.trim() === '') {
-            formGroup.classList.remove('focused');
-          }
-        });
-        
-        // Validasi real-time untuk telepon: hanya angka
-        if (input.id === 'telepon') {
-          input.addEventListener('input', () => {
-            const formGroup = input.closest('.form-group');
-            const errorMessage = formGroup.querySelector('.error-message');
-            const val = input.value.trim();
-            
-            if (val !== '') {
-              if (!/^[0-9]+$/.test(val)) {
-                formGroup.classList.add('error');
-                errorMessage.textContent = 'Nomor telepon harus berupa angka (0-9)';
-              } else {
-                formGroup.classList.remove('error');
-              }
-            } else {
-              formGroup.classList.remove('error');
-            }
-          });
-        }
-      });
-    });
-
-    // Handler saat formulir disubmit
-    document.getElementById('logForm').onsubmit = function(e) {
-      e.preventDefault();
-      
-      if (!validateForm()) {
-        showNotification('Harap periksa kembali data yang Anda masukkan', 'error');
-        return;
-      }
-      
-      loading.classList.add('show');
-      submitBtn.disabled = true;
-      
-      const tanggal = document.getElementById('tanggal').value;
-      const nama = document.getElementById('nama').value;
-      const perusahaan = document.getElementById('perusahaan').value;
-      const alamat = document.getElementById('alamat').value;
-      const telepon = document.getElementById('telepon').value;
-      const tujuan = document.getElementById('tujuan').value;
-      const deskripsi = document.getElementById('deskripsi').value;
-
-      const dataToFirestore = {
-        tanggal,
-        nama,
-        perusahaan,
-        alamat,
-        telepon,
-        tujuan,
-        deskripsi,
-        foto: photoData
-      };
-
-      db.collection("logbook").add(dataToFirestore)
-        .then(() => {
-          showNotification("Data berhasil disimpan di buku tamu", 'success');
-          document.getElementById('logForm').reset();
-          retakePhoto();
-          
-          const formGroups = document.querySelectorAll('.form-group');
-          formGroups.forEach(group => {
-            group.classList.remove('focused');
-          });
-        })
-        .catch(err => {
-          console.error("Gagal menyimpan data:", err);
-          showNotification("Gagal menyimpan data: " + err.message, 'error');
-        })
-        .finally(() => {
-          loading.classList.remove('show');
-          submitBtn.disabled = false;
-        });
-    };
-  </script>
+/* ================= INIT ================= */
+const COLORS = ['#ffd23f', '#ff8c42', '#2ec4b6', '#4d7cfe', '#a78bfa', '#ff5c8a', '#7ee081'];
+$('#chips').innerHTML = TUJUAN.map(([v, ic], i) => `<label class="chip" style="--c:${COLORS[i]};--r:${[-2, 1.5, -1, 2, -1.5, 1, -2][i]}deg"><input type="radio" name="tujuan" value="${v}"><span><i class="fa-solid ${ic}"></i>${v}</span></label>`).join('');
+$('#f-telepon').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, ''); });
+$$('#logForm input').forEach(el => el.addEventListener('input', () => { const f = el.closest('[data-field]'); if (f) f.classList.remove('error'); onChange(); }));
+$('#captureBtn').addEventListener('click', takePhoto);
+$('#retakeBtn').addEventListener('click', retakePhoto);
+startCamera();
+</script>
 </body>
 </html>
