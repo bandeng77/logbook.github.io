@@ -1,891 +1,532 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Logbook</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- jsPDF & AutoTable untuk Export PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Logbook · Genetek</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root{--bg:#fff4e0;--ink:#111;--y:#ffd23f;--p:#ff5c8a;--t:#2ec4b6;--b:#4d7cfe;--v:#a78bfa;--o:#ff8c42;--g:#7ee081;--red:#e63946;--bounce:cubic-bezier(.34,1.56,.64,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(rgba(17,17,17,.13) 1.2px,transparent 1.2px);background-size:22px 22px}
+.hidden{display:none!important}
+button{font:inherit}
 
-  <style>
-    /* --- CSS Variables (Sesuai File Asli Anda) --- */
-    :root {
-      --primary-color: #4a6cf7; /* Biru cerah */
-      --secondary-color: #6a5acd; /* Ungu */
-      --accent-color: #7FFFD4; /* Hijau mint - background body */
-      --text-color: #333;
-      --light-text-color: #666;
-      --border-color: rgba(0,0,0,0.1);
-      --bg-light: rgba(255,255,255,0.95);
-      --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.15);
-      --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
-    }
+/* Marquee */
+.marquee{background:var(--ink);color:var(--y);overflow:hidden;white-space:nowrap;padding:12px 0;font-family:'Archivo Black';font-size:15px;letter-spacing:.06em}
+.track{display:inline-flex;animation:marq 26s linear infinite}
+.track span{padding-right:20px}
+@keyframes marq{to{transform:translateX(-50%)}}
 
-    /* --- General Styles --- */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* Shapes */
+.shape{position:fixed;z-index:-1;border:3px solid var(--ink);pointer-events:none}
+.s1{width:80px;height:80px;background:var(--y);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);border:0;top:18%;left:2%;animation:spinS 14s linear infinite}
+.s2{width:64px;height:64px;border-radius:50%;background:var(--p);bottom:8%;left:3%;animation:bob 4s ease-in-out infinite}
+.s3{width:54px;height:54px;background:var(--t);top:30%;right:2%;animation:bob 5s ease-in-out infinite reverse,spinS 18s linear infinite}
+@keyframes spinS{to{rotate:360deg}}
+@keyframes bob{50%{translate:0 -20px}}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, var(--accent-color) 0%, #c3cfe2 100%);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 20px;
-      color: var(--text-color);
-    }
+.wrap{max-width:1320px;margin:0 auto;padding:32px 20px 60px}
+.card{background:#fff;border:3px solid var(--ink);border-radius:20px;box-shadow:8px 8px 0 var(--ink);padding:28px}
+@keyframes slam{from{opacity:0;transform:translateY(50px) rotate(-2deg)}to{opacity:1;transform:none}}
+.slam{animation:slam .7s var(--bounce) both;animation-delay:calc(var(--i,0)*80ms)}
+.logo-box{display:inline-block;border:3px solid var(--ink);border-radius:12px;padding:8px 14px;background:#fff;box-shadow:4px 4px 0 var(--ink)}
+.logo-box img{height:28px;display:block}
+.logo-box b{font-family:'Archivo Black';letter-spacing:.1em}
+.ch{display:inline-block;animation:drop .7s var(--bounce) both;animation-delay:calc(var(--i)*55ms + .15s)}
+@keyframes drop{from{opacity:0;transform:translateY(-80px) rotate(-20deg)}to{opacity:1;transform:none}}
+.hl{background:linear-gradient(var(--y),var(--y)) no-repeat 0 85%/0% 45%;animation:mark .8s .9s ease-out forwards;padding:0 6px}
+@keyframes mark{to{background-size:100% 45%}}
 
-    /* --- Form & Section Containers --- */
-    .login-form, .logbook-data {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--bg-light);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-light);
-      border: 1px solid rgba(255,255,255,0.3);
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      margin: auto;
-    }
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:54px;padding:0 20px;border:3px solid var(--ink);border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;color:var(--ink);background:#fff;box-shadow:5px 5px 0 var(--ink);transition:transform .12s,box-shadow .12s;white-space:nowrap}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.btn:active:not(:disabled){transform:translate(5px,5px);box-shadow:0 0 0 var(--ink)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.yellow{background:var(--y)}.btn.pink{background:var(--p);color:#fff}.btn.teal{background:var(--t)}.btn.red{background:var(--red);color:#fff}
+.spin{display:none;width:22px;height:22px;border:4px solid var(--ink);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+.loading .spin{display:inline-block}.loading .txt{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    .login-form:hover, .logbook-data:hover {
-      box-shadow: var(--shadow-hover);
-    }
+/* Login */
+.login{max-width:480px;margin:6vh auto 0;position:relative}
+.login h1{font-family:'Archivo Black';font-size:clamp(46px,9vw,72px);line-height:.92;margin:22px 0 10px}
+.login .sub{font-weight:500;font-size:16px;margin-bottom:24px}
+.login .lock{position:absolute;top:-24px;right:22px;width:64px;height:64px;border:3px solid var(--ink);border-radius:16px;background:var(--t);box-shadow:5px 5px 0 var(--ink);display:grid;place-items:center;font-size:26px;transform:rotate(8deg);animation:bob 3s ease-in-out infinite}
+.field{margin-bottom:18px}
+.field label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.field label i{width:24px;height:24px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:6px;background:var(--y);font-size:11px}
+.inp{position:relative}
+.inp input,.ctrl input,.ctrl select{width:100%;height:56px;padding:0 16px;border:3px solid var(--ink);border-radius:12px;background:#fff;font:inherit;font-size:16px;font-weight:500;color:var(--ink);box-shadow:4px 4px 0 var(--ink);outline:none;transition:transform .15s,box-shadow .15s,background .2s}
+.inp input:focus,.ctrl input:focus,.ctrl select:focus{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--b);background:#fffbea}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:2px solid var(--ink);border-radius:8px;background:#fff;cursor:pointer}
+.login .btn{width:100%;height:64px;font-family:'Archivo Black';font-size:20px;letter-spacing:.04em;margin-top:6px}
+.login-err{display:none;margin-top:16px;font-weight:700;font-size:14px;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:10px;padding:10px 14px;box-shadow:4px 4px 0 var(--ink);animation:wobble .4s}
+.login-err.show{display:block}
+@keyframes wobble{25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
 
-    /* --- Login Form Styles --- */
-    .login-form h1 {
-      text-align: center;
-      color: var(--primary-color);
-      margin-bottom: 30px;
-      font-size: 28px;
-    }
+/* Dashboard head */
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.top-left{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.top h1{font-family:'Archivo Black';font-size:clamp(40px,6vw,68px);line-height:.95}
+.top-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.who{display:inline-flex;align-items:center;gap:8px;background:var(--v);border:3px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;box-shadow:4px 4px 0 var(--ink);transform:rotate(-2deg);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.live{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:13px;letter-spacing:.06em}
+.live i{width:12px;height:12px;border-radius:50%;background:#1fbf5b;border:2px solid var(--ink);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{transform:scale(1.35)}}
 
-    .login-form input {
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background-color: rgba(255,255,255,0.7);
-      transition: all 0.3s ease;
-      color: var(--text-color);
-    }
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+.stat{border:3px solid var(--ink);border-radius:18px;padding:18px 20px;box-shadow:6px 6px 0 var(--ink);transform:rotate(var(--r));transition:transform .25s var(--bounce)}
+.stat:hover{transform:rotate(0) translateY(-4px)}
+.stat .k{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.stat .v{font-family:'Archivo Black';font-size:44px;line-height:1.05;margin-top:8px}
+.stat .v.small{font-size:22px;line-height:1.2;margin-top:12px}
+.stat .n{font-size:13px;font-weight:600;margin-top:4px;opacity:.8}
 
-    .login-form input::placeholder {
-      color: var(--light-text-color);
-      opacity: 0.8;
-    }
+/* Controls */
+.controls{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;align-items:center}
+.ctrl{position:relative;flex:1;min-width:200px}
+.ctrl.search{flex:2;min-width:260px}
+.ctrl.search input{padding-left:48px}
+.ctrl.search>i{position:absolute;left:18px;top:50%;transform:translateY(-50%);z-index:1;pointer-events:none}
+.ctrl select{appearance:none;-webkit-appearance:none;padding-right:46px;cursor:pointer;font-weight:700}
+.ctrl.sel::after{content:'\25BE';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none}
+.count{font-weight:700;margin:-6px 0 14px 4px;font-size:14px}
+.count b{background:var(--y);border:2px solid var(--ink);border-radius:6px;padding:0 8px}
 
-    .login-form input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
-      background-color: white;
-    }
+/* Table */
+.tcard{padding:0;overflow:hidden}
+.table-wrap{overflow-x:auto;max-height:68vh}
+table{width:100%;min-width:1080px;border-collapse:separate;border-spacing:0}
+th{position:sticky;top:0;z-index:2;background:var(--ink);color:var(--y);text-align:left;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:14px 12px;white-space:nowrap}
+td{padding:12px;border-bottom:2px dashed rgba(17,17,17,.15);font-size:14px;vertical-align:middle;word-break:break-word}
+tbody tr{transition:background .15s}
+tbody tr:hover td{background:#fffbea}
+tbody tr.in{animation:rowin .45s var(--bounce) both;animation-delay:calc(var(--i)*35ms)}
+@keyframes rowin{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+td.no{font-family:'Archivo Black';text-align:center;width:54px}
+td.tgl{white-space:nowrap;font-variant-numeric:tabular-nums}
+td.tgl small{display:block;font-weight:700;font-size:12px;opacity:.6}
+td.nama{font-weight:700}
+.badge{display:inline-block;border:2px solid var(--ink);border-radius:8px;padding:3px 9px;font-weight:700;font-size:12px;box-shadow:2px 2px 0 var(--ink);white-space:nowrap;background:var(--c,#fff)}
+.thumb{width:52px;height:52px;border:3px solid var(--ink);border-radius:10px;overflow:hidden;cursor:pointer;box-shadow:3px 3px 0 var(--ink);background:#eee;display:block;padding:0;transition:transform .2s var(--bounce)}
+.thumb:hover{transform:rotate(-6deg) scale(1.12)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.empty{text-align:center;padding:60px 20px}
+.empty .e{font-size:64px;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+.empty p{font-family:'Archivo Black';font-size:22px;margin-top:10px}
+.empty small{font-weight:600;opacity:.7}
+.skeleton td{height:66px}
+.skeleton span{display:block;height:16px;border-radius:6px;background:linear-gradient(90deg,#eee 25%,#f8f8f8 50%,#eee 75%);background-size:200% 100%;animation:shimmer 1.2s infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
 
-    .login-form button {
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-      color: white;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
+/* Modals */
+.overlay{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;background:rgba(255,244,224,.82);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.show{opacity:1;pointer-events:auto}
+.polaroid{position:relative;background:#fff;border:3px solid var(--ink);border-radius:8px;padding:16px 16px 0;box-shadow:12px 12px 0 var(--ink);max-width:min(560px,92vw);transform:rotate(-3deg) scale(.7);opacity:0;transition:transform .45s var(--bounce),opacity .3s}
+.overlay.show .polaroid{transform:rotate(-2deg) scale(1);opacity:1}
+.polaroid .tape{position:absolute;top:-18px;left:50%;width:120px;height:34px;transform:translateX(-50%) rotate(-4deg);background:rgba(255,210,63,.85);border:2px solid var(--ink)}
+.polaroid img{display:block;width:100%;max-height:62vh;object-fit:contain;border:3px solid var(--ink);background:#222}
+.polaroid .cap{font-family:'Caveat',cursive;font-size:30px;text-align:center;padding:10px 0 4px;line-height:1.1}
+.polaroid .cap small{display:block;font-family:'Space Grotesk';font-size:13px;font-weight:700;opacity:.7;padding-bottom:14px}
+.x{position:absolute;top:-20px;right:-20px;width:46px;height:46px;border:3px solid var(--ink);border-radius:50%;background:var(--red);color:#fff;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .2s var(--bounce);z-index:2}
+.x:hover{transform:rotate(90deg) scale(1.1)}
+.pdf-card{width:min(440px,100%);transform:translateY(40px) scale(.9);opacity:0;transition:transform .45s var(--bounce),opacity .3s;position:relative}
+.overlay.show .pdf-card{transform:none;opacity:1}
+.pdf-card h3{font-family:'Archivo Black';font-size:28px;margin-bottom:6px}
+.pdf-card p{font-weight:500;margin-bottom:20px}
+.opt{width:100%;justify-content:space-between;margin-bottom:14px;height:62px}
+.opt span{display:flex;align-items:center;gap:12px}
+.opt span span{flex-direction:column;align-items:flex-start;gap:0;text-align:left;line-height:1.25}
+.opt br{display:none}
+.opt small{font-weight:600;opacity:.75}
 
-    .login-form button:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
+/* Toast */
+.toasts{position:fixed;top:70px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:100;width:max-content;max-width:92vw}
+.toast{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid var(--ink);border-radius:12px;padding:10px 16px 10px 10px;font-weight:700;box-shadow:5px 5px 0 var(--ink);animation:tin .5s var(--bounce) both}
+.toast i{width:34px;height:34px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:8px;flex:none}
+.toast.success i{background:var(--t)}.toast.error i{background:var(--red);color:#fff}.toast.warning i{background:var(--y)}
+.toast.out{animation:tout .3s ease-in forwards}
+@keyframes tin{from{opacity:0;transform:translateY(-40px) rotate(-6deg) scale(.8)}}
+@keyframes tout{to{opacity:0;transform:translateY(-30px) scale(.8)}}
 
-    .login-form button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    /* --- Heading Styles --- */
-    h2 {
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 30px;
-      font-size: 28px;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    h2 i {
-      color: var(--secondary-color);
-    }
-
-    /* --- Controls Bar --- */
-    .controls-container {
-      margin-bottom: 20px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .search-filter-group {
-      display: flex;
-      gap: 15px;
-      flex: 1;
-      min-width: 280px;
-      flex-wrap: wrap;
-    }
-
-    input[type="text"], select {
-      padding: 15px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--border-color);
-      background-color: rgba(255,255,255,0.7);
-      transition: all 0.3s ease;
-      color: var(--text-color);
-      flex-grow: 1;
-      min-width: 180px;
-    }
-
-    input[type="text"]:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
-      background-color: white;
-    }
-
-    select {
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 15px center;
-      background-size: 20px;
-    }
-
-    .export-btn {
-      background: linear-gradient(to right, #27ae60, #2ecc71);
-      color: white;
-      padding: 15px 20px;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .export-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-
-    /* --- PRECISE TABLE STYLING --- */
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      background-color: white;
-      margin-top: 10px;
-    }
-
-    table {
-      width: 100%;
-      table-layout: fixed;
-      border-collapse: collapse;
-      border-spacing: 0;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      text-align: left;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      vertical-align: middle;
-      word-break: break-word;
-      overflow: hidden;
-      font-size: 14px;
-    }
-
-    th {
-      background-color: var(--primary-color);
-      color: white;
-      font-weight: 500;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    tr:hover td {
-      background-color: rgba(74, 108, 247, 0.05);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    /* Presisi Lebar Kolom */
-    .col-no { width: 4%; text-align: center; }
-    .col-tanggal { width: 13%; }
-    .col-nama { width: 12%; font-weight: 500; }
-    .col-perusahaan { width: 12%; }
-    .col-alamat { width: 15%; }
-    .col-telepon { width: 11%; }
-    .col-tujuan { width: 12%; }
-    .col-deskripsi { width: 13%; }
-    .col-foto { width: 8%; text-align: center; }
-
-    .view-photo-btn {
-      background: rgba(74, 108, 247, 0.1);
-      border: none;
-      color: var(--primary-color);
-      cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 13px;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .view-photo-btn:hover {
-      background: var(--primary-color);
-      color: white;
-      transform: translateY(-1px);
-    }
-
-    /* --- POP-UP MODAL GAMBAR (FOTO) --- */
-    .img-modal-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(5px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .img-modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .img-modal-container {
-      position: relative;
-      background: white;
-      padding: 15px;
-      border-radius: 16px;
-      max-width: 90%;
-      max-height: 90vh;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: modalZoom 0.3s ease forwards;
-    }
-
-    @keyframes modalZoom {
-      from { transform: scale(0.8); }
-      to { transform: scale(1); }
-    }
-
-    .img-modal-container img {
-      max-width: 100%;
-      max-height: 75vh;
-      border-radius: 10px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .img-modal-close {
-      position: absolute;
-      top: -15px;
-      right: -15px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: all 0.2s ease;
-    }
-
-    .img-modal-close:hover {
-      background: #c0392b;
-      transform: scale(1.1);
-    }
-
-    .img-modal-caption {
-      margin-top: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-color);
-      text-align: center;
-    }
-
-    /* --- Logout Button --- */
-    .logout-btn {
-      background-color: #e74c3c;
-      color: white;
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      margin-top: 30px;
-      cursor: pointer;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: fit-content;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .logout-btn:hover {
-      background-color: #c0392b;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-
-    /* --- Export PDF Modal --- */
-    .pdf-modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      display: none;
-    }
-
-    .pdf-modal-card {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-
-    .pdf-modal-card h3 {
-      color: var(--primary-color);
-      margin-bottom: 15px;
-      font-size: 20px;
-    }
-
-    .pdf-modal-card p {
-      font-size: 14px;
-      color: var(--light-text-color);
-      margin-bottom: 20px;
-    }
-
-    .pdf-option-btn {
-      width: 100%;
-      padding: 12px 15px;
-      margin-bottom: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: #f8fafc;
-      color: var(--text-color);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all 0.2s;
-    }
-
-    .pdf-option-btn:hover {
-      background: rgba(74, 108, 247, 0.1);
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .pdf-cancel-btn {
-      background: transparent;
-      border: none;
-      color: var(--light-text-color);
-      margin-top: 10px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    /* --- Utilities & Animations --- */
-    .hidden { display: none; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .fade-in { animation: fadeIn 0.3s ease forwards; }
-
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top-color: white;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* --- Responsive Adjustments --- */
-    @media (max-width: 992px) {
-      .login-form, .logbook-data { padding: 30px; max-width: 600px; }
-      .controls-container { flex-direction: column; align-items: stretch; }
-      .search-filter-group { flex-direction: column; }
-      .export-btn { justify-content: center; }
-      .table-wrapper { overflow-x: auto; }
-      table { min-width: 900px; }
-    }
-
-    @media (max-width: 576px) {
-      body { padding: 15px; }
-      .login-form, .logbook-data { padding: 25px; border-radius: 15px; }
-    }
-  </style>
+@media (max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.stats{grid-template-columns:1fr 1fr;gap:12px}.stat .v{font-size:32px}.card{padding:20px}.controls .btn{width:100%}.who{max-width:200px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
+<div class="marquee"><div class="track"><span>ADMIN PANEL ✦ BUKU TAMU GENETEK ✦ DAFTAR KUNJUNGAN TAMU ✦ EXPORT PDF ✦ </span><span>ADMIN PANEL ✦ BUKU TAMU GENETEK ✦ DAFTAR KUNJUNGAN TAMU ✦ EXPORT PDF ✦ </span></div></div>
+<div class="shape s1"></div><div class="shape s2"></div><div class="shape s3"></div>
 
-  <!-- Login Form Section -->
-  <div class="login-form" id="loginForm">
-    <h1>Login Admin</h1>
-    <input type="email" id="email" placeholder="Email admin" required aria-label="Email admin">
-    <input type="password" id="password" placeholder="Password" required aria-label="Password">
-    <button onclick="login()" id="loginButton" aria-label="Login">
-        Login
-        <span id="loginSpinner" class="loading hidden"></span>
-    </button>
-  </div>
+<!-- ========== LOGIN ========== -->
+<section class="wrap" id="loginView">
+  <form class="card login slam" id="loginForm" novalidate>
+    <div class="lock">🔐</div>
+    <div class="logo-box"><img src="genetek-logo.png" alt="Genetek" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'GENETEK'}))"></div>
+    <h1 data-split="LOGIN|ADMIN"></h1>
+    <p class="sub">Masuk untuk melihat daftar tamu.</p>
+    <div class="field"><label for="email"><i class="fa-solid fa-envelope"></i>Email admin</label><div class="inp"><input type="email" id="email" placeholder="admin@genetek.co.id" autocomplete="username" required></div></div>
+    <div class="field"><label for="password"><i class="fa-solid fa-key"></i>Password</label><div class="inp"><input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required style="padding-right:58px"><button type="button" class="eye" id="eyeBtn" aria-label="Tampilkan password"><i class="fa-solid fa-eye"></i></button></div></div>
+    <button type="submit" class="btn pink" id="loginBtn"><span class="txt">MASUK →</span><span class="spin"></span></button>
+    <div class="login-err" id="loginErr"></div>
+  </form>
+</section>
 
-  <!-- Logbook Data Section -->
-  <div class="logbook-data hidden" id="logbookSection">
-    <h2><i class="fas fa-book"></i> Daftar Logbook</h2>
-
-    <!-- Search, Filter, & Export Controls -->
-    <div class="controls-container">
-      <div class="search-filter-group">
-        <input type="text" id="searchInput" placeholder="Cari..." aria-label="Cari logbook">
-        <select id="filterMonthYear" aria-label="Filter berdasarkan bulan dan tahun"></select>
-      </div>
-      <button class="export-btn" onclick="openPdfModal()">
-        <i class="fas fa-file-pdf"></i> Export PDF
-      </button>
+<!-- ========== DASHBOARD ========== -->
+<section class="wrap hidden" id="dashView">
+  <div class="top">
+    <div class="top-left">
+      <div class="logo-box slam"><img src="genetek-logo.png" alt="Genetek" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'GENETEK'}))"></div>
+      <h1 data-split="LOG|BOOK" data-inline="1"></h1>
     </div>
-
-    <!-- Logbook Table Container -->
-    <div id="logbookContainer"></div>
-
-    <!-- Logout Button -->
-    <button class="logout-btn" onclick="logout()" aria-label="Logout dari akun admin">Logout</button>
-  </div>
-
-  <!-- Pop-Up Modal Foto Jelas -->
-  <div class="img-modal-overlay" id="imgModal" onclick="closePhotoModal()">
-    <div class="img-modal-container" onclick="event.stopPropagation()">
-      <button class="img-modal-close" onclick="closePhotoModal()">&times;</button>
-      <img id="imgModalSrc" src="" alt="Foto Tamu">
-      <div class="img-modal-caption" id="imgModalCaption"></div>
+    <div class="top-right">
+      <span class="live"><i></i>LIVE</span>
+      <span class="who slam" id="who" style="--i:2"><i class="fa-solid fa-user-shield"></i><span></span></span>
+      <button class="btn red slam" style="--i:3" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
     </div>
   </div>
 
-  <!-- Export PDF Option Modal -->
-  <div class="pdf-modal" id="pdfModal">
-    <div class="pdf-modal-card">
-      <h3><i class="fas fa-file-pdf"></i> Opsi Export PDF</h3>
-      <p>Pilih cakupan data yang ingin diexport:</p>
-      
-      <button class="pdf-option-btn" onclick="exportPDF('selected')">
-        <span><i class="fas fa-calendar-alt"></i> Bulan Dipilih</span>
-        <i class="fas fa-chevron-right"></i>
-      </button>
-
-      <button class="pdf-option-btn" onclick="exportPDF('all')">
-        <span><i class="fas fa-globe"></i> Semua Bulan</span>
-        <i class="fas fa-chevron-right"></i>
-      </button>
-
-      <button class="pdf-cancel-btn" onclick="closePdfModal()">Batal</button>
-    </div>
+  <div class="stats">
+    <div class="stat slam" style="--i:1;--r:-1.5deg;background:var(--y)"><div class="k"><i class="fa-solid fa-users"></i>Total Tamu</div><div class="v" id="stTotal">0</div><div class="n">semua waktu</div></div>
+    <div class="stat slam" style="--i:2;--r:1deg;background:var(--t)"><div class="k"><i class="fa-solid fa-calendar"></i>Periode Ini</div><div class="v" id="stMonth">0</div><div class="n" id="stMonthLbl">bulan dipilih</div></div>
+    <div class="stat slam" style="--i:3;--r:-1deg;background:var(--p);color:#fff"><div class="k"><i class="fa-solid fa-sun"></i>Hari Ini</div><div class="v" id="stToday">0</div><div class="n" id="stTodayLbl"></div></div>
+    <div class="stat slam" style="--i:4;--r:1.5deg;background:var(--v)"><div class="k"><i class="fa-solid fa-trophy"></i>Tujuan Teratas</div><div class="v small" id="stTop">-</div><div class="n" id="stTopN"></div></div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <div class="controls slam" style="--i:5">
+    <div class="ctrl search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="searchInput" placeholder="Cari nama, perusahaan, telepon…" aria-label="Cari logbook"></div>
+    <div class="ctrl sel"><select id="filterMonthYear" aria-label="Filter bulan"></select></div>
+    <div class="ctrl sel"><select id="filterTujuan" aria-label="Filter tujuan"><option value="">Semua Tujuan</option></select></div>
+    <button class="btn yellow" id="pdfBtn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+  </div>
+  <p class="count" id="countLbl"></p>
 
-  <script>
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
-      authDomain: "logbook-e6ab3.firebaseapp.com",
-      projectId: "logbook-e6ab3",
-      storageBucket: "logbook-e6ab3.appspot.com",
-      messagingSenderId: "484546392348",
-      appId: "1:484546392348:web:861616b680427c158ecad9"
+  <div class="card tcard slam" style="--i:6">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>No</th><th>Tanggal &amp; Jam</th><th>Nama</th><th>Perusahaan</th><th>Alamat</th><th>No Telepon</th><th>Tujuan</th><th>Deskripsi</th><th>Foto</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Foto -->
+<div class="overlay" id="imgModal">
+  <div class="polaroid">
+    <div class="tape"></div>
+    <button class="x" data-close aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+    <img id="imgModalSrc" alt="Foto tamu">
+    <div class="cap"><span id="imgName"></span><small id="imgMeta"></small></div>
+  </div>
+</div>
+
+<!-- PDF -->
+<div class="overlay" id="pdfModal">
+  <div class="card pdf-card">
+    <button class="x" data-close aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button>
+    <h3>📄 EXPORT PDF</h3>
+    <p>Pilih cakupan data yang ingin diexport:</p>
+    <button class="btn opt teal" data-export="selected"><span><i class="fa-solid fa-calendar-days"></i><span>Bulan dipilih<br><small id="pdfSelLbl"></small></span></span><i class="fa-solid fa-arrow-right"></i></button>
+    <button class="btn opt yellow" data-export="all"><span><i class="fa-solid fa-globe"></i><span>Semua bulan<br><small id="pdfAllLbl"></small></span></span><i class="fa-solid fa-arrow-right"></i></button>
+    <button class="btn" data-close style="width:100%">Batal</button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script>
+/* ================= FIREBASE (sama dengan versi lama) ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyC8LlcI_ccRGieFNjlVFLfEr2c4PBg6J70",
+  authDomain: "logbook-e6ab3.firebaseapp.com",
+  projectId: "logbook-e6ab3",
+  storageBucket: "logbook-e6ab3.appspot.com",
+  messagingSenderId: "484546392348",
+  appId: "1:484546392348:web:861616b680427c158ecad9"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ================= UTIL ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const pad = n => String(n).padStart(2, '0');
+const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const TUJUAN_COLORS = {
+  'Antar Dokumen': '#ffd23f', 'Ambil Dokumen': '#ff8c42', 'Antar Barang': '#2ec4b6', 'Ambil Barang': '#4d7cfe',
+  'Antar Dokumen dan Barang': '#a78bfa', 'Kunjungan': '#ff5c8a', 'Lain-lain': '#7ee081'
+};
+const monthLabel = ym => { const [y, m] = ym.split('-'); return `${monthNames[parseInt(m, 10) - 1] || m} ${y}`; };
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+// Elemen dengan teks aman (tidak pernah memakai innerHTML untuk data tamu)
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+function toast(msg, type = 'success') {
+  const icons = { success: 'fa-check', error: 'fa-xmark', warning: 'fa-exclamation' };
+  const t = el('div', 'toast ' + type);
+  const i = el('i', 'fa-solid ' + (icons[type] || icons.success));
+  t.append(i, el('span', null, msg));
+  $('#toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3600);
+}
+
+/* Judul huruf jatuh */
+$$('[data-split]').forEach(h => {
+  let i = 0;
+  const parts = h.dataset.split.split('|');
+  parts.forEach((txt, pi) => {
+    const w = el('span', pi === parts.length - 1 ? 'hl' : null);
+    [...txt].forEach(ch => { const s = el('span', 'ch', ch); s.style.setProperty('--i', i++); w.appendChild(s); });
+    h.appendChild(w);
+    if (pi < parts.length - 1) h.appendChild(h.dataset.inline ? document.createTextNode('') : document.createElement('br'));
+  });
+});
+
+/* ================= LOGIN ================= */
+$('#eyeBtn').addEventListener('click', () => {
+  const p = $('#password'), show = p.type === 'password';
+  p.type = show ? 'text' : 'password';
+  $('#eyeBtn i').className = 'fa-solid ' + (show ? 'fa-eye-slash' : 'fa-eye');
+});
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#email').value.trim(), password = $('#password').value;
+  const err = $('#loginErr');
+  err.classList.remove('show');
+  if (!email || !password) { err.textContent = 'Email dan password harus diisi.'; void err.offsetWidth; err.classList.add('show'); return; }
+  const b = $('#loginBtn'); b.disabled = true; b.classList.add('loading');
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    const map = {
+      'auth/user-not-found': 'Email atau password salah.', 'auth/wrong-password': 'Email atau password salah.',
+      'auth/invalid-credential': 'Email atau password salah.', 'auth/invalid-login-credentials': 'Email atau password salah.',
+      'auth/invalid-email': 'Format email tidak valid.', 'auth/too-many-requests': 'Terlalu banyak percobaan. Coba lagi nanti.',
+      'auth/network-request-failed': 'Koneksi internet bermasalah.'
     };
+    err.textContent = map[error.code] || ('Login gagal: ' + error.message);
+    void err.offsetWidth; err.classList.add('show');
+  } finally { b.disabled = false; b.classList.remove('loading'); }
+});
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+/* ================= DATA ================= */
+let allLogData = [], unsub = null, firstLoad = true, animateNext = true;
+const monthSel = $('#filterMonthYear'), tujuanSel = $('#filterTujuan');
 
-    const loginForm = document.getElementById("loginForm");
-    const logbookSection = document.getElementById("logbookSection");
-    const logbookContainer = document.getElementById("logbookContainer");
-    const filterMonthYearSelect = document.getElementById("filterMonthYear");
-    const loginButton = document.getElementById("loginButton");
-    const loginSpinner = document.getElementById("loginSpinner");
+auth.onAuthStateChanged(user => {
+  if (user) {
+    $('#loginView').classList.add('hidden');
+    $('#dashView').classList.remove('hidden');
+    $('#who span').textContent = user.email || 'Admin';
+    loadLogbook();
+  } else {
+    if (unsub) { unsub(); unsub = null; }
+    allLogData = []; firstLoad = true;
+    $('#dashView').classList.add('hidden');
+    $('#loginView').classList.remove('hidden');
+  }
+});
+$('#logoutBtn').addEventListener('click', () => {
+  if (unsub) { unsub(); unsub = null; }
+  auth.signOut().then(() => { $('#email').value = ''; $('#password').value = ''; $('#tbody').innerHTML = ''; toast('Berhasil logout', 'success'); })
+    .catch(error => toast('Gagal logout: ' + error.message, 'error'));
+});
 
-    let allLogData = [];
-    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
-                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+function showSkeleton() {
+  const tb = $('#tbody'); tb.innerHTML = '';
+  for (let r = 0; r < 6; r++) { const tr = el('tr', 'skeleton'); for (let c = 0; c < 9; c++) { const td = el('td'); td.appendChild(el('span')); tr.appendChild(td); } tb.appendChild(tr); }
+}
 
-    // Login Function
-    async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+function loadLogbook() {
+  if (unsub) unsub();
+  showSkeleton();
+  unsub = db.collection('logbook').orderBy('tanggal', 'desc').onSnapshot(snapshot => {
+    const before = allLogData.length;
+    allLogData = [];
+    snapshot.forEach(doc => allLogData.push({ id: doc.id, ...doc.data() }));
+    populateFilters();
+    if (!firstLoad && allLogData.length > before) toast(`${allLogData.length - before} tamu baru masuk 🎉`, 'success');
+    animateNext = firstLoad; firstLoad = false;
+    renderLogbook();
+  }, error => {
+    console.error('Error loading logbook data:', error);
+    toast('Gagal memuat data: ' + error.message, 'error');
+  });
+}
 
-      if (!email || !password) {
-        alert("Email dan password harus diisi.");
-        return;
-      }
+function populateFilters() {
+  // Bulan: pertahankan pilihan admin saat data baru masuk
+  const prev = monthSel.value, hadOptions = monthSel.options.length > 0;
+  const months = [...new Set(allLogData.filter(d => d.tanggal).map(d => d.tanggal.substring(0, 7)))].sort((a, b) => b.localeCompare(a));
+  monthSel.innerHTML = '';
+  monthSel.appendChild(new Option('Semua Bulan', ''));
+  months.forEach(m => monthSel.appendChild(new Option(monthLabel(m), m)));
+  monthSel.value = hadOptions ? (months.includes(prev) || prev === '' ? prev : '') : (months[0] || '');
 
-      loginSpinner.classList.remove("hidden");
-      loginButton.disabled = true;
-      loginButton.innerHTML = 'Logging in... <span class="loading"></span>';
+  const prevT = tujuanSel.value;
+  const tujuans = [...new Set(allLogData.map(d => d.tujuan).filter(Boolean))].sort();
+  tujuanSel.innerHTML = '';
+  tujuanSel.appendChild(new Option('Semua Tujuan', ''));
+  tujuans.forEach(t => tujuanSel.appendChild(new Option(t, t)));
+  tujuanSel.value = tujuans.includes(prevT) ? prevT : '';
+}
 
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-      } catch (error) {
-        let errorMessage = "Login gagal. Silakan coba lagi.";
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-          errorMessage = "Email atau password salah.";
-        } else if (error.code === 'auth/invalid-email') {
-          errorMessage = "Format email tidak valid.";
-        }
-        alert(errorMessage + " (" + error.message + ")");
-      } finally {
-        loginSpinner.classList.add("hidden");
-        loginButton.disabled = false;
-        loginButton.innerHTML = 'Login';
-      }
-    }
+function filtered() {
+  const q = $('#searchInput').value.toLowerCase().trim();
+  const m = monthSel.value, t = tujuanSel.value;
+  return allLogData.filter(d => {
+    const combined = `${d.nama || ''} ${d.perusahaan || ''} ${d.alamat || ''} ${d.telepon || ''} ${d.tujuan || ''} ${d.deskripsi || ''}`.toLowerCase();
+    return (!q || combined.includes(q)) && (!m || (d.tanggal && d.tanggal.startsWith(m))) && (!t || d.tujuan === t);
+  });
+}
 
-    // Logout Function
-    function logout() {
-      auth.signOut().then(() => {
-        logbookContainer.innerHTML = "";
-        loginForm.classList.remove("hidden");
-        logbookSection.classList.add("hidden");
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-      }).catch(error => {
-        alert("Gagal logout: " + error.message);
-      });
-    }
+function countUp(node, to) {
+  const from = parseInt(node.textContent, 10) || 0;
+  if (from === to) { node.textContent = to; return; }
+  const start = performance.now(), dur = 700;
+  const step = now => { const p = Math.min(1, (now - start) / dur), e = 1 - Math.pow(1 - p, 3); node.textContent = Math.round(from + (to - from) * e); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
 
-    // POP-UP FOTO MODAL FUNCTIONS
-    function showPhotoModal(url, nama) {
-      const modal = document.getElementById("imgModal");
-      const img = document.getElementById("imgModalSrc");
-      const caption = document.getElementById("imgModalCaption");
+function renderStats() {
+  const m = monthSel.value, today = todayStr();
+  const monthData = m ? allLogData.filter(d => d.tanggal && d.tanggal.startsWith(m)) : allLogData;
+  countUp($('#stTotal'), allLogData.length);
+  countUp($('#stMonth'), monthData.length);
+  $('#stMonthLbl').textContent = m ? monthLabel(m) : 'semua bulan';
+  countUp($('#stToday'), allLogData.filter(d => d.tanggal && d.tanggal.startsWith(today)).length);
+  $('#stTodayLbl').textContent = new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+  const freq = {};
+  monthData.forEach(d => { if (d.tujuan) freq[d.tujuan] = (freq[d.tujuan] || 0) + 1; });
+  const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
+  $('#stTop').textContent = top ? top[0] : '-';
+  $('#stTopN').textContent = top ? `${top[1]} kunjungan · ${m ? monthLabel(m) : 'semua bulan'}` : '';
+}
 
-      img.src = url;
-      caption.textContent = nama ? `Foto Kegiatan: ${nama}` : "Foto Kegiatan";
-      modal.classList.add("active");
-    }
+function renderLogbook() {
+  renderStats();
+  const data = filtered();
+  const tb = $('#tbody');
+  tb.innerHTML = '';
+  $('#countLbl').innerHTML = '';
+  $('#countLbl').append('Menampilkan ', el('b', null, String(data.length)), ` dari ${allLogData.length} data`);
 
-    function closePhotoModal() {
-      document.getElementById("imgModal").classList.remove("active");
-    }
+  if (!data.length) {
+    const tr = el('tr'), td = el('td'); td.colSpan = 9;
+    const box = el('div', 'empty');
+    box.append(el('span', 'e', '🫥'), el('p', null, 'Tidak ada data'), el('small', null, 'Coba ubah kata kunci atau filter bulan.'));
+    td.appendChild(box); tr.appendChild(td); tb.appendChild(tr);
+    return;
+  }
 
-    // Modal Control PDF Export
-    function openPdfModal() {
-      document.getElementById("pdfModal").style.display = "flex";
-    }
+  const frag = document.createDocumentFragment();
+  data.forEach((d, idx) => {
+    const tr = el('tr', animateNext ? 'in' : null);
+    if (animateNext) tr.style.setProperty('--i', Math.min(idx, 18));
+    tr.appendChild(el('td', 'no', String(idx + 1)));
 
-    function closePdfModal() {
-      document.getElementById("pdfModal").style.display = "none";
-    }
+    const tgl = el('td', 'tgl');
+    const [dPart, tPart] = (d.tanggal || '-').split(' ');
+    tgl.append(document.createTextNode(dPart || '-'), el('small', null, tPart || ''));
+    tr.appendChild(tgl);
 
-    // Populate Month/Year Filter
-    function populateMonthYearFilter(data) {
-      const uniqueMonths = new Set();
-      data.forEach(d => {
-        if (d.tanggal) {
-          const datePart = d.tanggal.substring(0, 7);
-          uniqueMonths.add(datePart);
-        }
-      });
+    tr.appendChild(el('td', 'nama', d.nama || '-'));
+    tr.appendChild(el('td', null, d.perusahaan || '-'));
+    tr.appendChild(el('td', null, d.alamat || '-'));
+    tr.appendChild(el('td', null, d.telepon || '-'));
 
-      const sortedMonths = Array.from(uniqueMonths).sort((a, b) => b.localeCompare(a));
+    const tj = el('td'); const bd = el('span', 'badge', d.tujuan || '-');
+    bd.style.setProperty('--c', TUJUAN_COLORS[d.tujuan] || '#fff'); tj.appendChild(bd); tr.appendChild(tj);
 
-      filterMonthYearSelect.innerHTML = '<option value="">Semua Bulan</option>';
-      sortedMonths.forEach(monthYear => {
-        const [year, month] = monthYear.split('-');
-        const monthName = monthNames[parseInt(month) - 1] || month;
-        const option = document.createElement('option');
-        option.value = monthYear;
-        option.textContent = `${monthName} ${year}`;
-        filterMonthYearSelect.appendChild(option);
-      });
+    tr.appendChild(el('td', null, d.deskripsi || '-'));
 
-      if (sortedMonths.length > 0 && !filterMonthYearSelect.value) {
-        filterMonthYearSelect.value = sortedMonths[0];
-      }
-    }
+    const ft = el('td');
+    if (d.foto && /^data:image\//.test(d.foto)) {
+      const b = el('button', 'thumb'); b.type = 'button'; b.setAttribute('aria-label', 'Lihat foto ' + (d.nama || ''));
+      const img = el('img'); img.loading = 'lazy'; img.alt = ''; img.src = d.foto; b.appendChild(img);
+      b.addEventListener('click', () => showPhotoModal(d));
+      ft.appendChild(b);
+    } else ft.textContent = '-';
+    tr.appendChild(ft);
+    frag.appendChild(tr);
+  });
+  tb.appendChild(frag);
+  animateNext = false;
+}
 
-    // Load Logbook Data
-    function loadLogbook() {
-      db.collection("logbook").orderBy("tanggal", "desc").onSnapshot(snapshot => {
-        allLogData = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          allLogData.push({ id: doc.id, ...data });
-        });
-        populateMonthYearFilter(allLogData);
-        renderLogbook(allLogData);
-      }, error => {
-        console.error("Error loading logbook data: ", error);
-        alert("Gagal memuat data logbook: " + error.message);
-      });
-    }
+$('#searchInput').addEventListener('input', renderLogbook);
+monthSel.addEventListener('change', () => { animateNext = true; renderLogbook(); });
+tujuanSel.addEventListener('change', () => { animateNext = true; renderLogbook(); });
 
-    // Render Table
-    function renderLogbook(dataList) {
-      const searchValue = document.getElementById("searchInput").value.toLowerCase();
-      const selectedMonthYear = filterMonthYearSelect.value;
+/* ================= MODAL ================= */
+function openModal(id) { $(id).classList.add('show'); }
+function closeModals() { $$('.overlay').forEach(o => o.classList.remove('show')); }
+function showPhotoModal(d) {
+  $('#imgModalSrc').src = d.foto;
+  $('#imgName').textContent = d.nama || 'Tamu';
+  $('#imgMeta').textContent = [d.perusahaan, d.tanggal].filter(Boolean).join(' · ');
+  openModal('#imgModal');
+}
+$$('.overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o || e.target.closest('[data-close]')) closeModals(); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
+$('#pdfBtn').addEventListener('click', () => {
+  const m = monthSel.value;
+  const nSel = m ? allLogData.filter(d => d.tanggal && d.tanggal.startsWith(m)).length : allLogData.length;
+  $('#pdfSelLbl').textContent = `${m ? monthLabel(m) : 'Semua bulan'} · ${nSel} data`;
+  $('#pdfAllLbl').textContent = `${allLogData.length} data`;
+  openModal('#pdfModal');
+});
+$$('[data-export]').forEach(b => b.addEventListener('click', () => exportPDF(b.dataset.export)));
 
-      const filteredData = dataList.filter(d => {
-        const combined = `${d.nama || ''} ${d.perusahaan || ''} ${d.alamat || ''} ${d.telepon || ''} ${d.tujuan || ''} ${d.deskripsi || ''}`.toLowerCase();
-        const matchesSearch = combined.includes(searchValue);
-        const matchesMonthYear = !selectedMonthYear || (d.tanggal && d.tanggal.startsWith(selectedMonthYear));
+/* ================= EXPORT PDF ================= */
+function exportPDF(type) {
+  closeModals();
+  if (!window.jspdf) { toast('Library PDF gagal dimuat. Periksa koneksi internet.', 'error'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const m = monthSel.value;
+  let targetData, periodTitle;
+  if (type === 'selected' && m) {
+    periodTitle = `Periode: ${monthLabel(m)}`;
+    targetData = allLogData.filter(d => d.tanggal && d.tanggal.startsWith(m));
+  } else {
+    periodTitle = 'Periode: Semua Bulan';
+    targetData = [...allLogData];
+  }
+  if (!targetData.length) { toast('Tidak ada data untuk diexport.', 'warning'); return; }
 
-        return matchesSearch && matchesMonthYear;
-      });
+  doc.setFillColor(255, 210, 63); doc.rect(0, 0, 297, 8, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(17, 17, 17);
+  doc.text('DAFTAR LOGBOOK KUNJUNGAN TAMU', 14, 18);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(90, 90, 90);
+  doc.text(periodTitle, 14, 25);
+  doc.text(`Tanggal Cetak: ${new Date().toLocaleString('id-ID')}  ·  Total: ${targetData.length} tamu`, 14, 30);
 
-      logbookContainer.innerHTML = "";
-
-      if (filteredData.length === 0) {
-        logbookContainer.innerHTML = "<p style='text-align: center; margin-top: 30px; color: #666;'>Tidak ada data logbook yang ditemukan untuk filter ini.</p>";
-        return;
-      }
-
-      const tableWrapper = document.createElement("div");
-      tableWrapper.className = "table-wrapper";
-
-      const table = document.createElement("table");
-      table.setAttribute("role", "grid");
-      const thead = document.createElement("thead");
-      const tbody = document.createElement("tbody");
-
-      thead.innerHTML = `
-        <tr>
-          <th scope="col" class="col-no">No</th>
-          <th scope="col" class="col-tanggal">Tanggal & Jam</th>
-          <th scope="col" class="col-nama">Nama</th>
-          <th scope="col" class="col-perusahaan">Perusahaan</th>
-          <th scope="col" class="col-alamat">Alamat</th>
-          <th scope="col" class="col-telepon">No Telepon</th>
-          <th scope="col" class="col-tujuan">Tujuan</th>
-          <th scope="col" class="col-deskripsi">Deskripsi</th>
-          <th scope="col" class="col-foto">Foto</th>
-        </tr>
-      `;
-
-      let no = 1;
-      filteredData.forEach(d => {
-        const row = document.createElement("tr");
-        
-        // Escape nama untuk fungsi onclick
-        const safeNama = (d.nama || '').replace(/'/g, "\\'");
-        
-        const photoContent = d.foto 
-          ? `<button class="view-photo-btn" onclick="showPhotoModal('${d.foto}', '${safeNama}')">
-               <i class="fas fa-eye"></i>
-             </button>`
-          : `-`;
-
-        row.innerHTML = `
-          <td class="col-no">${no++}</td>
-          <td class="col-tanggal">${d.tanggal || '-'}</td>
-          <td class="col-nama">${d.nama || '-'}</td>
-          <td class="col-perusahaan">${d.perusahaan || '-'}</td>
-          <td class="col-alamat">${d.alamat || '-'}</td>
-          <td class="col-telepon">${d.telepon || '-'}</td>
-          <td class="col-tujuan">${d.tujuan || '-'}</td>
-          <td class="col-deskripsi">${d.deskripsi || '-'}</td>
-          <td class="col-foto">${photoContent}</td>
-        `;
-        tbody.appendChild(row);
-      });
-
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      tableWrapper.appendChild(table);
-      logbookContainer.appendChild(tableWrapper);
-    }
-
-    // Export to PDF
-    function exportPDF(type) {
-      closePdfModal();
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-      let targetData = [];
-      let periodTitle = "";
-
-      if (type === 'selected') {
-        const selectedMonthYear = filterMonthYearSelect.value;
-        if (selectedMonthYear) {
-          const [year, month] = selectedMonthYear.split('-');
-          periodTitle = `Periode: ${monthNames[parseInt(month) - 1]} ${year}`;
-          targetData = allLogData.filter(d => d.tanggal && d.tanggal.startsWith(selectedMonthYear));
-        } else {
-          periodTitle = "Periode: Semua Bulan";
-          targetData = [...allLogData];
-        }
-      } else {
-        periodTitle = "Periode: Semua Bulan";
-        targetData = [...allLogData];
-      }
-
-      if (targetData.length === 0) {
-        alert("Tidak ada data untuk diexport.");
-        return;
-      }
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(16);
-      doc.setTextColor(74, 108, 247);
-      doc.text("DAFTAR LOGBOOK KUNJUNGAN TAMU", 14, 15);
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(periodTitle, 14, 22);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleString('id-ID')}`, 14, 27);
-
-      const tableRows = [];
-      targetData.forEach((item, index) => {
-        tableRows.push([
-          index + 1,
-          item.tanggal || '-',
-          item.nama || '-',
-          item.perusahaan || '-',
-          item.alamat || '-',
-          item.telepon || '-',
-          item.tujuan || '-',
-          item.deskripsi || '-'
-        ]);
-      });
-
-      doc.autoTable({
-        startY: 32,
-        head: [['No', 'Tanggal & Jam', 'Nama', 'Perusahaan', 'Alamat', 'No Telepon', 'Tujuan', 'Deskripsi']],
-        body: tableRows,
-        theme: 'grid',
-        headStyles: { 
-          fillColor: [74, 108, 247], 
-          textColor: 255,
-          fontStyle: 'bold',
-          fontSize: 9
-        },
-        bodyStyles: { 
-          fontSize: 8,
-          textColor: 50 
-        },
-        columnStyles: {
-          0: { cellWidth: 10, halign: 'center' },
-          1: { cellWidth: 32 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: 30 },
-          4: { cellWidth: 45 },
-          5: { cellWidth: 28 },
-          6: { cellWidth: 35 },
-          7: { cellWidth: 'auto' }
-        },
-        styles: { overflow: 'linebreak' },
-        margin: { top: 30, left: 14, right: 14 }
-      });
-
-      const filename = `Logbook_${type === 'selected' ? filterMonthYearSelect.value || 'Semua' : 'Semua_Bulan'}.pdf`;
-      doc.save(filename);
-    }
-
-    // Event Listeners
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("searchInput").addEventListener("input", () => renderLogbook(allLogData));
-      filterMonthYearSelect.addEventListener("change", () => renderLogbook(allLogData));
-
-      // Tutup Pop-up foto menggunakan tombol Escape (ESC)
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          closePhotoModal();
-          closePdfModal();
-        }
-      });
-    });
-
-    // Auth Listener
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        loginForm.classList.add("hidden");
-        logbookSection.classList.remove("hidden");
-        logbookSection.classList.add("fade-in");
-        loadLogbook();
-      } else {
-        loginForm.classList.remove("hidden");
-        logbookSection.classList.add("hidden");
-      }
-    });
-  </script>
+  doc.autoTable({
+    startY: 35,
+    head: [['No', 'Tanggal & Jam', 'Nama', 'Perusahaan', 'Alamat', 'No Telepon', 'Tujuan', 'Deskripsi']],
+    body: targetData.map((item, i) => [i + 1, item.tanggal || '-', item.nama || '-', item.perusahaan || '-', item.alamat || '-', item.telepon || '-', item.tujuan || '-', item.deskripsi || '-']),
+    theme: 'grid',
+    headStyles: { fillColor: [17, 17, 17], textColor: [255, 210, 63], fontStyle: 'bold', fontSize: 9 },
+    bodyStyles: { fontSize: 8, textColor: 40, lineColor: [17, 17, 17], lineWidth: 0.2 },
+    alternateRowStyles: { fillColor: [255, 248, 230] },
+    columnStyles: { 0: { cellWidth: 10, halign: 'center' }, 1: { cellWidth: 32 }, 2: { cellWidth: 30 }, 3: { cellWidth: 30 }, 4: { cellWidth: 45 }, 5: { cellWidth: 28 }, 6: { cellWidth: 35 }, 7: { cellWidth: 'auto' } },
+    styles: { overflow: 'linebreak' },
+    margin: { top: 30, left: 14, right: 14 }
+  });
+  doc.save(`Logbook_${type === 'selected' ? (m || 'Semua') : 'Semua_Bulan'}.pdf`);
+  toast('PDF berhasil dibuat', 'success');
+}
+</script>
 </body>
 </html>
